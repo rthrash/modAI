@@ -1,0 +1,14 @@
+name: modAI
+version: 1.0.0-pl
+lowCaseName: modai
+namespace: modAI
+author: 'John Peca'
+plugins:
+  - name: modAI
+    file: modai.php
+    events:
+      - OnManagerPageBeforeRender
+systemSettings:
+  - key: chatgpt.key
+    type: text-password
+    area: chatgpt
