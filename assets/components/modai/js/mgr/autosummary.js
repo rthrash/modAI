@@ -6,7 +6,7 @@ Ext.onReady(function() {
             const cachedItem = this._cache[key];
 
             cachedItem.els.forEach(({wrapper, field}) => {
-                const prevValue = field.value;
+                const prevValue = field.getValue();
                 field.setValue(value);
                 field.fireEvent('change', field, value, prevValue);
 
@@ -35,6 +35,11 @@ Ext.onReady(function() {
             }
 
             this._cache[key].els.push({ field, wrapper });
+            const currentValue = field.getValue();
+            if (currentValue) {
+                this._cache[key].values = [currentValue];
+                this._cache[key].visible = 0;
+            }
         },
         store (key, value) {
             const cachedItem = this._cache[key];
