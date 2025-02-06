@@ -8,7 +8,40 @@ plugins:
     file: modai.php
     events:
       - OnManagerPageBeforeRender
+
 systemSettings:
   - key: chatgpt.key
     type: text-password
     area: chatgpt
+
+  - key: global.model
+    area: global
+    value: gpt-4o
+
+  - key: global.temperature
+    area: global
+    value: 0.7
+
+  - key: global.max_tokens
+    area: global
+    value: 2048
+
+  - key: prompt.base
+    area: prompt
+
+  - key: prompt.pagetitle
+    area: prompt
+    type: 'textarea'
+    value: "- You are a SEO expert\n- Your task is to generate Page Title from the content provided by the user\n- Title can't exceed 191 characters\n- Don't use any HTML or markdown tags"
+  - key: prompt.longtitle
+    area: prompt
+    type: 'textarea'
+    value: "- You are a SEO expert\n- Your task is to generate SEO Title from the content provided by the user\n- Title can't exceed 70 characters\n- Don't use any HTML or markdown tags"
+  - key: prompt.introtext
+    area: prompt
+    type: 'textarea'
+    value: "- You are an assistant that summarizes content.\n- Your task is to generate concise summary from the content user provides.\n- Don't use any HTML or markdown tags"
+  - key: prompt.description
+    area: prompt
+    type: 'textarea'
+    value: "- You are a SEO expert\n- Your task is to generate SEO description from the content provided by the user\n- Description can't exceed 155 characters\n- Don't use any HTML or markdown tags"
