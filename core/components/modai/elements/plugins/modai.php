@@ -31,15 +31,16 @@ if (in_array($action, ['resource/create', 'resource/update', '78', '85'])) {
     // Define the assets URL (ensure this path matches your installation).
     $assetsUrl = $modAI->getOption('assets_url');
 
-//    $modx->controller->addHtml('
-//            <script type="text/javascript">
-//                Ext.onReady(function() {
-//                    modAI.config = ' . $modx->toJSON($modAI->config) . ';
-//                });
-//            </script>
-//        ');
+    $modx->controller->addHtml('
+            <script type="text/javascript">
+                Ext.onReady(function() {
+                    modAI.config = ' . $modx->toJSON($modAI->config) . ';
+                });
+            </script>
+        ');
 
     $modx->regClientCSS($assetsUrl . 'css/mgr.css');
-//    $modx->regClientStartupScript($assetsUrl . 'js/mgr/modai.js');
+    $modx->regClientStartupScript($assetsUrl . 'js/mgr/modai.js');
     $modx->regClientStartupScript($assetsUrl . 'js/mgr/autosummary.js');
+    $modx->regClientStartupScript($assetsUrl . 'js/mgr/widgets/image_prompt.window.js');
 }

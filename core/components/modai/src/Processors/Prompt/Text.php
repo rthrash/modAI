@@ -6,7 +6,7 @@ use modAI\Services\ChatGPT;
 use modAI\Settings;
 use MODX\Revolution\Processors\Processor;
 
-class Generate extends Processor
+class Text extends Processor
 {
     private static array $validFields = ['pagetitle', 'longtitle', 'introtext', 'description'];
 

@@ -1,5 +1,5 @@
 name: modAI
-version: 1.0.0-pl
+version: 0.0.2-alpha
 lowCaseName: modai
 namespace: modAI
 author: 'John Peca'
@@ -45,3 +45,17 @@ systemSettings:
     area: prompt
     type: 'textarea'
     value: "- You are a SEO expert\n- Your task is to generate SEO description from the content provided by the user\n- Description can't exceed 155 characters\n- Don't use any HTML or markdown tags"
+
+  - key: vision.model
+    area: vision
+    value: gpt-4o-mini
+  - key: vision.prompt
+    area: vision
+    value: "What is in this image?"
+
+  - key: image.model
+    area: image
+    value: dall-e-3
+  - key: image.size
+    area: image
+    value: "1024x1024"

@@ -74,7 +74,7 @@ Ext.onReady(function() {
         }
     };
 
-    const createGenerateButton = (field, fieldName) => {
+    const createWantEl = () => {
         const wandEl = document.createElement('span');
         wandEl.style.cursor = 'pointer';
         wandEl.style.marginLeft = '5px';
@@ -82,6 +82,11 @@ Ext.onReady(function() {
         wandEl.style.fontSize = '24px';
         wandEl.innerText = '🪄'
 
+        return wandEl;
+    }
+
+    const createGenerateButton = (field, fieldName) => {
+        const wandEl = createWantEl();
 
         wandEl.addEventListener('click', () => {
             Ext.Msg.wait('Generating ...', 'Please wait');
@@ -89,7 +94,7 @@ Ext.onReady(function() {
             MODx.Ajax.request({
                 url: MODx.config.connector_url,
                 params: {
-                    action: 'modAI\\Processors\\Prompt\\Generate',
+                    action: 'modAI\\Processors\\Prompt\\Text',
                     id: MODx.request.id,
                     field: fieldName
                 },
@@ -185,6 +190,74 @@ Ext.onReady(function() {
         field.label.appendChild(wrapper);
     }
 
+    const attachImagePlus = () => {
+        document.querySelectorAll('.imageplus-panel-input').forEach((el) => {
+            const imagePlus = Ext.getCmp(el.firstChild.id);
+
+            const imageWand = createWantEl();
+            imageWand.addEventListener('click', () => {
+                const createColumn = MODx.load({
+                    xtype: 'modai-window-image_prompt',
+                    title: 'Image',
+                    record: {
+                        resource: MODx.request.id,
+                        prompt: Ext.getCmp('modx-resource-introtext').getValue(),
+                    },
+                    listeners: {
+                        'success': {fn:function(res) {
+                            imagePlus.imageBrowser.setValue(res.a.result.object.url);
+                            imagePlus.onImageChange(res.a.result.object.url)
+                        },scope:this}
+                    }
+                });
+
+                createColumn.show();
+            });
+
+            const altTextWand = createWantEl();
+            altTextWand.addEventListener('click', () => {
+                const imgElement = imagePlus.imagePreview.el.dom;
+
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                canvas.width = imgElement.width;
+                canvas.height = imgElement.height;
+
+                ctx.drawImage(imgElement, 0, 0);
+
+                const base64Data = canvas.toDataURL('image/png');
+
+                Ext.Msg.wait('Generating ...', 'Please wait');
+
+                MODx.Ajax.request({
+                    url: MODx.config.connector_url,
+                    params: {
+                        action: 'modAI\\Processors\\Prompt\\Vision',
+                        image: base64Data
+                    },
+                    listeners: {
+                        success: {
+                            fn: (r) => {
+                                imagePlus.items.items[1].items.items[1].items.items[0].setValue(r.object.content);
+                                Ext.Msg.hide();
+                            }
+                        },
+                        failure: {
+                            fn: function() {
+                                console.log('fail');
+                            } ,
+                            scope: this
+                        }
+                    }
+                });
+            });
+
+            imagePlus.items.items[0].el.dom.appendChild(imageWand);
+            imagePlus.items.items[1].items.items[1].el.dom.appendChild(altTextWand);
+        })
+    };
+
     Ext.defer(function() {
         attach('modx-resource-pagetitle', 'pagetitle');
 
@@ -195,6 +268,8 @@ Ext.onReady(function() {
 
         attach('modx-resource-description', 'description');
         attach('seosuite-description', 'description');
+
+        attachImagePlus();
 
     }, 500);
 });

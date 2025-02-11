@@ -27,4 +27,8 @@ class Settings {
     public static function getPrompt(modX $modx, string $prompt, string $model = null): string {
         return $modx->getOption("modai.prompt.$prompt");
     }
+
+    public static function getSetting(modX $modx, string $key, string $default = null) {
+        return $modx->getOption("modai.$key", null, $default);
+    }
 }
