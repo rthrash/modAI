@@ -23,13 +23,10 @@ if (isset($modx->controller) && is_object($modx->controller) && property_exists(
     $action = $_REQUEST['a'];
 }
 
-// Log the action value for debugging.
-$modx->log(modX::LOG_LEVEL_INFO, 'AutoSummaryPlugin: Current action value is: ' . print_r($action, true));
-
 // Adjust the check as per your Manager’s action identifiers.
 if (in_array($action, ['resource/create', 'resource/update', '78', '85'])) {
     // Define the assets URL (ensure this path matches your installation).
-    $assetsUrl = $modAI->getOption('assets_url');
+    $assetsUrl = $modAI->getOption('assetsUrl');
 
     $modx->controller->addHtml('
             <script type="text/javascript">
