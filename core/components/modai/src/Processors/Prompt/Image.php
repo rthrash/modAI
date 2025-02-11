@@ -3,6 +3,7 @@
 namespace modAI\Processors\Prompt;
 
 use modAI\Services\ChatGPT;
+use modAI\Settings;
 use MODX\Revolution\Processors\Processor;
 
 class Image extends Processor
