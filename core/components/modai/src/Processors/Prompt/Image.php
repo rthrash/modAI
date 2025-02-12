@@ -25,13 +25,19 @@ class Image extends Processor
             return $this->failure('image.size setting is required');
         }
 
+        $quality = Settings::getSetting($this->modx, 'image.quality');
+        if (empty($quality)) {
+            return $this->failure('image.quality setting is required');
+        }
+
         $chatGPT = new ChatGPT($this->modx);
 
         $data = [
             'model' => $model,
             'prompt' => $prompt,
             'n' => 1,
-            'size' => $size
+            'size' => $size,
+            'quality' => $quality
         ];
 
         try {

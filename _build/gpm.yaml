@@ -32,30 +32,37 @@ systemSettings:
   - key: prompt.pagetitle
     area: prompt
     type: 'textarea'
-    value: "- You are a SEO expert\n- Your task is to generate Page Title from the content provided by the user\n- Title can't exceed 191 characters\n- Don't use any HTML or markdown tags"
+    value: "- You are a SEO expert\n- Your task is to generate a Page Title from from the page content for use as the main H1 tag on the page.\n- The Title shouldn't exceed 191 characters\n- Don't use any HTML or markdown tags"
   - key: prompt.longtitle
     area: prompt
     type: 'textarea'
-    value: "- You are a SEO expert\n- Your task is to generate SEO Title from the content provided by the user\n- Title can't exceed 70 characters\n- Don't use any HTML or markdown tags"
+    value: "- You are a SEO expert\n- Your task is to generate an optimal Meta Title from the page content.\n- The Meta Title can't exceed 70 characters\n- Don't use any HTML or markdown tags\n- Don't wrap the Meta Title in quotes"
   - key: prompt.introtext
     area: prompt
     type: 'textarea'
-    value: "- You are an assistant that summarizes content.\n- Your task is to generate concise summary from the content user provides.\n- Don't use any HTML or markdown tags"
+    value: "- You are an assistant that summarizes content.\n- Your task is to generate concise summary of the page content.\n- Don't use any HTML or markdown tags"
   - key: prompt.description
     area: prompt
     type: 'textarea'
-    value: "- You are a SEO expert\n- Your task is to generate SEO description from the content provided by the user\n- Description can't exceed 155 characters\n- Don't use any HTML or markdown tags"
+    value: "- You are a SEO expert\n- Your task is to generate SEO Meta Description\n- Description can't exceed 155 characters\n- Don't use any HTML or markdown tags"
 
   - key: vision.model
     area: vision
     value: gpt-4o-mini
   - key: vision.prompt
     area: vision
-    value: "What is in this image?"
+    value: "Create an optimal alt tag for accessibility for this image that is no longer than 120 characters and not using any punctuation, quotes, or special characters"
 
   - key: image.model
     area: image
     value: dall-e-3
+    description: "valid options are `dall-e-2` and `dall-e-3` (default). Consult https://platform.openai.com/docs/guides/images/image-generation-beta for full details including DALL-E-2 specifics."
   - key: image.size
     area: image
     value: "1024x1024"
+    description: "Valid options for DALL-E-3 are `1024x1024` (default), `1792x1024`, and `1024x1792`. "
+  - key: image.quality
+    area: image
+    value: standard
+    description: "Valid options are `standard` (default) and `hd`."
+
