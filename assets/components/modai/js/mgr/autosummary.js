@@ -240,6 +240,8 @@ Ext.onReady(function() {
                         success: {
                             fn: (r) => {
                                 imagePlus.items.items[1].items.items[1].items.items[0].setValue(r.object.content);
+                                imagePlus.image.altTag = r.object.content;
+                                imagePlus.updateValue();
                                 Ext.Msg.hide();
                             }
                         },
