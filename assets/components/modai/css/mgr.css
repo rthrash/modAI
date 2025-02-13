@@ -1,20 +1,28 @@
-/* Styling for the magic wand emoji icon */
-.modai-generate {
-    all: unset;
-    display: inline-block;
-    cursor: pointer;
-    margin-left: 5px;
-    vertical-align: baseline;
-    transition: transform 0.2s ease;
-}
-
-/* Hover effect for the wand icon */
-.modai-generate:hover {
-    transform: rotate(20deg);
-}
-
 .modai-history_prev, .modai-history_next {
-    all: unset;
+    //all: unset;
+}
+
+.modai-generate,
+.modai-history_next,
+.modai-history_prev {
     display: inline-block;
     cursor: pointer;
+    background: #fff;
+    color: #000;
+    border-radius: 3px;
+    margin-right: 6px;
+    padding-inline: 0.6em;
+    padding-top: 3px;
+    vertical-align: baseline;
+    box-shadow: 0 0 0 1px #e4e4e4;
+    &:disabled {
+        opacity:0.5;
+        cursor:initial;
+    }
+}
+
+.modai-generate {
+    //transition: transform 0.2s ease-in-out;
+    margin-left: 6px;
+    padding-bottom: 3px;
 }

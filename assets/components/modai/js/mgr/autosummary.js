@@ -90,7 +90,7 @@ Ext.onReady(function() {
     const createWandEl = () => {
         const wandEl = document.createElement('button');
         wandEl.className = 'modai-generate';
-        wandEl.innerText = '🪄'
+        wandEl.innerText = '✦'
         wandEl.type = 'button'
         wandEl.title = 'Generate using AI'
 
@@ -100,7 +100,7 @@ Ext.onReady(function() {
     const createHistoryNav = (field, fieldName) => {
         const prevButton = document.createElement('button');
         prevButton.type = 'button';
-        prevButton.title = 'Prev';
+        prevButton.title = 'Previous Version';
         prevButton.className = 'modai-history_prev';
         prevButton.disable = () => {
             prevButton.disabled = true;
@@ -108,14 +108,14 @@ Ext.onReady(function() {
         prevButton.enable = () => {
             prevButton.disabled = false;
         }
-        prevButton.innerHTML = '<<';
+        prevButton.innerHTML = 'prev';
         prevButton.addEventListener('click', () => {
             cache.prev(fieldName);
         });
 
         const nextButton = document.createElement('button');
         nextButton.type = 'button';
-        nextButton.title = 'Next';
+        nextButton.title = 'Next Version';
         nextButton.className = 'modai-history_next';
         nextButton.disable = () => {
             nextButton.disabled = true;
@@ -123,7 +123,7 @@ Ext.onReady(function() {
         nextButton.enable = () => {
             nextButton.disabled = false;
         }
-        nextButton.innerHTML = '>>';
+        nextButton.innerHTML = 'next';
         nextButton.addEventListener('click', () => {
             cache.next(fieldName);
         });
