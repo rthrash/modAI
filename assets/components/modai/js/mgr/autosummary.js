@@ -107,7 +107,8 @@ Ext.onReady(function() {
                     },
                     failure: {
                         fn: function() {
-                            console.log('fail');
+                            Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
+                            Ext.Msg.hide();
                         } ,
                         scope: this
                     }
@@ -247,7 +248,8 @@ Ext.onReady(function() {
                         },
                         failure: {
                             fn: function() {
-                                console.log('fail');
+                                Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
+                                Ext.Msg.hide();
                             } ,
                             scope: this
                         }
