@@ -12,3 +12,9 @@
 .modai-generate:hover {
     transform: rotate(20deg);
 }
+
+.modai-history_prev, .modai-history_next {
+    all: unset;
+    display: inline-block;
+    cursor: pointer;
+}

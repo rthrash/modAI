@@ -99,6 +99,9 @@ Ext.onReady(function() {
 
     const createHistoryNav = (field, fieldName) => {
         const prevButton = document.createElement('button');
+        prevButton.type = 'button';
+        prevButton.title = 'Prev';
+        prevButton.className = 'modai-history_prev';
         prevButton.disable = () => {
             prevButton.disabled = true;
         }
@@ -111,6 +114,9 @@ Ext.onReady(function() {
         });
 
         const nextButton = document.createElement('button');
+        nextButton.type = 'button';
+        nextButton.title = 'Next';
+        nextButton.className = 'modai-history_next';
         nextButton.disable = () => {
             nextButton.disabled = true;
         }
