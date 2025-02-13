@@ -229,6 +229,7 @@ Ext.onReady(function() {
             });
 
             const altTextWand = createWandEl();
+            altTextWand.style.marginTop = '6px';
             altTextWand.addEventListener('click', () => {
                 const imgElement = imagePlus.imagePreview.el.dom;
 
