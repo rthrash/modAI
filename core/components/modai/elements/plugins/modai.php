@@ -40,4 +40,5 @@ if (in_array($action, ['resource/create', 'resource/update', '78', '85'])) {
     $modx->regClientStartupScript($assetsUrl . 'js/mgr/modai.js');
     $modx->regClientStartupScript($assetsUrl . 'js/mgr/autosummary.js');
     $modx->regClientStartupScript($assetsUrl . 'js/mgr/widgets/image_prompt.window.js');
+    $modx->regClientStartupScript($assetsUrl . 'js/mgr/widgets/text_prompt.window.js');
 }

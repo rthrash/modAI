@@ -1,15 +1,15 @@
-modAI.window.ImagePrompt = function(config) {
+modAI.window.TextPrompt = function(config) {
     config = config || {};
 
-    const pagination = this.init();
+    this.addEvents('afterrender');
+
+    const pagination = this.init(config);
 
     Ext.applyIf(config,{
         title: 'Image',
         closeAction: 'close',
         width: 600,
         autoHeight: true,
-        url: MODx.config.connector_url,
-        action: 'modAI\\Processors\\Download\\Image',
         fields: this.getFields(config),
         buttonAlign: 'left',
         modal: true,
@@ -23,26 +23,21 @@ modAI.window.ImagePrompt = function(config) {
                     this.close();
                 }
             },
-            this.downloadButton
-        ]
+            this.copyClose
+        ],
     });
 
-    modAI.window.ImagePrompt.superclass.constructor.call(this,config);
+    modAI.window.TextPrompt.superclass.constructor.call(this,config);
 };
-Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
-    _cache: {
-        visible: -1,
-        history: []
-    },
-
-    init: function() {
+Ext.extend(modAI.window.TextPrompt,MODx.Window, {
+    init: function(config) {
         const syncUI = () => {
             info.update({currentPage: this._cache.visible + 1, total: this._cache.history.length})
             info.show();
 
-            this.hidenUrl.setValue(this._cache.history[this._cache.visible].url);
             this.prompt.setValue(this._cache.history[this._cache.visible].prompt)
-            this.imagePreview.update({url: this._cache.history[this._cache.visible].url});
+            this.preview.show();
+            this.preview.setValue(this._cache.history[this._cache.visible].content);
 
 
             if (this._cache.visible <= 0) {
@@ -63,8 +58,8 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
 
             syncUI();
 
-            this.imagePreview.show();
-            this.downloadButton.enable();
+            this.preview.show();
+            this.copyClose.enable();
             prev.show();
             next.show();
         }
@@ -102,23 +97,37 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             required: true,
         });
 
-        this.imagePreview = new Ext.Component({
+        this.preview = new Ext.form.TextArea({
             hidden: true,
-            data: {url: ''},
-            tpl: new Ext.XTemplate(
-                '<img src="{url}" style="width:100%;margin-top:10px;" />',
-            )
+            anchor: '100%',
         });
 
-        this.hidenUrl = new Ext.form.Hidden({
-            name: 'url'
-        });
-
-        this.downloadButton = new Ext.Button({
-            text: _('save'),
+        this.copyClose = new Ext.Button({
+            text: 'Copy & Close',
             cls: 'primary-button',
             scope: this,
-            handler: this.submit,
+            handler: () => {
+                this.preview.el.dom.select()
+                this.preview.el.dom.setSelectionRange(0, this.preview.el.dom.value.length);
+
+                // 4. Use the Clipboard API (modern approach)
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(this.preview.getValue())
+                        .then(() => {
+                            this.close();
+                        })
+                        .catch(() => {
+                            Ext.Msg.alert("Failed", "Failed to copy the generated text. Please try again.");
+                        });
+                } else {
+                    try {
+                        document.execCommand("copy");
+                        this.close();
+                    } catch (err) {
+                        Ext.Msg.alert("Failed", "Failed to copy the generated text. Please try again.");
+                    }
+                }
+            },
             disabled: true
         });
 
@@ -126,10 +135,19 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             addItem,
         };
 
-        this._cache = {
-            visible: -1,
-            history: []
-        };
+        this._cache = config.cache;
+
+        if (this._cache.history.length > 0) {
+            this.addListener('afterrender', () => {
+                syncUI();
+
+                this.preview.show();
+                this.copyClose.enable();
+                prev.show();
+                next.show();
+            }, this, {single: true});
+
+        }
 
         return [prev, next, info];
     },
@@ -137,17 +155,12 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
     getFields: function(config) {
 
         return [
-            {
-                xtype: 'hidden',
-                name: 'resource'
-            },
-            this.hidenUrl,
             this.prompt,
             {
                 style: 'margin-top: 10px;',
                 xtype: 'button',
                 anchor: '100%',
-                text: 'Generate Image',
+                text: 'Generate',
                 handler: () => {
                     const prompt = this.prompt.getValue();
                     if (!prompt) {
@@ -161,13 +174,13 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                     MODx.Ajax.request({
                         url: MODx.config.connector_url,
                         params: {
-                            action: 'modAI\\Processors\\Prompt\\Image',
+                            action: 'modAI\\Processors\\Prompt\\FreeText',
                             prompt: this.prompt.getValue()
                         },
                         listeners: {
                             success: {
                                 fn: (r) => {
-                                    this.pagination.addItem({prompt: this.prompt.getValue(), url: r.object.data.url});
+                                    this.pagination.addItem({prompt: this.prompt.getValue(), content: r.object.content});
                                     Ext.Msg.hide();
                                 }
                             },
@@ -182,8 +195,8 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                     });
                 }
             },
-            this.imagePreview
+            this.preview
         ];
     }
 });
-Ext.reg('modai-window-image_prompt',modAI.window.ImagePrompt);
+Ext.reg('modai-window-text_prompt', modAI.window.TextPrompt);

@@ -73,48 +73,26 @@ Ext.onReady(function() {
             this._setFieldValue(key, cachedItem.values[--cachedItem.visible]);
         }
     };
-
-    const createWantEl = () => {
-        const wandEl = document.createElement('span');
-        wandEl.style.cursor = 'pointer';
-        wandEl.style.marginLeft = '5px';
-        wandEl.style.verticalAlign = 'middle';
-        wandEl.style.fontSize = '24px';
-        wandEl.innerText = '🪄'
-
-        return wandEl;
-    }
-
-    const createGenerateButton = (field, fieldName) => {
-        const wandEl = createWantEl();
-
-        wandEl.addEventListener('click', () => {
-            Ext.Msg.wait('Generating ...', 'Please wait');
-
-            MODx.Ajax.request({
-                url: MODx.config.connector_url,
-                params: {
-                    action: 'modAI\\Processors\\Prompt\\Text',
-                    id: MODx.request.id,
-                    field: fieldName
-                },
-                listeners: {
-                    success: {
-                        fn: (r) => {
-                            cache.store(fieldName, r.object.content);
-                            Ext.Msg.hide();
-                        }
-                    },
-                    failure: {
-                        fn: function() {
-                            Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
-                            Ext.Msg.hide();
-                        } ,
-                        scope: this
-                    }
+    const freePromptCache = {
+        _cache: {},
+        get(key) {
+            if (!this._cache[key]) {
+                this._cache[key] = {
+                    visible: -1,
+                    history: []
                 }
-            });
-        });
+            }
+
+            return this._cache[key];
+        }
+    };
+
+    const createWandEl = () => {
+        const wandEl = document.createElement('button');
+        wandEl.className = 'modai-generate';
+        wandEl.innerText = '🪄'
+        wandEl.type = 'button'
+        wandEl.title = 'Generate using AI'
 
         return wandEl;
     }
@@ -183,7 +161,36 @@ Ext.onReady(function() {
 
         wrapper.historyNav = historyNav;
 
-        wrapper.appendChild(createGenerateButton(field, fieldName));
+        const wandEl = createWandEl();
+        wandEl.addEventListener('click', () => {
+            Ext.Msg.wait('Generating ...', 'Please wait');
+
+            MODx.Ajax.request({
+                url: MODx.config.connector_url,
+                params: {
+                    action: 'modAI\\Processors\\Prompt\\Text',
+                    id: MODx.request.id,
+                    field: fieldName
+                },
+                listeners: {
+                    success: {
+                        fn: (r) => {
+                            cache.store(fieldName, r.object.content);
+                            Ext.Msg.hide();
+                        }
+                    },
+                    failure: {
+                        fn: function() {
+                            Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
+                            Ext.Msg.hide();
+                        } ,
+                        scope: this
+                    }
+                }
+            });
+        });
+
+        wrapper.appendChild(wandEl);
         wrapper.appendChild(historyNav);
 
         cache.init(fieldName, field, wrapper);
@@ -195,7 +202,7 @@ Ext.onReady(function() {
         document.querySelectorAll('.imageplus-panel-input').forEach((el) => {
             const imagePlus = Ext.getCmp(el.firstChild.id);
 
-            const imageWand = createWantEl();
+            const imageWand = createWandEl();
             imageWand.addEventListener('click', () => {
                 const createColumn = MODx.load({
                     xtype: 'modai-window-image_prompt',
@@ -215,7 +222,7 @@ Ext.onReady(function() {
                 createColumn.show();
             });
 
-            const altTextWand = createWantEl();
+            const altTextWand = createWandEl();
             altTextWand.addEventListener('click', () => {
                 const imgElement = imagePlus.imagePreview.el.dom;
 
@@ -240,7 +247,7 @@ Ext.onReady(function() {
                     listeners: {
                         success: {
                             fn: (r) => {
-                                imagePlus.items.items[1].items.items[1].items.items[0].setValue(r.object.content);
+                                imagePlus.altTextField.items.items[0].setValue(r.object.content);
                                 imagePlus.image.altTag = r.object.content;
                                 imagePlus.updateValue();
                                 Ext.Msg.hide();
@@ -257,9 +264,38 @@ Ext.onReady(function() {
                 });
             });
 
-            imagePlus.items.items[0].el.dom.appendChild(imageWand);
-            imagePlus.items.items[1].items.items[1].el.dom.appendChild(altTextWand);
+            imagePlus.altTextField.el.dom.style.display = 'flex';
+            imagePlus.altTextField.el.dom.style.justifyItems = 'center';
+
+            imagePlus.el.dom.parentElement.parentElement.parentElement.querySelector('label').appendChild(imageWand);
+            imagePlus.altTextField.el.dom.appendChild(altTextWand);
         })
+    };
+
+    const attachContent = () => {
+        const cmp = Ext.getCmp('modx-resource-content');
+        const label = cmp.el.dom.querySelector('label');
+
+        const wandEl = createWandEl();
+        wandEl.addEventListener('click', () => {
+            const win = MODx.load({
+                xtype: 'modai-window-text_prompt',
+                title: 'Text',
+                cache: freePromptCache.get('modx-resource-content'),
+                listeners: {
+                    success: {
+                        fn: function(res) {
+                            console.log(res);
+                        },
+                        scope:this
+                    }
+                }
+            });
+
+            win.show();
+        });
+
+        label.appendChild(wandEl);
     };
 
     Ext.defer(function() {
@@ -272,6 +308,8 @@ Ext.onReady(function() {
 
         attach('modx-resource-description', 'description');
         attach('seosuite-description', 'description');
+
+        attachContent();
 
         attachImagePlus();
 
