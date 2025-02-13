@@ -23,6 +23,8 @@ After installing the Extra, update the `modai.chatgpt_key` (filter by the `modai
 
 You can customize the prompts and configurations in the global, image, prompt and vision areas of the `modai` namespace in the system settings.
 
+The base prompt is appended to every prompt you generate. It can be considered similar to the Customize ChatGPT settings.
+
 **Note:** modAI also works with SEO Suite, which uses the longtitle and description fields (see below). It also supports image+ for things like Open Graph sharing preview images, hero section images, etc. 
 
 The `modai.prompt.base` can be used for **{INSERT DESCRIPTION HERE}**

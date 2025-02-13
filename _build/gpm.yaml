@@ -32,7 +32,8 @@ systemSettings:
 
   - key: prompt.base
     area: prompt
-
+    type: 'textarea'
+    description: "This is an overall instruction modifier that is added to each API request by default, similar to what you would enter for Customize ChatGPT on their website."
   - key: prompt.pagetitle
     area: prompt
     type: 'textarea'
