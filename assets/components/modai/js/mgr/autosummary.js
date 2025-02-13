@@ -272,6 +272,7 @@ Ext.onReady(function() {
 
             imagePlus.altTextField.el.dom.style.display = 'flex';
             imagePlus.altTextField.el.dom.style.justifyItems = 'center';
+            imagePlus.altTextField.el.dom.style.alignItems = 'center';
 
             imagePlus.el.dom.parentElement.parentElement.parentElement.querySelector('label').appendChild(imageWand);
             imagePlus.altTextField.el.dom.appendChild(altTextWand);
