@@ -15,31 +15,29 @@ The Plugin adds a sparkle (✦) button next to fields or labels in the back-end 
 
 MODX’s modAI Extra plays very well with the following Extras, though they’re not required:
 
-- **image+** – https://extras.modx.com/package/imageplustvinput
-- **pThumb** – https://extras.modx.com/package/pthumb (don't forget to disable the phpThumbOfCacheManager plugin … it’s evil)
+- **image+** – for things like Open Graph sharing previews or hero section images with robust output templating, resizing, cropping and format conversions in conjunction with **pThumb** https://extras.modx.com/package/imageplustvinput
+- **SEO Suite+** – for managing and previewing SEO-related information for your sites https://extras.modx.com/package/seosuite
 
 ## Configuration
 
-After installing the Extra, update the `modai.chatgpt_key`—filter by the `modai` namespace to make it easy to find—with your ChatGPT API key.
+After installing the Extra, update the `modai.chatgpt_key` with your ChatGPT API key. (Filter by the `modai` namespace to make finding it easier.)
 
-You can customize the prompts and configurations in the global, image, prompt and vision areas of the `modai` namespace in the system settings.
+Customize the base prompts and configurations in the `global`, `image`, `prompt` and `vision` areas of the `modai` namespace in the system settings as needed or desired.
 
-**Note:** modAI works with SEO Suite, which uses the `longtitle` and `description` fields (see below). It also supports image+ for things like Open Graph sharing preview images, hero section images, etc. 
+The `modai.prompt.base` can be roughly equated to a light version of ChatGPT’s custom instructions: it prepends the base prompt to ever other prompt.
 
-The `modai.prompt.base` can be roughly equated to a light version of ChatGPT’s custom instructions: it prepends the base prompt to ever other prompt for your site.
+If you wish to override a model or the system default configurations for a specific field, create a system setting in the format of `modai.prompt.{field}.{setting}` substituting for the relevant `{field}` and `{setting}` as appropriate. 
 
-If you wish to override a model or model configuration for a specific field, or to attach to additional fields, you do so by creating a system setting in the format of `modai.prompt.{field}.{setting}` substituting for the relevant `{field}` and `{setting}` as appropriate. 
-
-You can attach modAI to text, textarea or image Template Variables (TVs) using similar settings to the built in fields: `modai.prompt.{tv-name}.{setting}` (setting is optional). It will always attach to Image+ TVs, with support for the alt attribute generation using the vision models to describe the images for you.
+Attach modAI to text, textarea or image Template Variables (TVs) using similar settings: `modai.prompt.{tv-name}.{setting}` (`setting` is optional)—modAI will always attaches to Image+ TVs, with support for the alt attribute generation using the vision models to describe the images for you.
 
 ## Usage
 
 Wherever you see a field or a label with a “sparkle button” (✦) next to it, click it to use the chatGPT api to create content in those fileds based on the system settings prompts/configurations. By default, it automatically creates sparkle buttons for several fields as outlined below. Delete the prompt settings to remove modAI’s sparkle buttons and generative AI content creation for those fields:
 
 - **pagetitle** – sometimes used for an H1 tag (~60 characters)
-- **longtitle** – often used for the SEO Meta Title (should be ~70 characters)
-- **description** – often used for the SEO Meta Description (should be ~155 characters)
-- **introtext** – aka Summary, this is used to create a brief summary of the page content field and used to generate images
+- **longtitle** – often used for the SEO Meta Title manually or with SEO Suite (should be ~70 characters)
+- **description** – often used for the SEO Meta Description manually or with SEO Suite (should be ~155 characters)
+- **introtext** – aka Summary, this can used to create a brief summary of the page content field for overviews for things like news summary pages or blog index pages, or to use as a base to generate images or image+ images from
 - **image+ TVs** – it will use the introtext/summary as a default prompt which can be overwritten before requesting an image generation. It also uses the vision API to create 120 character alt tag descriptions if enabled for your Image+ TVs.
 
 If you’re not happy with what modAI generates, click the sparkle button or generate buttons again to generate another variation. You can then use the prev/next navigation buttons to go between the options. When you save, it keeps the option shown and discards the rest.
