@@ -1,11 +1,11 @@
 # modAI
-A proof of concept Extra generative AI creation of SEO-related content including page titles, meta titles, meta descriptions, page summaries, and images/alt text that can be used for Open Graph shares or hero sections that are all the rage for the top of web pages.
+A proof of concept generative AI Extra – perfect for speeding up the time needed for SEO-related content including page titles, meta titles, meta descriptions, page summaries, and images/alt text that can be used for Open Graph shares or hero sections that are all the rage for the top of web pages.
 
-The Plugin adds a sparkle (✦) button next to fields or labels in the back-end Manager. When clicked, it:
+The modAI Plugin adds a sparkle button (✦) next to fields or labels in back-end Manager for MODX Revolution. When clicked, it:
 
-- uses prompts based on the type of content being created, 
-- uses the ChatGPT API to create said content, and 
-- dumps the result into the appropriate field or a textarea that you can copy/paste from (e.g., for the Content field). 
+1. uses field-specific prompts for the type of content being created, 
+2. uses the ChatGPT API to create said content, and 
+3. dumps the result directly into the appropriate field or a textarea that you can copy/paste from (e.g., for longer format articles going into the Content field). 
 
 ## Requirements
 
