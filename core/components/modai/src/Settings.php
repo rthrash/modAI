@@ -14,8 +14,8 @@ class Settings {
     /**
      * @throws RequiredSettingException
      */
-    public static function getPromptSetting(modX $modx, string $field, string $setting, string $model = null): string {
-        $value = $modx->getOption("modai.prompt.$field.$setting", null, $modx->getOption("modai.global.$setting"), true);
+    public static function getFieldSetting(modX $modx, string $field, string $setting): string {
+        $value = $modx->getOption("modai.$field.$setting", null, $modx->getOption("modai.global.$setting"), true);
 
         if (empty($value)) {
             throw new RequiredSettingException("modai.global.$setting");
@@ -24,8 +24,8 @@ class Settings {
         return $value;
     }
 
-    public static function getPrompt(modX $modx, string $prompt, string $model = null): string {
-        return $modx->getOption("modai.prompt.$prompt");
+    public static function getPrompt(modX $modx, string $field, string $model = null): string {
+        return $modx->getOption("modai.$field.prompt");
     }
 
     public static function getSetting(modX $modx, string $key, string $default = null) {

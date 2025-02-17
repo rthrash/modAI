@@ -8,15 +8,27 @@ use MODX\Revolution\Processors\Processor;
 
 class Text extends Processor
 {
-    private static array $validFields = ['pagetitle', 'longtitle', 'introtext', 'description'];
+    private static array $validFields = ['res.pagetitle', 'res.longtitle', 'res.introtext', 'res.description'];
 
     public function process()
     {
         $fields = array_flip(self::$validFields);
         $field = $this->getProperty('field');
 
-        if (!isset($fields[$field])) {
-            return $this->failure('Unsupported field.');
+        if (substr($field, 0, 3) === 'tv.') {
+            $modAi = $this->modx->services->get('modai');
+            $tvs = $modAi->getListOfTVs();
+            $tvs = array_flip($tvs);
+
+            $tvName = substr($field, 3);
+
+            if (!isset($tvs[$tvName])) {
+                return $this->failure('Unsupported TV.');
+            }
+        } else {
+            if (!isset($fields[$field])) {
+                return $this->failure('Unsupported field.');
+            }
         }
 
         $id = $this->getProperty('id');
@@ -40,9 +52,9 @@ class Text extends Processor
         $messages = [];
 
         try {
-            $model = Settings::getPromptSetting($this->modx, $field, 'model');
-            $temperature = (float)Settings::getPromptSetting($this->modx, $field, 'temperature', $model);
-            $maxTokens = (int)Settings::getPromptSetting($this->modx, $field, 'max_tokens', $model);
+            $model = Settings::getFieldSetting($this->modx, $field, 'model');
+            $temperature = (float)Settings::getFieldSetting($this->modx, $field, 'temperature');
+            $maxTokens = (int)Settings::getFieldSetting($this->modx, $field, 'max_tokens');
         } catch (RequiredSettingException $e) {
             return $this->failure($e->getMessage());
         }

@@ -1,6 +1,7 @@
 <?php
 namespace modAI;
 
+use MODX\Revolution\modTemplateVar;
 use MODX\Revolution\modX;
 
 class modAI
@@ -61,6 +62,52 @@ class modAI
             }
         }
         return $option;
+    }
+
+    public function getListOfTVs()
+    {
+        $tvs = $this->modx->getOption('modai.tvs');
+        if (empty($tvs)) {
+            return [];
+        }
+
+        $tvs = explode(',', $tvs);
+        $tvs = array_map('trim', $tvs);
+        $tvs = array_keys(array_flip($tvs));
+
+        return array_filter($tvs);
+    }
+
+    public function getResourceFields()
+    {
+        $fields = $this->modx->getOption('modai.res.fields');
+        if (empty($fields)) {
+            return [];
+        }
+
+        $fields = explode(',', $fields);
+        $fields = array_map('trim', $fields);
+        $fields = array_keys(array_flip($fields));
+
+        return array_filter($fields);
+    }
+
+    public function getListOfTVsWithIDs()
+    {
+        $tvs = $this->getListOfTVs();
+        if (empty($tvs)) {
+            return [];
+        }
+
+        $output = [];
+
+        $tvObjects = $this->modx->getIterator(modTemplateVar::class, ['name:IN' => $tvs]);
+        foreach ($tvObjects as $tvObject) {
+            $output[] = [$tvObject->get('id'), $tvObject->get('name')];
+        }
+
+        return $output;
+
     }
 
 }

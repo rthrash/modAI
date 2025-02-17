@@ -158,7 +158,89 @@ Ext.onReady(function() {
         return wrapper;
     }
 
-    const attach = (cmp, fieldName) => {
+    const createFreeTextPrompt = (cacheKey) => {
+        const wandEl = createWandEl();
+        wandEl.addEventListener('click', () => {
+            const win = MODx.load({
+                xtype: 'modai-window-text_prompt',
+                title: 'Text',
+                cache: freePromptCache.get(cacheKey)
+            });
+
+            win.show();
+        });
+
+        return wandEl;
+    }
+
+    const createForcedTextPrompt = (field, fieldName) => {
+        const aiWrapper = document.createElement('span');
+        const historyNav = createHistoryNav(field, fieldName);
+
+        aiWrapper.historyNav = historyNav;
+
+        const wandEl = createWandEl();
+        wandEl.addEventListener('click', () => {
+            Ext.Msg.wait('Generating ...', 'Please wait');
+
+            MODx.Ajax.request({
+                url: MODx.config.connector_url,
+                params: {
+                    action: 'modAI\\Processors\\Prompt\\Text',
+                    id: MODx.request.id,
+                    field: fieldName
+                },
+                listeners: {
+                    success: {
+                        fn: (r) => {
+                            cache.store(fieldName, r.object.content);
+                            Ext.Msg.hide();
+                        }
+                    },
+                    failure: {
+                        fn: function() {
+                            Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
+                            Ext.Msg.hide();
+                        } ,
+                        scope: this
+                    }
+                }
+            });
+        });
+
+        aiWrapper.appendChild(wandEl);
+        aiWrapper.appendChild(historyNav);
+
+        cache.init(fieldName, field, aiWrapper);
+
+        return aiWrapper;
+    }
+
+    const createImagePrompt = (defaultPrompt, onSuccess) => {
+        const imageWand = createWandEl();
+        imageWand.addEventListener('click', () => {
+            const createColumn = MODx.load({
+                xtype: 'modai-window-image_prompt',
+                title: 'Image',
+                record: {
+                    resource: MODx.request.id,
+                    prompt: defaultPrompt,
+                },
+                listeners: {
+                    success: {
+                        fn: onSuccess,
+                        scope:this
+                    }
+                }
+            });
+
+            createColumn.show();
+        });
+
+        return imageWand;
+    }
+
+    const attachField = (cmp, fieldName) => {
         const field = Ext.getCmp(cmp);
         if (!field) return;
 
@@ -204,122 +286,153 @@ Ext.onReady(function() {
         field.label.appendChild(wrapper);
     }
 
-    const attachImagePlus = () => {
-        document.querySelectorAll('.imageplus-panel-input').forEach((el) => {
-            const imagePlus = Ext.getCmp(el.firstChild.id);
+    const attachImagePlus = (imgPlusPanel) => {
+        const imagePlus = Ext.getCmp(imgPlusPanel.firstChild.id);
 
-            const imageWand = createWandEl();
-            imageWand.addEventListener('click', () => {
-                const createColumn = MODx.load({
-                    xtype: 'modai-window-image_prompt',
-                    title: 'Image',
-                    record: {
-                        resource: MODx.request.id,
-                        prompt: Ext.getCmp('modx-resource-introtext').getValue(),
-                    },
-                    listeners: {
-                        'success': {fn:function(res) {
-                            imagePlus.imageBrowser.setValue(res.a.result.object.url);
-                            imagePlus.onImageChange(res.a.result.object.url)
-                        },scope:this}
-                    }
-                });
+        const imageWand = createImagePrompt(
+            // Ext.getCmp('modx-resource-introtext').getValue(),
+            '',
+            function(res) {
+                imagePlus.imageBrowser.setValue(res.a.result.object.url);
+                imagePlus.onImageChange(res.a.result.object.url)
+            }
+        );
 
-                createColumn.show();
-            });
+        const altTextWand = createWandEl();
+        altTextWand.style.marginTop = '6px';
+        altTextWand.addEventListener('click', () => {
+            const imgElement = imagePlus.imagePreview.el.dom;
 
-            const altTextWand = createWandEl();
-            altTextWand.style.marginTop = '6px';
-            altTextWand.addEventListener('click', () => {
-                const imgElement = imagePlus.imagePreview.el.dom;
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
 
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
+            canvas.width = imgElement.width;
+            canvas.height = imgElement.height;
 
-                canvas.width = imgElement.width;
-                canvas.height = imgElement.height;
+            ctx.drawImage(imgElement, 0, 0);
 
-                ctx.drawImage(imgElement, 0, 0);
+            const base64Data = canvas.toDataURL('image/png');
 
-                const base64Data = canvas.toDataURL('image/png');
+            Ext.Msg.wait('Generating ...', 'Please wait');
 
-                Ext.Msg.wait('Generating ...', 'Please wait');
-
-                MODx.Ajax.request({
-                    url: MODx.config.connector_url,
-                    params: {
-                        action: 'modAI\\Processors\\Prompt\\Vision',
-                        image: base64Data
-                    },
-                    listeners: {
-                        success: {
-                            fn: (r) => {
-                                imagePlus.altTextField.items.items[0].setValue(r.object.content);
-                                imagePlus.image.altTag = r.object.content;
-                                imagePlus.updateValue();
-                                Ext.Msg.hide();
-                            }
-                        },
-                        failure: {
-                            fn: function() {
-                                Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
-                                Ext.Msg.hide();
-                            } ,
-                            scope: this
+            MODx.Ajax.request({
+                url: MODx.config.connector_url,
+                params: {
+                    action: 'modAI\\Processors\\Prompt\\Vision',
+                    image: base64Data
+                },
+                listeners: {
+                    success: {
+                        fn: (r) => {
+                            imagePlus.altTextField.items.items[0].setValue(r.object.content);
+                            imagePlus.image.altTag = r.object.content;
+                            imagePlus.updateValue();
+                            Ext.Msg.hide();
                         }
+                    },
+                    failure: {
+                        fn: function() {
+                            Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
+                            Ext.Msg.hide();
+                        } ,
+                        scope: this
                     }
-                });
+                }
             });
+        });
 
-            imagePlus.altTextField.el.dom.style.display = 'flex';
-            imagePlus.altTextField.el.dom.style.justifyItems = 'center';
-            imagePlus.altTextField.el.dom.style.alignItems = 'center';
+        imagePlus.altTextField.el.dom.style.display = 'flex';
+        imagePlus.altTextField.el.dom.style.justifyItems = 'center';
+        imagePlus.altTextField.el.dom.style.alignItems = 'center';
 
-            imagePlus.el.dom.parentElement.parentElement.parentElement.querySelector('label').appendChild(imageWand);
-            imagePlus.altTextField.el.dom.appendChild(altTextWand);
-        })
+        imagePlus.el.dom.parentElement.parentElement.parentElement.querySelector('label').appendChild(imageWand);
+        imagePlus.altTextField.el.dom.appendChild(altTextWand);
     };
 
     const attachContent = () => {
         const cmp = Ext.getCmp('modx-resource-content');
         const label = cmp.el.dom.querySelector('label');
-
-        const wandEl = createWandEl();
-        wandEl.addEventListener('click', () => {
-            const win = MODx.load({
-                xtype: 'modai-window-text_prompt',
-                title: 'Text',
-                cache: freePromptCache.get('modx-resource-content'),
-                listeners: {
-                    success: {
-                        fn: function(res) {
-                            console.log(res);
-                        },
-                        scope:this
-                    }
-                }
-            });
-
-            win.show();
-        });
-
-        label.appendChild(wandEl);
+        label.appendChild(createFreeTextPrompt('modx-resource-content'));
     };
 
+    const attachTVs = () => {
+        const form = Ext.getCmp('modx-panel-resource').getForm();
+        for (const [tvId, tvName] of (modAI?.tvs || [])) {
+            const wrapper = Ext.get(`tv${tvId}-tr`);
+            if (!wrapper) {
+                continue;
+            }
+
+            const field = form.findField(`tv${tvId}`);
+            if (!field) {
+                const imgPlusPanel = wrapper.dom.querySelector('.imageplus-panel-input');
+                if (imgPlusPanel) {
+                    attachImagePlus(imgPlusPanel);
+                }
+                continue;
+            }
+
+            if (field.xtype === 'textfield') {
+                const prompt = MODx.config[`modai.tv.${tvName}.prompt`];
+
+                const label = wrapper.dom.querySelector('label');
+
+                if (prompt) {
+                    label.appendChild(createForcedTextPrompt(field, `tv.${tvName}`));
+                } else {
+                    label.appendChild(createFreeTextPrompt(`tv${tvId}`));
+                }
+            }
+
+            if (field.xtype === 'modx-panel-tv-image') {
+                const imageWand = createImagePrompt(
+                    '',
+                    function(res) {
+                        const eventData = {
+                            relativeUrl: res.a.result.object.url,
+                            url: res.a.result.object.url
+                        };
+
+                        field.items.items[1].fireEvent('select', eventData)
+                        field.fireEvent('select', eventData);
+                    }
+                );
+
+                const label = wrapper.dom.querySelector('label');
+                label.appendChild(imageWand);
+            }
+        }
+
+    }
+
+    const attachResourceFields = () => {
+        const fieldsMap = {
+            pagetitle: ['modx-resource-pagetitle'],
+            longtitle: ['modx-resource-longtitle', 'seosuite-longtitle'],
+            introtext: ['modx-resource-introtext'],
+            description: ['modx-resource-description', 'seosuite-description'],
+            content: ['modx-resource-content'],
+        };
+
+        for (const field of modAI?.resourceFields || []) {
+            if (!fieldsMap[field]) {
+                continue;
+            }
+
+            if (field === 'content') {
+                attachContent();
+                continue;
+            }
+
+            fieldsMap[field].forEach((cmpId) => {
+                attachField(cmpId, `res.${field}`);
+            })
+
+        }
+    }
+
     Ext.defer(function() {
-        attach('modx-resource-pagetitle', 'pagetitle');
-
-        attach('modx-resource-introtext', 'introtext');
-
-        attach('modx-resource-longtitle', 'longtitle');
-        attach('seosuite-longtitle', 'longtitle');
-
-        attach('modx-resource-description', 'description');
-        attach('seosuite-description', 'description');
-
-        attachContent();
-
-        attachImagePlus();
-
+        attachResourceFields();
+        attachTVs();
     }, 500);
 });
