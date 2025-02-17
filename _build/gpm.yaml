@@ -15,25 +15,27 @@ systemSettings:
     area: chatgpt
     description: "Your API key found at https://platform.openai.com/api-keys."
 
-  - key: global.model
+  - key: global.base.output
     area: global
-    value: gpt-4o
-    description: "The default model to use for all prompts. Can be overridden per-prompt below."
-
-  - key: global.temperature
-    area: global
-    value: 0.7
-    description: "Higher values like 0.8 will be more random and creative, while values lower than 0.2 will be more focused and deterministic."
-
-  - key: global.max_tokens
-    area: global
-    value: 2048
-    description: "To manage costs, 1000 tokens is roughly equal to 750 words."
-
+    type: 'textarea'
+    value: '- This content will be used inside a web content management system.\n- The output should be usable without editing or modification.\n- This is not a conversation; do not include justification or explanation.\n- When returning results, do not wrap them in anything like quotes.'
+    description: "This tells the model how to ouptut the results to remove commentary, wrapping quotes, etc."
   - key: global.base.prompt
     area: global
     type: 'textarea'
     description: "This is an overall instruction modifier that is added to each API request by default, similar to what you would enter for Customize ChatGPT on their website."
+  - key: global.max_tokens
+    area: global
+    value: 2048
+    description: "To manage costs, 1000 tokens is roughly equal to 750 words."
+  - key: global.model
+    area: global
+    value: gpt-4o
+    description: "The default model for all prompts unless overridden per prompt."
+  - key: global.temperature
+    area: global
+    value: 0.7
+    description: "Higher values like 0.8 will be more random and creative, while values lower than 0.2 will be more focused and deterministic."
 
   - key: res.fields
     area: resource
@@ -42,11 +44,11 @@ systemSettings:
   - key: res.pagetitle.prompt
     area: resource
     type: 'textarea'
-    value: "- You are a SEO expert\n- Your task is to generate a Page Title from from the page content for use as the main H1 tag on the page.\n- The Title shouldn't exceed 60 characters, though shorter is also OK\n- Don't use any HTML or markdown tags"
+    value: "- You are an SEO expert\n- Your task is to generate a Page Title from from the page content for use as the main H1 tag on the page.\n- The Title shouldn't exceed 60 characters, though shorter is also OK\n- Don't use any HTML or markdown tags"
   - key: res.longtitle.prompt
     area: resource
     type: 'textarea'
-    value: "- You are a SEO expert\n- Your task is to generate an optimal Meta Title from the page content.\n- The Meta Title can't exceed 70 characters\n- Don't use any HTML or markdown tags\n- Don't wrap the Meta Title in quotes"
+    value: "- You are an SEO expert\n- Your task is to generate an optimal Meta Title from the page content.\n- The Meta Title can't exceed 70 characters\n- Don't use any HTML or markdown tags\n- Don't wrap the Meta Title in quotes"
     description: "Use this for the meta title—also works with SEO Suite."
   - key: res.introtext.prompt
     area: resource
@@ -56,7 +58,7 @@ systemSettings:
   - key: res.description.prompt
     area: resource
     type: 'textarea'
-    value: "- You are a SEO expert\n- Your task is to generate SEO Meta Description\n- Description can't exceed 155 characters\n- Don't use any HTML or markdown tags"
+    value: "- You are an SEO expert\n- Your task is to generate SEO Meta Description\n- Description can't exceed 155 characters\n- Don't use any HTML or markdown tags"
     description: "Use this for the meta description—also works with SEO Suite."
 
   - key: vision.model
