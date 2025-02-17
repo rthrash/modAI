@@ -13,7 +13,7 @@ The modAI Plugin adds a sparkle button (✦) next to fields or labels in back-en
 - A ChatGPT API key from https://platform.openai.com/api-keys
 - Pre-paid credits for API calls—this is different than the $20/month ChatGPT Pro subscription
 
-MODX’s modAI Extra plays very well with the following Extras, though they’re not required:
+MODX’s modAI Extra works with the following Extras if installed:
 
 - **image+** – for things like Open Graph sharing previews or hero section images with robust output templating, resizing, cropping and format conversions in conjunction with **pThumb** https://extras.modx.com/package/imageplustvinput
 - **SEO Suite+** – for managing and previewing SEO-related information for your sites https://extras.modx.com/package/seosuite
@@ -22,22 +22,37 @@ MODX’s modAI Extra plays very well with the following Extras, though they’re
 
 After installing the Extra, update the `modai.chatgpt_key` with your ChatGPT API key. (Filter by the `modai` namespace to make finding it easier.)
 
-Customize the base prompts and configurations in the `global`, `image`, `prompt` and `vision` areas of the `modai` namespace in the system settings as needed or desired.
+The default fields modAI enables in the `res.fields` setting are longtitle, description, introtext/summary, and content. Attach modAI to other default fields in this setting. 
 
-The `modai.prompt.base` can be roughly equated to a light version of ChatGPT’s custom instructions: it prepends the base prompt to ever other prompt.
+If you have text, textarea, image or image+ Template Variables you wish to use with modAI, add their TV names to the `modai.tvs` setting (without a `tv.` prefix). 
 
-If you wish to override a model or the system default configurations for a specific field, create a system setting in the format of `modai.prompt.{field}.{setting}` substituting for the relevant `{field}` and `{setting}` as appropriate. 
+Customize the base prompts and configurations in the `global`, `image`, `prompt` and `vision` areas of the `modai` namespace in the system settings as needed. The `modai.prompt.base` is roughly equated to a light version of ChatGPT’s custom instructions: it prepends the base prompt to ever other text or textarea prompt, but it does not for image or vision model prompts.
 
-Attach modAI to text, textarea or image Template Variables (TVs) using similar settings: `modai.prompt.{tv-name}.{setting}` (`setting` is optional)—modAI will always attaches to Image+ TVs, with support for the alt attribute generation using the vision models to describe the images for you.
+Settings use the following naming convention: `modai.{res||tv}.{field/tv-name}.{setting}` where `{res||tv}` denotes a default MODX Revolution field or a custom Template Variable (TV) and `field/tv-name` is its actual name (e.g., pagetitle, longtitle, fancy-image-tv, etc.).
+
+The `setting` for text or textarea inputs can contain several options below which will override the default settings from the `global` area:
+
+- **model** – for text or textarea, modAI defaults to use `gpt-4o`
+- **temperature** – defaults to `0.7`, increase this to 1 for more “creative” results or 0 for highly predictable ones
+- **max_tokens** – defaults to `2048`
+
+Image and Image+ fields do not prepend their prompts with the base prompt. Image/Image+ setting defaults in the `image` area include:
+
+- **model** – defaults to `dall-e-3`
+- **quality** – defaults to `standard`
+- **size** – defaults to `1792x1024`
+
+Image+ fields can use Vision models to describe an imgage for the alt content found in the `vision` area:
+
+- **vision.model** – defaults to `gpt-4o-mini`
 
 ## Usage
 
-Wherever you see a field or a label with a “sparkle button” (✦) next to it, click it to use the chatGPT api to create content in those fileds based on the system settings prompts/configurations. By default, it automatically creates sparkle buttons for several fields as outlined below. Delete the prompt settings to remove modAI’s sparkle buttons and generative AI content creation for those fields:
+Wherever you see a field or a label with a “sparkle button” (✦) next to it, click it to use the chatGPT api to create content in those fileds based on the system settings prompts/configurations. By default, it automatically creates sparkle buttons for several fields as outlined below. Delete the prompt settings to remove modAI’s sparkle buttons and the generative AI content creation for those fields:
 
-- **pagetitle** – sometimes used for an H1 tag (~60 characters)
 - **longtitle** – often used for the SEO Meta Title manually or with SEO Suite (should be ~70 characters)
 - **description** – often used for the SEO Meta Description manually or with SEO Suite (should be ~155 characters)
-- **introtext** – aka Summary, this can used to create a brief summary of the page content field for overviews for things like news summary pages or blog index pages, or to use as a base to generate images or image+ images from
+- **introtext** – aka Summary, this is set to summarize the content field—useful for news/blog landing pages or as a base to generate images or image+ images from
 - **image+ TVs** – it will use the introtext/summary as a default prompt which can be overwritten before requesting an image generation. It also uses the vision API to create 120 character alt tag descriptions if enabled for your Image+ TVs.
 
 If you’re not happy with what modAI generates, click the sparkle button or generate buttons again to generate another variation. You can then use the prev/next navigation buttons to go between the options. When you save, it keeps the option shown and discards the rest.

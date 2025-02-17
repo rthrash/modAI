@@ -74,8 +74,8 @@ systemSettings:
     description: "Valid options are `dall-e-2` and `dall-e-3` (default). See https://platform.openai.com/docs/guides/images/image-generation-beta for full details including DALL-E-2 specifics."
   - key: image.size
     area: image
-    value: "1024x1024"
-    description: "Valid options for DALL-E-3 are `1024x1024` (default), `1792x1024`, and `1024x1792`. "
+    value: "1792x1024"
+    description: "Valid options for DALL-E-3 are `1024x1024`, `1792x1024` (default), and `1024x1792`. "
   - key: image.quality
     area: image
     value: standard
