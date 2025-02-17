@@ -22,7 +22,7 @@ MODX’s modAI Extra works with the following Extras if installed:
 
 After installing the Extra, update the `modai.chatgpt_key` with your ChatGPT API key. (Filter by the `modai` namespace to make finding it easier.)
 
-The default fields modAI enables in the `res.fields` setting are longtitle, description, introtext/summary, and content. Attach modAI to other default fields in this setting. 
+The default fields modAI enables in the `modai.res.fields` setting are longtitle, description, introtext/summary, and content. Attach modAI to other default fields in this setting. 
 
 If you have text, textarea, image or image+ Template Variables you wish to use with modAI, add their TV names to the `modai.tvs` setting (without a `tv.` prefix). 
 
