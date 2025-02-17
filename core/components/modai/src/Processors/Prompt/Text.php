@@ -59,7 +59,7 @@ class Text extends Processor
             return $this->failure($e->getMessage());
         }
 
-        $base = Settings::getPrompt($this->modx, 'base');
+        $base = Settings::getPrompt($this->modx, 'global.base');
         if (!empty($base)) {
             $messages[] = [
                 'role' => 'system',
