@@ -25,7 +25,7 @@ class FreeText extends Processor
         $temperature = (float)Settings::getSetting($this->modx, 'global.temperature', $model);
         $maxTokens = (int)Settings::getSetting($this->modx, 'global.max_tokens', $model);
 
-        $base = Settings::getPrompt($this->modx, 'base');
+        $base = Settings::getPrompt($this->modx, 'global.base');
         if (!empty($base)) {
             $messages[] = [
                 'role' => 'system',
