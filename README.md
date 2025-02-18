@@ -13,7 +13,7 @@ The modAI Plugin adds a sparkle button (✦) next to fields or labels in back-en
 - A ChatGPT API key from https://platform.openai.com/api-keys, Google Gemini API key from https://ai.google.dev/gemini-api/docs/api-key or Anthropic Claude API key from https://console.anthropic.com/settings/keys
 - Pre-paid credits for API calls for ChatGPT if using—this is different than the $20/month ChatGPT Pro subscription
 
-**Note:** image and vision support is currently only supported with the ChatGPT APIs. Claude and Gemini only support text geneeration.
+**Note:** image and vision support is currently only supported with the ChatGPT APIs. Claude and Gemini only support text generation.
 
 MODX’s modAI Extra works with the following Extras if installed:
 
@@ -96,7 +96,7 @@ To use a model you can either set it globally, or override it on a per-prompt ba
 
 Then, you could set an override for a particular field as show above, or even replace the global default with another model:
 
-- `global.global.model` → `custom_qwen2.5-coder:1.5b-base`
+- `modapi.global.model` → `custom_qwen2.5-coder:1.5b-base`
 
 ## Supported ChatGPT Models
 
