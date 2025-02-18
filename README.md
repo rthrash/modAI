@@ -10,10 +10,10 @@ The modAI Plugin adds a sparkle button (✦) next to fields or labels in back-en
 ## Requirements
 
 - MODX Revolution 3.x
-- A ChatGPT API key from https://platform.openai.com/api-keys, Google Gemeini API key from https://ai.google.dev/gemini-api/docs/api-key or Anthropic Claude API key from https://console.anthropic.com/settings/keys
+- A ChatGPT API key from https://platform.openai.com/api-keys, Google Gemini API key from https://ai.google.dev/gemini-api/docs/api-key or Anthropic Claude API key from https://console.anthropic.com/settings/keys
 - Pre-paid credits for API calls for ChatGPT if using—this is different than the $20/month ChatGPT Pro subscription
 
-**Note:** image and vision support is currently only supported with the ChatGPT APIs. Claude and Gemeini only support text geneeration.
+**Note:** image and vision support is currently only supported with the ChatGPT APIs. Claude and Gemini only support text geneeration.
 
 MODX’s modAI Extra works with the following Extras if installed:
 
@@ -71,7 +71,11 @@ The modAI plugin can attach to most default fields (e.g. pagetitle, menutitle) a
 
 ### Overriding Global Defaults
 
-Each field that you attach modAI to can have overrides. See the modAI system settings for examples.
+Each field that you attach modAI to can have settings overrides. This means that you can mix and match which models are used for specific fields, allowing you to optimize for cost or quality depending on your application. For example to use Claude Haiku to generate a (very) creative summary for the `[[*introtext]]` field, you would update/create the following settings:
+
+- `modai.api.claude.key` → `{your API key}`
+- `modai.res.introtext.model` → `claude-3-5-haiku-20241022`
+- `modai.res.introtext.temperature` → `0.9`
 
 If you have a blank field option, it will remove the global defaults from being used.
 
@@ -80,6 +84,19 @@ For a list of valid modesl for OpenAI’s ChatGPT, see https://platform.openai.c
 For a list of valid models for Google Gemini, see https://ai.google.dev/gemini-api/docs/models/gemini
 
 For a list of valid models for Anthropic’s Claude, see https://docs.anthropic.com/en/docs/about-claude/models 
+
+### Using Custom Services/Models
+
+Some services like [Open WebUI](https://docs.openwebui.com) provide a wrapper for multiple models. To use a custom model via these services you need to fill out the `modai.api.custom.url`, `modai.api.custom.key` and optionally the `modai.custom.compatibility`, which tells the model what API emulation to use (almost alway leave this as openai).
+
+To use a model you can either set it globally, or override it on a per-prompt basis, prefixed with `custom_`. For example to have a custom model used, you would create/update settings as follows:
+
+- `modai.api.custom.url` → `{your custom URL}`
+- `modai.api.custom.key` → `{your API key}`
+
+Then, you could set an override for a particular field as show above, or even replace the global default with another model:
+
+- `global.global.model` → `custom_qwen2.5-coder:1.5b-base`
 
 ## Supported ChatGPT Models
 
