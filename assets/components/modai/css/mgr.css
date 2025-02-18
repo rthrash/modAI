@@ -7,25 +7,35 @@
 .modai-history_prev {
     display: inline-block;
     cursor: pointer;
-    background: #fff;
-    color: #000;
-    border-radius: 3px;
+    background: #00b5de;
+    color: #ffffff;
+    border-radius: 7px;
     margin-right: 6px;
     padding-inline: 0.6em;
-    padding-top: 3px;
+    padding: 3px 6px;
     vertical-align: baseline;
-    border: 1px solid #ddd;
-    border-right: 2px solid #444;
-    border-bottom: 2px solid #444;
+    border: 2px solid #ff9640;
+    border-top-color:#117ca3;
+    border-right-color:#ff5529;
+    border-left-color:#00decc;
     height: 1.85em;
-    &:disabled {
-        opacity:0.5;
-        cursor:initial;
-    }
+    transition: 200ms all;
+}
+.modai-generate:hover,
+.modai-history_next:hover,
+.modai-history_prev:hover {
+    transform: scale(1.15);
+    background: #117ca3;
+    border-top-color:#00b5de;
+}
+.modai-generate:disabled,
+.modai-history_next:disabled,
+.modai-history_prev:disabled {
+    opacity:0.5;
+    cursor:initial;
 }
 
 .modai-generate {
-    //transition: transform 0.2s ease-in-out;
     margin-left: 6px;
     padding-bottom: 3px;
 }
