@@ -1,7 +1,8 @@
 <?php
 namespace modAI\Processors\Prompt;
 
-use modAI\Services\ChatGPT;
+use modAI\Services\AIServiceFactory;
+use modAI\Services\Config\VisionConfig;
 use modAI\Settings;
 use MODX\Revolution\Processors\Processor;
 
@@ -14,8 +15,6 @@ class Vision extends Processor
             return $this->failure('Image is required');
         }
 
-        $chatGPT = new ChatGPT($this->modx);
-
         $model = Settings::getSetting($this->modx, 'vision.model');
         if (empty($model)) {
             return $this->failure('vision.model setting is required');
@@ -26,37 +25,12 @@ class Vision extends Processor
             return $this->failure('vision.prompt setting is required');
         }
 
-        $messages = [];
-
-        $messages[] = [
-            'role' => 'user',
-            'content' => [
-                [
-                    "type"=> "text",
-                    "text"=> $prompt,
-                ],
-                [
-                    "type" => "image_url",
-                    "image_url" => ["url" => $image],
-                ],
-            ]
-        ];
-
-        $data = [
-            'model' => $model,
-            'messages' => $messages,
-        ];
+        $aiService = AIServiceFactory::new($model, $this->modx);
 
         try {
-            $result = $chatGPT->getCompletions($data);
+            $result = $aiService->getVision($prompt, $image, VisionConfig::new($model));
 
-            if (!isset($result['choices'][0]['message']['content'])) {
-                return $this->failure('Error from ChatGPT API: ' . print_r($result, true));
-            }
-
-            $response = trim($result['choices'][0]['message']['content']);
-
-            return $this->success('', ['content' => $response]);
+            return $this->success('', ['content' => $result]);
         } catch (\Exception $e) {
             return $this->failure($e->getMessage());
         }

@@ -2,7 +2,8 @@
 namespace modAI\Processors\Prompt;
 
 use modAI\RequiredSettingException;
-use modAI\Services\ChatGPT;
+use modAI\Services\AIServiceFactory;
+use modAI\Services\Config\CompletionsConfig;
 use modAI\Settings;
 use MODX\Revolution\Processors\Processor;
 
@@ -46,10 +47,7 @@ class Text extends Processor
             return $this->failure('There\'s no content');
         }
 
-        $chatGPT = new ChatGPT($this->modx);
-
-
-        $messages = [];
+        $systemInstructions = [];
 
         try {
             $model = Settings::getFieldSetting($this->modx, $field, 'model');
@@ -61,50 +59,25 @@ class Text extends Processor
         }
 
         if (!empty($output)) {
-            $messages[] = [
-                'role' => 'system',
-                'content' => $output,
-            ];
+            $systemInstructions[] = $output;
         }
 
         $base = Settings::getPrompt($this->modx, 'global.base');
         if (!empty($base)) {
-            $messages[] = [
-                'role' => 'system',
-                'content' => $base,
-            ];
+            $systemInstructions[] = $base;
         }
 
         $fieldPrompt = Settings::getPrompt($this->modx, $field);
         if (!empty($fieldPrompt)) {
-            $messages[] = [
-                'role' => 'system',
-                'content' => $fieldPrompt,
-            ];
+            $systemInstructions[] = $fieldPrompt;
         }
 
-        $messages[] = [
-            'role' => 'user',
-            'content' => $content
-        ];
-
-        $data = [
-            'model' => $model,
-            'messages' => $messages,
-            'max_tokens' => $maxTokens,
-            'temperature' => $temperature
-        ];
+        $aiService = AIServiceFactory::new($model, $this->modx);
 
         try {
-            $result = $chatGPT->getCompletions($data);
+            $result = $aiService->getCompletions([$content], CompletionsConfig::new($model)->maxTokens($maxTokens)->temperature($temperature)->systemInstructions($systemInstructions));
 
-            if (!isset($result['choices'][0]['message']['content'])) {
-                return $this->failure('Error from ChatGPT API: ' . print_r($result, true));
-            }
-
-            $response = trim($result['choices'][0]['message']['content']);
-
-            return $this->success('', ['content' => $response]);
+            return $this->success('', ['content' => $result]);
         } catch (\Exception $e) {
             return $this->failure($e->getMessage());
         }

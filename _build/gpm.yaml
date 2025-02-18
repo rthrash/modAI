@@ -13,7 +13,11 @@ systemSettings:
   - key: chatgpt.key
     type: text-password
     area: chatgpt
-    description: "Your API key found at https://platform.openai.com/api-keys."
+    description: "Your API key found at https://platform.openai.com/api-keys"
+  - key: gemini.key
+    type: text-password
+    area: chatgpt
+    description: "Your API key found at https://ai.google.dev/gemini-api/docs/api-key"
 
   - key: global.base.output
     area: global

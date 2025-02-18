@@ -167,7 +167,7 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                         listeners: {
                             success: {
                                 fn: (r) => {
-                                    this.pagination.addItem({prompt: this.prompt.getValue(), url: r.object.data.url});
+                                    this.pagination.addItem({prompt: this.prompt.getValue(), url: r.object.url});
                                     Ext.Msg.hide();
                                 }
                             },

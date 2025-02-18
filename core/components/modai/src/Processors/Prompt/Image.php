@@ -2,7 +2,8 @@
 
 namespace modAI\Processors\Prompt;
 
-use modAI\Services\ChatGPT;
+use modAI\Services\AIServiceFactory;
+use modAI\Services\Config\ImageConfig;
 use modAI\Settings;
 use MODX\Revolution\Processors\Processor;
 
@@ -30,24 +31,12 @@ class Image extends Processor
             return $this->failure('image.quality setting is required');
         }
 
-        $chatGPT = new ChatGPT($this->modx);
-
-        $data = [
-            'model' => $model,
-            'prompt' => $prompt,
-            'n' => 1,
-            'size' => $size,
-            'quality' => $quality
-        ];
+        $aiService = AIServiceFactory::new($model, $this->modx);
 
         try {
-            $result = $chatGPT->generateImage($data);
+            $result = $aiService->generateImage($prompt, ImageConfig::new($model)->size($size)->quality($quality));
 
-            if (!isset($result['data'][0]['url'])) {
-                return $this->failure('Error from ChatGPT API: ' . print_r($result, true));
-            }
-
-            return $this->success('', ['data' => $result['data'][0]]);
+            return $this->success('', ['url' => $result]);
         } catch (\Exception $e) {
             return $this->failure($e->getMessage());
         }
