@@ -6,10 +6,11 @@ use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
 use MODX\Revolution\modX;
 
-class Gemini implements AIService {
+class Anthropic implements AIService
+{
     private modX $modx;
 
-    const COMPLETIONS_API = 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={apiKey}';
+    const COMPLETIONS_API = 'https://api.anthropic.com/v1/messages';
 
     public function __construct(modX &$modx)
     {
@@ -21,52 +22,41 @@ class Gemini implements AIService {
      */
     public function getCompletions(array $data, CompletionsConfig $config): string
     {
-        $apiKey = $this->modx->getOption('modai.gemini.key');
+        $apiKey = $this->modx->getOption('modai.anthropic.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.gemini.key');
-        }
-
-        $url = self::COMPLETIONS_API;
-        $url = str_replace("{model}", $config->getModel(), $url);
-        $url = str_replace("{apiKey}", $apiKey, $url);
-
-        $systemInstruction = [];
-
-        foreach ($config->getSystemInstructions() as $system) {
-            $systemInstruction[] = [
-                'text' => $system
-            ];
+            throw new \Exception('Missing modai.anthropic.key');
         }
 
         $messages = [];
+
+        $system = implode(';', $config->getSystemInstructions());
+
         foreach ($data as $msg) {
             $messages[] = [
-                'text' => $msg
+                'role' => 'user',
+                'content' => $msg
             ];
         }
 
         $input = [
-            "contents" => [
-                "parts" => $messages,
-            ],
-            "generationConfig"=> [
-                "temperature"=> $config->getTemperature(),
-                "maxOutputTokens"=> $config->getMaxTokens(),
-            ]
+            "model" => $config->getModel(),
+            "max_tokens"=> $config->getMaxTokens(),
+            "temperature"=> $config->getTemperature(),
+            "messages" => $messages
         ];
 
-        if (!empty($systemInstruction)) {
-            $input['system_instruction'] = [
-                "parts" => $systemInstruction
-            ];
+        if (!empty($system)) {
+            $input['system'] = $system;
         }
 
-        $ch = curl_init($url);
+        $ch = curl_init(self::COMPLETIONS_API);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
         curl_setopt($ch, CURLOPT_HTTPHEADER, [
             'Content-Type: application/json',
+            'anthropic-version: 2023-06-01',
+            'x-api-key: ' . $apiKey
         ]);
 
         $response = curl_exec($ch);
@@ -87,11 +77,11 @@ class Gemini implements AIService {
             throw new \Exception($result['error']['message']);
         }
 
-        if (!isset($result['candidates'][0]['content']['parts'][0]['text'])) {
+        if (!isset($result['content'][0]['text'])) {
             throw new \Exception("There was an error generating a response.");
         }
 
-        return $result['candidates'][0]['content']['parts'][0]['text'];
+        return $result['content'][0]['text'];
     }
 
     public function getVision(string $prompt, string $image, VisionConfig $config): string
@@ -103,4 +93,5 @@ class Gemini implements AIService {
     {
         throw new \Exception("not implemented");
     }
+
 }

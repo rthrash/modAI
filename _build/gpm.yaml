@@ -16,8 +16,12 @@ systemSettings:
     description: "Your API key found at https://platform.openai.com/api-keys"
   - key: gemini.key
     type: text-password
-    area: chatgpt
+    area: gemini
     description: "Your API key found at https://ai.google.dev/gemini-api/docs/api-key"
+  - key: anthropic.key
+    type: text-password
+    area: anthropic
+    description: "Your API key found at https://console.anthropic.com/settings/keys"
 
   - key: global.base.output
     area: global
