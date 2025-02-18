@@ -19,9 +19,9 @@ class ChatGPT implements AIService
     }
 
     public function generateImage(string $prompt, ImageConfig $config): string {
-        $chatgptApiKey = $this->modx->getOption('modai.chatgpt.key');
+        $chatgptApiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($chatgptApiKey)) {
-            throw new \Exception('Missing modai.chatgpt.key');
+            throw new \Exception('Missing modai.api.chatgpt.key');
         }
 
         $input = [
@@ -138,9 +138,9 @@ class ChatGPT implements AIService
      */
     public function getVision(string $prompt, string $image, VisionConfig $config): string
     {
-        $chatgptApiKey = $this->modx->getOption('modai.chatgpt.key');
+        $chatgptApiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($chatgptApiKey)) {
-            throw new \Exception('Missing modai.chatgpt.key');
+            throw new \Exception('Missing modai.api.chatgpt.key');
         }
 
         $input = [
