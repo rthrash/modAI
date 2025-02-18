@@ -6,7 +6,7 @@ use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
 use MODX\Revolution\modX;
 
-class Anthropic implements AIService
+class Claude implements AIService
 {
     private modX $modx;
 
@@ -22,9 +22,9 @@ class Anthropic implements AIService
      */
     public function getCompletions(array $data, CompletionsConfig $config): string
     {
-        $apiKey = $this->modx->getOption('modai.anthropic.key');
+        $apiKey = $this->modx->getOption('modai.api.claude.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.anthropic.key');
+            throw new \Exception('Missing modai.api.claude.key');
         }
 
         $messages = [];

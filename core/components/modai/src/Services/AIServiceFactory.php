@@ -10,7 +10,7 @@ class AIServiceFactory {
         }
 
         if (substr($model, 0, 7) === 'claude-') {
-            return new Anthropic($modx);
+            return new Claude($modx);
         }
 
         switch ($model) {

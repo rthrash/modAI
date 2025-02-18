@@ -21,9 +21,9 @@ class Gemini implements AIService {
      */
     public function getCompletions(array $data, CompletionsConfig $config): string
     {
-        $apiKey = $this->modx->getOption('modai.gemini.key');
+        $apiKey = $this->modx->getOption('modai.api.gemini.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.gemini.key');
+            throw new \Exception('Missing modai.api.gemini.key');
         }
 
         $url = self::COMPLETIONS_API;

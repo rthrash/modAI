@@ -71,9 +71,9 @@ class ChatGPT implements AIService
      */
     public function getCompletions(array $data, CompletionsConfig $config): string
     {
-        $chatgptApiKey = $this->modx->getOption('modai.chatgpt.key');
+        $chatgptApiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($chatgptApiKey)) {
-            throw new \Exception('Missing modai.chatgpt.key');
+            throw new \Exception('Missing modai.api.chatgpt.key');
         }
 
         $messages = [];

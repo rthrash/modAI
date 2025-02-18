@@ -10,17 +10,19 @@ plugins:
       - OnManagerPageBeforeRender
 
 systemSettings:
-  - key: chatgpt.key
+  - key: api.chatgpt.key
     type: text-password
-    area: chatgpt
+    area: api
     description: "Your API key found at https://platform.openai.com/api-keys"
-  - key: gemini.key
+
+  - key: api.gemini.key
     type: text-password
-    area: gemini
+    area: api
     description: "Your API key found at https://ai.google.dev/gemini-api/docs/api-key"
-  - key: anthropic.key
+
+  - key: api.claude.key
     type: text-password
-    area: anthropic
+    area: api
     description: "Your API key found at https://console.anthropic.com/settings/keys"
 
   - key: global.base.output
