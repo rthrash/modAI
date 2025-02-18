@@ -14,10 +14,14 @@ class Settings {
     /**
      * @throws RequiredSettingException
      */
-    public static function getFieldSetting(modX $modx, string $field, string $setting): string {
-        $value = $modx->getOption("modai.$field.$setting", null, $modx->getOption("modai.global.$setting"), true);
+    public static function getFieldSetting(modX $modx, string $field, string $setting, bool $required = true): string {
+        if (!empty($field)) {
+            $value = $modx->getOption("modai.$field.$setting", null, $modx->getOption("modai.global.$setting"), true);
+        } else {
+            $value = $modx->getOption("modai.global.$setting");
+        }
 
-        if (empty($value)) {
+        if ($required && empty($value)) {
             throw new RequiredSettingException("modai.global.$setting");
         }
 

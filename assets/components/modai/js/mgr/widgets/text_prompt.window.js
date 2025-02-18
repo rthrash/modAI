@@ -6,7 +6,7 @@ modAI.window.TextPrompt = function(config) {
     const pagination = this.init(config);
 
     Ext.applyIf(config,{
-        title: 'Image',
+        title: 'Text',
         closeAction: 'close',
         width: 600,
         autoHeight: true,
@@ -175,7 +175,8 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
                         url: MODx.config.connector_url,
                         params: {
                             action: 'modAI\\Processors\\Prompt\\FreeText',
-                            prompt: this.prompt.getValue()
+                            prompt: this.prompt.getValue(),
+                            field: config.fieldName || ''
                         },
                         listeners: {
                             success: {

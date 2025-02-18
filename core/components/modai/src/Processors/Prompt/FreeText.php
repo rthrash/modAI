@@ -11,6 +11,7 @@ class FreeText extends Processor
     public function process()
     {
         $prompt = $this->getProperty('prompt');
+        $field = $this->getProperty('field');
 
         if (empty($prompt)) {
             return $this->failure('Prompt is required.');
@@ -18,14 +19,17 @@ class FreeText extends Processor
 
         $chatGPT = new ChatGPT($this->modx);
 
-
         $messages = [];
 
-        $model = Settings::getSetting($this->modx, 'global.model');
-        $temperature = (float)Settings::getSetting($this->modx, 'global.temperature', $model);
-        $maxTokens = (int)Settings::getSetting($this->modx, 'global.max_tokens', $model);
+        try {
+            $model = Settings::getFieldSetting($this->modx, $field, 'model');
+            $temperature = (float)Settings::getFieldSetting($this->modx, $field, 'temperature');
+            $maxTokens = (int)Settings::getFieldSetting($this->modx, $field, 'max_tokens');
+            $output = Settings::getFieldSetting($this->modx, $field, 'base.output', false);
+        } catch (RequiredSettingException $e) {
+            return $this->failure($e->getMessage());
+        }
 
-        $output = Settings::getSetting($this->modx, 'global.base.output');
         if (!empty($output)) {
             $messages[] = [
                 'role' => 'system',

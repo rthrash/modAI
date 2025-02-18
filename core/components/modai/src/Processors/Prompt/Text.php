@@ -55,11 +55,11 @@ class Text extends Processor
             $model = Settings::getFieldSetting($this->modx, $field, 'model');
             $temperature = (float)Settings::getFieldSetting($this->modx, $field, 'temperature');
             $maxTokens = (int)Settings::getFieldSetting($this->modx, $field, 'max_tokens');
+            $output = Settings::getFieldSetting($this->modx, $field, 'base.output', false);
         } catch (RequiredSettingException $e) {
             return $this->failure($e->getMessage());
         }
 
-        $output = Settings::getSetting($this->modx, 'global.base.output');
         if (!empty($output)) {
             $messages[] = [
                 'role' => 'system',

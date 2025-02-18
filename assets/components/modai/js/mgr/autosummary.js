@@ -158,12 +158,13 @@ Ext.onReady(function() {
         return wrapper;
     }
 
-    const createFreeTextPrompt = (cacheKey) => {
+    const createFreeTextPrompt = (cacheKey, fieldName) => {
         const wandEl = createWandEl();
         wandEl.addEventListener('click', () => {
             const win = MODx.load({
                 xtype: 'modai-window-text_prompt',
                 title: 'Text',
+                field: fieldName,
                 cache: freePromptCache.get(cacheKey)
             });
 
@@ -352,7 +353,7 @@ Ext.onReady(function() {
     const attachContent = () => {
         const cmp = Ext.getCmp('modx-resource-content');
         const label = cmp.el.dom.querySelector('label');
-        label.appendChild(createFreeTextPrompt('modx-resource-content'));
+        label.appendChild(createFreeTextPrompt('modx-resource-content', 'res.content'));
     };
 
     const attachTVs = () => {
@@ -376,11 +377,12 @@ Ext.onReady(function() {
                 const prompt = MODx.config[`modai.tv.${tvName}.prompt`];
 
                 const label = wrapper.dom.querySelector('label');
+                const fieldName = `tv.${tvName}`;
 
                 if (prompt) {
-                    label.appendChild(createForcedTextPrompt(field, `tv.${tvName}`));
+                    label.appendChild(createForcedTextPrompt(field, fieldName));
                 } else {
-                    label.appendChild(createFreeTextPrompt(`tv${tvId}`));
+                    label.appendChild(createFreeTextPrompt(`tv${tvId}`, fieldName));
                 }
             }
 
