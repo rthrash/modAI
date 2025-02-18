@@ -1,5 +1,5 @@
 name: modAI
-version: 0.0.5-alpha
+version: 0.0.6-alpha
 lowCaseName: modai
 namespace: modAI
 author: 'John Peca'
@@ -26,74 +26,91 @@ systemSettings:
     description: "Your API key found at https://console.anthropic.com/settings/keys"
 
   - key: global.base.output
+    name: 'Base Output Instructions'
     area: global
-    type: 'textarea'
+    type: textarea
     value: '- This content will be used inside a web content management system.\n- The output should be usable without editing or modification.\n- This is not a conversation; do not include justification or explanation.\n- When returning results, do not wrap them in anything like quotes.'
     description: "This tells the model how to ouptut the results to remove commentary, wrapping quotes, etc."
   - key: global.base.prompt
+    name: 'Base Prompt'
     area: global
-    type: 'textarea'
+    type: textarea
     description: "This is an overall instruction modifier that is added to each API request by default, similar to what you would enter for Customize ChatGPT on their website."
   - key: global.max_tokens
+    name: 'Default Maximum Tokens'
     area: global
     value: 2048
     description: "To manage costs, 1000 tokens is roughly equal to 750 words."
   - key: global.model
+    name: 'Default AI Model'
     area: global
     value: gpt-4o
     description: "The default model for all prompts unless overridden per prompt."
   - key: global.temperature
+    name: 'Default AI Temperature'
     area: global
     value: 0.7
     description: "Higher values like 0.8 will be more random and creative, while values lower than 0.2 will be more focused and deterministic."
 
   - key: res.fields
+    name: 'Use with MODX Fields'
     area: resources
     value: 'longtitle,introtext,description,content'
     description: 'The default Resource fields to attached modAI generative AI buttons to.'
 
   - key: res.pagetitle.prompt
+    name: '[[*pagetitle]] Propmt'
     area: resources
-    type: 'textarea'
+    type: textarea
     value: "- You are an SEO expert\n- Your task is to generate a Page Title from from the page content for use as the main H1 tag on the page.\n- The Title shouldn't exceed 60 characters, though shorter is also OK\n- Don't use any HTML or markdown tags"
   - key: res.longtitle.prompt
+    name: '[[*longtitle]] Propmt'
     area: resources
-    type: 'textarea'
+    type: textarea
     value: "- You are an SEO expert\n- Your task is to generate an optimal Meta Title from the page content.\n- The Meta Title can't exceed 70 characters\n- Don't use any HTML or markdown tags\n- Don't wrap the Meta Title in quotes"
     description: "Use this for the meta title—also works with SEO Suite."
   - key: res.introtext.prompt
+    name: '[[*introtext]] Prompt'
     area: resources
-    type: 'textarea'
+    type: textarea
     value: "- You are an assistant that summarizes content.\n- Your task is to generate concise summary of the page content.\n- Don't use any HTML or markdown tags"
     description: "Use this to generate a summary of the page content—used as starting point for image generation."
   - key: res.description.prompt
+    name: '[[*description]] Prompt'
     area: resources
-    type: 'textarea'
+    type: textarea
     value: "- You are an SEO expert\n- Your task is to generate SEO Meta Description\n- Description can't exceed 155 characters\n- Don't use any HTML or markdown tags"
     description: "Use this for the meta description—also works with SEO Suite."
 
   - key: vision.model
+    name: 'Vision Model'
     area: vision
     value: gpt-4o-mini
     description: "Create text from image inputs. Valid options are o1, gpt-4o, gpt-4o-mini, and gpt-4-turbo."
   - key: vision.prompt
+    name: 'Vision Prompt'
     area: vision
     value: "Create an optimal alt tag for accessibility for this image that is no longer than 120 characters and not using any punctuation, quotes, or special characters"
     description: "By default, this should create a 120 character alt tag based on the vision API output."
 
   - key: image.model
+    name: 'Image Model'
     area: image
     value: dall-e-3
     description: "Valid options are `dall-e-2` and `dall-e-3` (default). See https://platform.openai.com/docs/guides/images/image-generation-beta for full details including DALL-E-2 specifics."
   - key: image.size
+    name: 'Image Dimensions'
     area: image
     value: "1792x1024"
     description: "Valid options for DALL-E-3 are `1024x1024`, `1792x1024` (default), and `1024x1792`. "
   - key: image.quality
+    name: 'Image Quallity'
     area: image
     value: standard
     description: "Valid options are `standard` (default) and `hd`."
 
   - key: tvs
+    name: 'Use with Template Variables'
     area: tvs
+    value: ''
     description: 'The Template Variable fields to attached modAI generative AI buttons to. Must be a text, textarea, image or Image+ Input Type.'

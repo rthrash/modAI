@@ -1,17 +1,19 @@
 # modAI
-A proof of concept generative AI Extra – perfect for speeding up the time needed for SEO-related content including page titles, meta titles, meta descriptions, page summaries, and images/alt text that can be used for Open Graph shares or hero sections that are all the rage for the top of web pages.
+A generative AI Extra for MODX Revolution 3.0 and later. It’s perfect for creating content quickly or speeding up optimizing SEO-related content including page titles, meta titles, meta descriptions, page summaries, and images/alt text (finally, an easy-button for Open Graph sharing images or hero sections).
 
 The modAI Plugin adds a sparkle button (✦) next to fields or labels in back-end Manager for MODX Revolution. When clicked, it:
 
 1. uses field-specific prompts for the type of content being created, 
-2. uses the ChatGPT API to create said content, and 
+2. uses a supported AI model API to create said content, and 
 3. dumps the result directly into the appropriate field or a textarea that you can copy/paste from (e.g., for longer format articles going into the Content field). 
 
 ## Requirements
 
 - MODX Revolution 3.x
-- A ChatGPT API key from https://platform.openai.com/api-keys
-- Pre-paid credits for API calls—this is different than the $20/month ChatGPT Pro subscription
+- A ChatGPT API key from https://platform.openai.com/api-keys, Google Gemeini API key from https://ai.google.dev/gemini-api/docs/api-key or Anthropic Claude API key from https://console.anthropic.com/settings/keys
+- Pre-paid credits for API calls for ChatGPT if using—this is different than the $20/month ChatGPT Pro subscription
+
+**Note:** image and vision support is currently only supported with the ChatGPT APIs. Claude and Gemeini only support text geneeration.
 
 MODX’s modAI Extra works with the following Extras if installed:
 
@@ -20,7 +22,7 @@ MODX’s modAI Extra works with the following Extras if installed:
 
 ## Configuration
 
-After installing the Extra, update the `modai.chatgpt.key` with your ChatGPT API key. (Filter by the `modai` namespace to make finding it easier.)
+After installing modAI, update the `modai.chatgpt.key` with your ChatGPT API key and/or the `modai.gemini.key` as appropriate. (Filter by the `modai` namespace to make finding it easier.)
 
 The default fields modAI enables in the `modai.res.fields` setting are longtitle, description, introtext/summary, and content. Attach modAI to other default fields in this setting. 
 
@@ -52,10 +54,32 @@ Wherever you see a field or a label with a “sparkle button” (✦) next to it
 
 - **longtitle** – often used for the SEO Meta Title manually or with SEO Suite (should be ~70 characters)
 - **description** – often used for the SEO Meta Description manually or with SEO Suite (should be ~155 characters)
-- **introtext** – aka Summary, this is set to summarize the content field—useful for news/blog landing pages or as a base to generate images or image+ images from
-- **image+ TVs** – it will use the introtext/summary as a default prompt which can be overwritten before requesting an image generation. It also uses the vision API to create 120 character alt tag descriptions if enabled for your Image+ TVs.
+- **introtext** – aka Summary, this is set to summarize the page content—useful for news/blog landing pages or as a base to generate images or image+ images from (make sure to save first so it has content to pull from)
+- **content** – a freeform prompt box allows you to give instructions on the type of content to generate
 
 If you’re not happy with what modAI generates, click the sparkle button or generate buttons again to generate another variation. You can then use the prev/next navigation buttons to go between the options. When you save, it keeps the option shown and discards the rest.
+
+### Adding modAI to other fields and Template Variables (TVs)
+
+The modAI plugin can attach to most default fields (e.g. pagetitle, menutitle) and any TV with a text, textarea, image or image+ TV input in the `modai.res.fields` and `modai.tvs` settings. The field types are handled individually as follows:
+
+- **text inputs** – modAI uses the base prompt and model and directly inputs the content into the field 
+- **textarea inputs** – handled the same as text inputs
+- **richtext inputs** – handled the same as a textarea input, but you must manually copy/paste the output into the textarea 
+- **image inputs** – modAI uses the default image model and sizes and creates the imaegs in the `assets/ai` directory
+- **image+ TVs** – handled the same as image inputs, with the addition of being able to use the Vision model for creating alt tag captions from generated images
+
+### Overriding Global Defaults
+
+Each field that you attach modAI to can have overrides. See the modAI system settings for examples.
+
+If you have a blank field option, it will remove the global defaults from being used.
+
+For a list of valid modesl for OpenAI’s ChatGPT, see https://platform.openai.com/docs/models
+
+For a list of valid models for Google Gemini, see https://ai.google.dev/gemini-api/docs/models/gemini
+
+For a list of valid models for Anthropic’s Claude, see https://docs.anthropic.com/en/docs/about-claude/models 
 
 ## Supported ChatGPT Models
 
@@ -67,6 +91,10 @@ For details on current ChatGPT models supported, consult their documentation:
 
 ## Costs
 
-**OpenAI API credits must be purchased for this Extra to work.** Find costs for the various models at https://openai.com/api/pricing/.
+**OpenAI API credits must be purchased for this Extra to work with Image models.** Find costs for the various models at https://openai.com/api/pricing/.
+
+Google Gemini offeres a variety of free options with limits: https://ai.google.dev/pricing
+
+Anthropic’s API pricing is here: https://www.anthropic.com/pricing#anthropic-api 
 
 To learn more about maanging cost, make sure to use the most optimal models for the type of content you expect your prompts to generate. For example, [1000 tokes is roughly equal to 750 words](https://platform.openai.com/docs/guides/production-best-practices#text-generation); make sure the [model you choose](https://platform.openai.com/docs/guides/model-selection) is the right one for the job at hand.
