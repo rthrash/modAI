@@ -13,6 +13,15 @@ class AIServiceFactory {
             return new Claude($modx);
         }
 
+        if (substr($model, 0,7) === 'custom_') {
+            $compatibility = $modx->getOption('modai.api.custom.compatibility');
+            if ($compatibility === 'openai') {
+                return new CustomChatGPT($modx);
+            }
+
+            throw new \Error("Unsupported API compatibility mode (modai.api.custom.compatibility).");
+        }
+
         switch ($model) {
             case 'text-embedding-004':
             case 'learnlm-1.5-pro-experimental':

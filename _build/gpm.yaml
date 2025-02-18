@@ -25,6 +25,15 @@ systemSettings:
     area: api
     description: "Your API key found at https://console.anthropic.com/settings/keys"
 
+  - key: api.custom.key
+    type: text-password
+    area: api
+  - key: api.custom.url
+    area: api
+  - key: api.custom.compatibility
+    area: api
+    value: openai
+
   - key: global.base.output
     name: 'Base Output Instructions'
     area: global

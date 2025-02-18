@@ -25,9 +25,8 @@ class Vision extends Processor
             return $this->failure('vision.prompt setting is required');
         }
 
-        $aiService = AIServiceFactory::new($model, $this->modx);
-
         try {
+            $aiService = AIServiceFactory::new($model, $this->modx);
             $result = $aiService->getVision($prompt, $image, VisionConfig::new($model));
 
             return $this->success('', ['content' => $result]);

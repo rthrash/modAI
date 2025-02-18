@@ -2,19 +2,11 @@
 namespace modAI\Services\Config;
 
 class ImageConfig {
-    private string $model;
+    use Model;
+
     private int $n = 1;
     private string $size;
     private string $quality;
-
-    private function __construct(string $model)
-    {
-        $this->model = $model;
-    }
-
-    public static function new(string $model): self {
-        return new self($model);
-    }
 
     public function size(string $size): self {
         $this->size = $size;
@@ -26,10 +18,6 @@ class ImageConfig {
         $this->quality = $quality;
 
         return $this;
-    }
-
-    public function getModel(): string {
-        return $this->model;
     }
 
     public function getN(): int

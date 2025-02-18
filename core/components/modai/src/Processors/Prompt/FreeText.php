@@ -39,9 +39,8 @@ class FreeText extends Processor
             $systemInstructions[] = $base;
         }
 
-        $aiService = AIServiceFactory::new($model, $this->modx);
-
         try {
+            $aiService = AIServiceFactory::new($model, $this->modx);
             $result = $aiService->getCompletions([$prompt], CompletionsConfig::new($model)->maxTokens($maxTokens)->temperature($temperature)->systemInstructions($systemInstructions));
 
             return $this->success('', ['content' => $result]);

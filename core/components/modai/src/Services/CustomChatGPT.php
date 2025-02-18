@@ -6,12 +6,12 @@ use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
 use MODX\Revolution\modX;
 
-class ChatGPT implements AIService
+class CustomChatGPT implements AIService
 {
     private modX $modx;
 
-    const COMPLETIONS_API = 'https://api.openai.com/v1/chat/completions';
-    const IMAGES_API = 'https://api.openai.com/v1/images/generations';
+    const COMPLETIONS_API = '{url}/chat/completions';
+    const IMAGES_API = '{url}/images/generations';
 
     public function __construct(modX &$modx)
     {
@@ -19,9 +19,14 @@ class ChatGPT implements AIService
     }
 
     public function generateImage(string $prompt, ImageConfig $config): string {
-        $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
+        $apiKey = $this->modx->getOption('modai.api.custom.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.chatgpt.key');
+            throw new \Exception('Missing modai.api.custom.key');
+        }
+
+        $baseUrl = $this->modx->getOption('modai.api.custom.url');
+        if (empty($baseUrl)) {
+            throw new \Exception('Missing modai.api.custom.url');
         }
 
         $input = [
@@ -32,7 +37,10 @@ class ChatGPT implements AIService
             'quality' => $config->getQuality()
         ];
 
-        $ch = curl_init(self::IMAGES_API);
+        $url = self::IMAGES_API;
+        $url = str_replace('{url}', $baseUrl, $url);
+
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
@@ -71,9 +79,14 @@ class ChatGPT implements AIService
      */
     public function getCompletions(array $data, CompletionsConfig $config): string
     {
-        $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
+        $apiKey = $this->modx->getOption('modai.api.custom.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.chatgpt.key');
+            throw new \Exception('Missing modai.api.custom.key');
+        }
+
+        $baseUrl = $this->modx->getOption('modai.api.custom.url');
+        if (empty($baseUrl)) {
+            throw new \Exception('Missing modai.api.custom.url');
         }
 
         $messages = [];
@@ -99,7 +112,10 @@ class ChatGPT implements AIService
             'messages' => $messages,
         ];
 
-        $ch = curl_init(self::COMPLETIONS_API);
+        $url = self::COMPLETIONS_API;
+        $url = str_replace('{url}', $baseUrl, $url);
+
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
@@ -127,7 +143,7 @@ class ChatGPT implements AIService
         }
 
         if (!isset($result['choices'][0]['message']['content'])) {
-            throw new \Exception("There was an error generating a response.");
+            throw new \Exception("There was an error generating a response: " . json_encode($result));
         }
 
         return $result['choices'][0]['message']['content'];
@@ -138,9 +154,14 @@ class ChatGPT implements AIService
      */
     public function getVision(string $prompt, string $image, VisionConfig $config): string
     {
-        $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
+        $apiKey = $this->modx->getOption('modai.api.custom.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.chatgpt.key');
+            throw new \Exception('Missing modai.api.custom.key');
+        }
+
+        $baseUrl = $this->modx->getOption('modai.api.custom.url');
+        if (empty($baseUrl)) {
+            throw new \Exception('Missing modai.api.custom.url');
         }
 
         $input = [
@@ -162,7 +183,10 @@ class ChatGPT implements AIService
             ],
         ];
 
-        $ch = curl_init(self::COMPLETIONS_API);
+        $url = self::COMPLETIONS_API;
+        $url = str_replace('{url}', $baseUrl, $url);
+
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));

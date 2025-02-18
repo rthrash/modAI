@@ -31,9 +31,8 @@ class Image extends Processor
             return $this->failure('image.quality setting is required');
         }
 
-        $aiService = AIServiceFactory::new($model, $this->modx);
-
         try {
+            $aiService = AIServiceFactory::new($model, $this->modx);
             $result = $aiService->generateImage($prompt, ImageConfig::new($model)->size($size)->quality($quality));
 
             return $this->success('', ['url' => $result]);
