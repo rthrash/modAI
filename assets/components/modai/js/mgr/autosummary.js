@@ -373,7 +373,7 @@ Ext.onReady(function() {
                 continue;
             }
 
-            if (field.xtype === 'textfield') {
+            if (field.xtype === 'textfield' || field.xtype === 'textarea') {
                 const prompt = MODx.config[`modai.tv.${tvName}.prompt`];
 
                 const label = wrapper.dom.querySelector('label');
