@@ -48,24 +48,64 @@ Image+ fields can use Vision models to describe an imgage for the alt content fo
 
 - **vision.model** – defaults to `gpt-4o-mini`
 
-## Usage
+### Supported Providers
 
-Wherever you see a field or a label with a “sparkle button” (✦) next to it, click it to use the chatGPT api to create content in those fileds based on the system settings prompts/configurations. By default, it automatically creates sparkle buttons for several fields as outlined below. Delete the prompt settings to remove modAI’s sparkle buttons and the generative AI content creation for those fields:
+#### ChatGPT
 
-- **longtitle** – often used for the SEO Meta Title manually or with SEO Suite (should be ~70 characters)
-- **description** – often used for the SEO Meta Description manually or with SEO Suite (should be ~155 characters)
-- **introtext** – aka Summary, this is set to summarize the page content—useful for news/blog landing pages or as a base to generate images or image+ images from (make sure to save first so it has content to pull from)
-- **content** – a freeform prompt box allows you to give instructions on the type of content to generate
+ChatGPT is the default model assumed. Just fill out the required `modai.api.chatgpt.key` and adjust any models as desired.
 
-If you’re not happy with what modAI generates, click the sparkle button or generate buttons again to generate another variation. You can then use the prev/next navigation buttons to go between the options. When you save, it keeps the option shown and discards the rest.
+For details on current ChatGPT models supported, consult their documentation:
+
+- **text generation** – https://platform.openai.com/docs/guides/text-generation
+- **image to text** – https://platform.openai.com/docs/guides/vision
+- **DALL-E image creation** – https://platform.openai.com/docs/guides/images.
+
+#### Claud
+
+Claude requires filling out the `modai.api.claude.key` to be filled. 
+
+For details on current Claude models supported, consult their documentation:
+
+- **text generation** - https://docs.anthropic.com/en/docs/about-claude/models
+
+Then, you for each model you want to use, set the corresponding "model", e.g:
+
+- `global.global.model` → `claude-3-5-haiku-latest`
+
+#### Gemini
+
+Gemini requires filling out the `modai.api.gemini.key` to be filled.
+
+For details on current Gemini models supported, consult their documentation:
+
+- **text generation** - https://ai.google.dev/gemini-api/docs/models/gemini
+
+Then, you for each model you want to use, set the corresponding "model", e.g:
+
+- `global.global.model` → `gemini-2.0-flash`
+
+
+#### Custom Services/Models
+
+Some services like [Open WebUI](https://docs.openwebui.com) provide a wrapper for multiple models. To use a custom model via these services you need to fill out the `modai.api.custom.url`, `modai.api.custom.key` and optionally the `modai.custom.compatibility`, which tells the model what API emulation to use (almost alway leave this as openai).
+
+To use the custom service, set the following fields:
+
+- `modai.api.custom.url` → `{your custom URL}`
+- `modai.api.custom.key` → `{your API key}`
+
+Then, you for each model you want to use, set the corresponding "model" field with the prefix "custom_" followed by the model name, e.g:
+
+- `modai.global.model` → `custom_llama3.1:8b`
+
 
 ### Adding modAI to other fields and Template Variables (TVs)
 
 The modAI plugin can attach to most default fields (e.g. pagetitle, menutitle) and any TV with a text, textarea, image or image+ TV input in the `modai.res.fields` and `modai.tvs` settings. The field types are handled individually as follows:
 
-- **text inputs** – modAI uses the base prompt and model and directly inputs the content into the field 
+- **text inputs** – modAI uses the base prompt and model and directly inputs the content into the field
 - **textarea inputs** – handled the same as text inputs
-- **richtext inputs** – handled the same as a textarea input, but you must manually copy/paste the output into the textarea 
+- **richtext inputs** – handled the same as a textarea input, but you must manually copy/paste the output into the textarea
 - **image inputs** – modAI uses the default image model and sizes and creates the imaegs in the `assets/ai` directory
 - **image+ TVs** – handled the same as image inputs, with the addition of being able to use the Vision model for creating alt tag captions from generated images
 
@@ -83,28 +123,19 @@ For a list of valid modesl for OpenAI’s ChatGPT, see https://platform.openai.c
 
 For a list of valid models for Google Gemini, see https://ai.google.dev/gemini-api/docs/models/gemini
 
-For a list of valid models for Anthropic’s Claude, see https://docs.anthropic.com/en/docs/about-claude/models 
+For a list of valid models for Anthropic’s Claude, see https://docs.anthropic.com/en/docs/about-claude/models
 
-### Using Custom Services/Models
 
-Some services like [Open WebUI](https://docs.openwebui.com) provide a wrapper for multiple models. To use a custom model via these services you need to fill out the `modai.api.custom.url`, `modai.api.custom.key` and optionally the `modai.custom.compatibility`, which tells the model what API emulation to use (almost alway leave this as openai).
+## Usage
 
-To use a model you can either set it globally, or override it on a per-prompt basis, prefixed with `custom_`. For example to have a custom model used, you would create/update settings as follows:
+Wherever you see a field or a label with a “sparkle button” (✦) next to it, click it to use the chatGPT api to create content in those fields based on the system settings prompts/configurations. By default, it automatically creates sparkle buttons for several fields as outlined below. Delete the prompt settings to remove modAI’s sparkle buttons and the generative AI content creation for those fields:
 
-- `modai.api.custom.url` → `{your custom URL}`
-- `modai.api.custom.key` → `{your API key}`
+- **longtitle** – often used for the SEO Meta Title manually or with SEO Suite (should be ~70 characters)
+- **description** – often used for the SEO Meta Description manually or with SEO Suite (should be ~155 characters)
+- **introtext** – aka Summary, this is set to summarize the page content—useful for news/blog landing pages or as a base to generate images or image+ images from (make sure to save first so it has content to pull from)
+- **content** – a freeform prompt box allows you to give instructions on the type of content to generate
 
-Then, you could set an override for a particular field as show above, or even replace the global default with another model:
-
-- `modapi.global.model` → `custom_qwen2.5-coder:1.5b-base`
-
-## Supported ChatGPT Models
-
-For details on current ChatGPT models supported, consult their documentation: 
-
-- **text generation** – https://platform.openai.com/docs/guides/text-generation
-- **image to text** – https://platform.openai.com/docs/guides/vision
-- **DALL-E image creation** – https://platform.openai.com/docs/guides/images.
+If you’re not happy with what modAI generates, click the sparkle button or generate buttons again to generate another variation. You can then use the prev/next navigation buttons to go between the options. When you save, it keeps the option shown and discards the rest.
 
 ## Costs
 

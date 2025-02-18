@@ -1,2 +1,4 @@
 core/components/modai/vendor
 _packages
+.idea
+.vscode
