@@ -18,7 +18,7 @@ class ChatGPT implements AIService
         $this->modx =& $modx;
     }
 
-    public function generateImage(string $prompt, ImageConfig $config): string {
+    public function generateImage(string $prompt, ImageConfig $config): array {
         $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($apiKey)) {
             throw new \Exception('Missing modai.api.chatgpt.key');
@@ -63,7 +63,7 @@ class ChatGPT implements AIService
             throw new \Exception("There was an error generating a response.");
         }
 
-        return $result['data'][0]['url'];
+        return [ 'url' => $result['data'][0]['url'] ];
     }
 
     /**

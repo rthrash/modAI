@@ -10,5 +10,5 @@ interface AIService {
 
     public function getCompletions(array $data, CompletionsConfig $config): string;
     public function getVision(string $prompt, string $image, VisionConfig $config): string;
-    public function generateImage(string $prompt, ImageConfig $config): string;
+    public function generateImage(string $prompt, ImageConfig $config): array;
 }

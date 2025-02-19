@@ -10,6 +10,7 @@ class Gemini implements AIService {
     private modX $modx;
 
     const COMPLETIONS_API = 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={apiKey}';
+    const IMAGES_API = 'https://generativelanguage.googleapis.com/v1beta/models/{model}:predict?key={apiKey}';
 
     public function __construct(modX &$modx)
     {
@@ -99,8 +100,48 @@ class Gemini implements AIService {
         throw new \Exception("not implemented");
     }
 
-    public function generateImage(string $prompt, ImageConfig $config): string
+    public function generateImage(string $prompt, ImageConfig $config): array
     {
-        throw new \Exception("not implemented");
+        $apiKey = $this->modx->getOption('modai.api.gemini.key');
+        if (empty($apiKey)) {
+            throw new \Exception('Missing modai.api.gemini.key');
+        }
+
+        $url = self::IMAGES_API;
+        $url = str_replace("{model}", $config->getModel(), $url);
+        $url = str_replace("{apiKey}", $apiKey, $url);
+
+        $input = [
+            "instances" => [
+                "prompt" => $prompt,
+            ],
+            "parameters" => [
+                "sampleCount" => $config->getN()
+            ]
+        ];
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+        ]);
+
+        $response = curl_exec($ch);
+        if (curl_errno($ch)) {
+            $error_msg = curl_error($ch);
+            curl_close($ch);
+            throw new \Exception($error_msg);
+        }
+
+        curl_close($ch);
+
+        $result = json_decode($response, true);
+        if (!is_array($result)) {
+            throw new \Exception('Invalid response');
+        }
+
+        return ['base64' => 'data:image/png;base64, ' . $result['predictions'][0]['bytesBase64Encoded']];
     }
 }

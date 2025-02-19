@@ -40,9 +40,22 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             info.update({currentPage: this._cache.visible + 1, total: this._cache.history.length})
             info.show();
 
-            this.hidenUrl.setValue(this._cache.history[this._cache.visible].url);
+            const currentItem = this._cache.history[this._cache.visible];
+
+            if (currentItem.url) {
+                this.hidenUrl.setValue(currentItem.url);
+            } else {
+                this.hidenUrl.setValue('');
+            }
+
+            if (currentItem.base64) {
+                this.hidenBase64.setValue(currentItem.base64);
+            } else {
+                this.hidenBase64.setValue('');
+            }
+
             this.prompt.setValue(this._cache.history[this._cache.visible].prompt)
-            this.imagePreview.update({url: this._cache.history[this._cache.visible].url});
+            this.imagePreview.update({url: currentItem?.url || currentItem.base64});
 
 
             if (this._cache.visible <= 0) {
@@ -114,6 +127,10 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             name: 'url'
         });
 
+        this.hidenBase64 = new Ext.form.Hidden({
+            name: 'image'
+        });
+
         this.downloadButton = new Ext.Button({
             text: _('save'),
             cls: 'primary-button',
@@ -150,6 +167,7 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                 name: 'fieldName'
             },
             this.hidenUrl,
+            this.hidenBase64,
             this.prompt,
             {
                 style: 'margin-top: 10px;',
@@ -176,7 +194,7 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                         listeners: {
                             success: {
                                 fn: (r) => {
-                                    this.pagination.addItem({prompt: this.prompt.getValue(), url: r.object.url});
+                                    this.pagination.addItem({prompt: this.prompt.getValue(), ...r.object});
                                     Ext.Msg.hide();
                                 }
                             },

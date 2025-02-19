@@ -14,6 +14,7 @@ class Image extends Processor {
         $resource = $this->getProperty('resource');
         $field = $this->getProperty('fieldName', '');
         $url = $this->getProperty('url');
+        $image = $this->getProperty('image');
         $mediaSource = (int)$this->getProperty('mediaSource', 0);
 
         if (empty($mediaSource)) {
@@ -24,21 +25,25 @@ class Image extends Processor {
             return $this->failure("Resource is required");
         }
 
-        if (empty($url)) {
-            return $this->failure('URL is required');
+        if (empty($url) && empty($image)) {
+            return $this->failure('URL or Image is required');
         }
 
-        $additionalDomains = Settings::getSetting($this->modx, 'image.download_domains');
+        $additionalDomains = Settings::getSetting($this->modx, 'image.download_domains', '');
         $additionalDomains = Utils::explodeAndClean($additionalDomains);
 
         $allowedDomains = array_merge($additionalDomains, $this->allowedDomains);
 
-        $domainAllowed = false;
-        foreach ($allowedDomains as $domain) {
-            if (strncmp($url, $domain, strlen($domain)) === 0) {
-                $domainAllowed = true;
-                break;
+        if (!empty($url)) {
+            $domainAllowed = false;
+            foreach ($allowedDomains as $domain) {
+                if (strncmp($url, $domain, strlen($domain)) === 0) {
+                    $domainAllowed = true;
+                    break;
+                }
             }
+        } else {
+            $domainAllowed = true;
         }
 
         if (!$domainAllowed) {
@@ -59,7 +64,9 @@ class Image extends Processor {
 
         $filePath = $this->createFilePath($path, $resource);
 
-        $source->createObject($filePath[0], $filePath[1], file_get_contents($url));
+        $image = file_get_contents(empty($url) ? $image : $url);
+
+        $source->createObject($filePath[0], $filePath[1], $image);
 
         return $this->success('', ['url' => $filePath[0].$filePath[1]]);
     }

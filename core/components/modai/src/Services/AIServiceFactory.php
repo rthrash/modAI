@@ -9,6 +9,10 @@ class AIServiceFactory {
             return new Gemini($modx);
         }
 
+        if (strncmp($model, 'imagen-', strlen('imagen-')) === 0) {
+            return new Gemini($modx);
+        }
+
         if (strncmp($model, 'claude-', strlen('claude-')) === 0) {
             return new Claude($modx);
         }

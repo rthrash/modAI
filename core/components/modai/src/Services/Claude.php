@@ -89,7 +89,7 @@ class Claude implements AIService
         throw new \Exception("not implemented");
     }
 
-    public function generateImage(string $prompt, ImageConfig $config): string
+    public function generateImage(string $prompt, ImageConfig $config): array
     {
         throw new \Exception("not implemented");
     }
