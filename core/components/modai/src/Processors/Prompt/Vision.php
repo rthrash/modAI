@@ -12,22 +12,17 @@ class Vision extends Processor
     {
         set_time_limit(0);
 
+        $field = $this->getProperty('fieldName');
+
         $image = $this->getProperty('image');
         if (empty($image)) {
             return $this->failure('Image is required');
         }
 
-        $model = Settings::getSetting($this->modx, 'vision.model');
-        if (empty($model)) {
-            return $this->failure('vision.model setting is required');
-        }
-
-        $prompt = Settings::getSetting($this->modx, 'vision.prompt');
-        if (empty($prompt)) {
-            return $this->failure('vision.prompt setting is required');
-        }
-
         try {
+            $model = Settings::getVisionFieldSetting($this->modx, $field, 'model');
+            $prompt = Settings::getVisionFieldSetting($this->modx, $field, 'prompt');
+
             $aiService = AIServiceFactory::new($model, $this->modx);
             $result = $aiService->getVision($prompt, $image, VisionConfig::new($model));
 

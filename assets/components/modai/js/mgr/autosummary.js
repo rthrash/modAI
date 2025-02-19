@@ -326,7 +326,8 @@ Ext.onReady(function() {
                 timeout: 0,
                 params: {
                     action: 'modAI\\Processors\\Prompt\\Vision',
-                    image: base64Data
+                    image: base64Data,
+                    fieldName
                 },
                 listeners: {
                     success: {

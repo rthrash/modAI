@@ -52,4 +52,21 @@ class Settings {
 
         return $value;
     }
+
+    /**
+     * @throws RequiredSettingException
+     */
+    public static function getVisionFieldSetting(modX $modx, string $field, string $setting, bool $required = true): string {
+        if (!empty($field)) {
+            $value = $modx->getOption("modai.vision.$field.$setting", null, $modx->getOption("modai.vision.$setting"), true);
+        } else {
+            $value = $modx->getOption("modai.vision.$setting");
+        }
+
+        if ($required && empty($value)) {
+            throw new RequiredSettingException("modai.vision.$setting");
+        }
+
+        return $value;
+    }
 }
