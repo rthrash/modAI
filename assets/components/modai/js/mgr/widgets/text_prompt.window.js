@@ -173,6 +173,7 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
 
                     MODx.Ajax.request({
                         url: MODx.config.connector_url,
+                        timeout: 0,
                         params: {
                             action: 'modAI\\Processors\\Prompt\\FreeText',
                             prompt: this.prompt.getValue(),

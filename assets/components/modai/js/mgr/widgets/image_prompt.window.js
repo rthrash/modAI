@@ -160,6 +160,7 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
 
                     MODx.Ajax.request({
                         url: MODx.config.connector_url,
+                        timeout: 0,
                         params: {
                             action: 'modAI\\Processors\\Prompt\\Image',
                             prompt: this.prompt.getValue()

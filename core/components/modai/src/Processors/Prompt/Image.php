@@ -11,6 +11,8 @@ class Image extends Processor
 {
     public function process()
     {
+        set_time_limit(0);
+
         $prompt = $this->getProperty('prompt');
         if (empty($prompt)) {
             return $this->failure('Prompt is required');

@@ -10,6 +10,8 @@ class Vision extends Processor
 {
     public function process()
     {
+        set_time_limit(0);
+
         $image = $this->getProperty('image');
         if (empty($image)) {
             return $this->failure('Image is required');

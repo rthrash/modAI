@@ -186,6 +186,7 @@ Ext.onReady(function() {
 
             MODx.Ajax.request({
                 url: MODx.config.connector_url,
+                timeout: 0,
                 params: {
                     action: 'modAI\\Processors\\Prompt\\Text',
                     id: MODx.request.id,
@@ -256,6 +257,7 @@ Ext.onReady(function() {
 
             MODx.Ajax.request({
                 url: MODx.config.connector_url,
+                timeout: 0,
                 params: {
                     action: 'modAI\\Processors\\Prompt\\Text',
                     id: MODx.request.id,
@@ -318,6 +320,7 @@ Ext.onReady(function() {
 
             MODx.Ajax.request({
                 url: MODx.config.connector_url,
+                timeout: 0,
                 params: {
                     action: 'modAI\\Processors\\Prompt\\Vision',
                     image: base64Data

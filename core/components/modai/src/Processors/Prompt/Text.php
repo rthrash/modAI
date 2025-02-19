@@ -13,6 +13,8 @@ class Text extends Processor
 
     public function process()
     {
+        set_time_limit(0);
+
         $fields = array_flip(self::$validFields);
         $field = $this->getProperty('field');
 
