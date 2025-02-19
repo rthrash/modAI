@@ -14,23 +14,18 @@ class Image extends Processor
         set_time_limit(0);
 
         $prompt = $this->getProperty('prompt');
+        $field = $this->getProperty('fieldName', '');
+
         if (empty($prompt)) {
             return $this->failure('Prompt is required');
         }
 
-        $model = Settings::getSetting($this->modx, 'image.model');
-        if (empty($model)) {
-            return $this->failure('image.model setting is required');
-        }
-
-        $size = Settings::getSetting($this->modx, 'image.size');
-        if (empty($size)) {
-            return $this->failure('image.size setting is required');
-        }
-
-        $quality = Settings::getSetting($this->modx, 'image.quality');
-        if (empty($quality)) {
-            return $this->failure('image.quality setting is required');
+        try {
+            $model = Settings::getImageFieldSetting($this->modx, $field, 'model');
+            $size = Settings::getImageFieldSetting($this->modx, $field, 'size');
+            $quality = Settings::getImageFieldSetting($this->modx, $field, 'quality');
+        } catch (\Exception $e) {
+            return $this->failure($e->getMessage());
         }
 
         try {

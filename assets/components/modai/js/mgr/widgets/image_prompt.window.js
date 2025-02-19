@@ -183,13 +183,13 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                     this.prompt.clearInvalid();
 
                     Ext.Msg.wait('Generating ...', 'Please wait');
-
                     MODx.Ajax.request({
                         url: MODx.config.connector_url,
                         timeout: 0,
                         params: {
                             action: 'modAI\\Processors\\Prompt\\Image',
-                            prompt: this.prompt.getValue()
+                            prompt: this.prompt.getValue(),
+                            fieldName: config.record.fieldName || ''
                         },
                         listeners: {
                             success: {
