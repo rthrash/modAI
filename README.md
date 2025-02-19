@@ -50,39 +50,37 @@ Image+ fields can use Vision models to describe an imgage for the alt content fo
 
 ### Supported Providers
 
-#### ChatGPT
+#### ChatGPT (OpenAI)
 
-ChatGPT is the default model assumed. Just fill out the required `modai.api.chatgpt.key` and adjust any models as desired.
-
-For details on current ChatGPT models supported, consult their documentation:
+ChatGPT is the default model assumed. Fill out the `modai.api.chatgpt.key` and adjust any models as desired.
 
 - **text generation** – https://platform.openai.com/docs/guides/text-generation
 - **image to text** – https://platform.openai.com/docs/guides/vision
-- **DALL-E image creation** – https://platform.openai.com/docs/guides/images.
+- **DALL-E image creation** – https://platform.openai.com/docs/guides/images
 
-#### Claud
+#### Google Gemini
 
-Claude requires filling out the `modai.api.claude.key` to be filled. 
-
-For details on current Claude models supported, consult their documentation:
-
-- **text generation** - https://docs.anthropic.com/en/docs/about-claude/models
-
-Then, you for each model you want to use, set the corresponding "model", e.g:
-
-- `global.global.model` → `claude-3-5-haiku-latest`
-
-#### Gemini
-
-Gemini requires filling out the `modai.api.gemini.key` to be filled.
+Add a valide API key to the `modai.api.gemini.key` to use Google Gemini.
 
 For details on current Gemini models supported, consult their documentation:
 
 - **text generation** - https://ai.google.dev/gemini-api/docs/models/gemini
+- **image to text** – https://ai.google.dev/gemini-api/docs/vision 
+- **image generation** – https://ai.google.dev/gemini-api/docs/imagen 
 
-Then, you for each model you want to use, set the corresponding "model", e.g:
+To change a prompt to use Google Gemini, set its corresponding model setting, e.g:
 
 - `global.global.model` → `gemini-2.0-flash`
+
+#### Claude (Anthropic)
+
+Claude currently only supports text generation. Add a valide API key to the `modai.api.claude.key` to use Claude. 
+
+- **text generation** - https://docs.anthropic.com/en/docs/about-claude/models
+
+To change a prompt to use Claude, set its corresponding model setting, e.g:
+
+- `global.global.model` → `claude-3-5-haiku-latest`
 
 
 #### Custom Services/Models
@@ -141,7 +139,7 @@ If you’re not happy with what modAI generates, click the sparkle button or gen
 
 **OpenAI API credits must be purchased for this Extra to work with Image models.** Find costs for the various models at https://openai.com/api/pricing/.
 
-Google Gemini offeres a variety of free options with limits: https://ai.google.dev/pricing
+Google Gemini offeres a variety of free options with limits. Image generation requires payments: https://ai.google.dev/pricing
 
 Anthropic’s API pricing is here: https://www.anthropic.com/pricing#anthropic-api 
 
