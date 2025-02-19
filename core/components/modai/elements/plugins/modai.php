@@ -24,7 +24,7 @@ if (isset($modx->controller) && is_object($modx->controller) && property_exists(
 }
 
 // Adjust the check as per your Manager’s action identifiers.
-if (in_array($action, ['resource/create', 'resource/update', '78', '85'])) {
+if (in_array($action, ['resource/create', 'resource/update'])) {
     // Define the assets URL (ensure this path matches your installation).
     $assetsUrl = $modAI->getOption('assetsUrl');
 
