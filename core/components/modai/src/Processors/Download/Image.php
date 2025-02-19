@@ -2,13 +2,23 @@
 
 namespace modAI\Processors\Download;
 
+use modAI\Settings;
+use modAI\Utils;
 use MODX\Revolution\Processors\Processor;
 use MODX\Revolution\Sources\modMediaSource;
 
 class Image extends Processor {
+    private $allowedDomains = ['https://oaidalleapiprodscus.blob.core.windows.net'];
+
     public function process() {
         $resource = $this->getProperty('resource');
+        $field = $this->getProperty('fieldName', '');
         $url = $this->getProperty('url');
+        $mediaSource = (int)$this->getProperty('mediaSource', 0);
+
+        if (empty($mediaSource)) {
+            return $this->failure("Media Source is required");
+        }
 
         if (empty($resource)) {
             return $this->failure("Resource is required");
@@ -18,17 +28,55 @@ class Image extends Processor {
             return $this->failure('URL is required');
         }
 
-        $source = modMediaSource::getDefaultSource($this->modx, 1);
+        $additionalDomains = Settings::getSetting($this->modx, 'image.download_domains');
+        $additionalDomains = Utils::explodeAndClean($additionalDomains);
+
+        $allowedDomains = array_merge($additionalDomains, $this->allowedDomains);
+
+        $domainAllowed = false;
+        foreach ($allowedDomains as $domain) {
+            if (strncmp($url, $domain, strlen($domain)) === 0) {
+                $domainAllowed = true;
+                break;
+            }
+        }
+
+        if (!$domainAllowed) {
+            return $this->failure('Domain not allowed for image downloads.');
+        }
+
+        $source = modMediaSource::getDefaultSource($this->modx, $mediaSource);
 
         if (!$source->initialize()) {
             return $this->failure('fail');
         }
 
-        $dir = "assets/ai/$resource/";
-        $name = md5(microtime()) . '.png';
+        try {
+            $path = Settings::getImageFieldSetting($this->modx, $field, 'path');
+        } catch (\Exception $e) {
+            return $this->failure($e->getMessage());
+        }
 
-        $source->createObject($dir, $name, file_get_contents($url));
+        $filePath = $this->createFilePath($path, $resource);
 
-        return $this->success('', ['url' => $dir.$name]);
+        $source->createObject($filePath[0], $filePath[1], file_get_contents($url));
+
+        return $this->success('', ['url' => $filePath[0].$filePath[1]]);
+    }
+
+    private function createFilePath($path, $resource): array
+    {
+        $hash = md5(microtime());
+
+        $path = str_replace('{hash}', $hash, $path);
+        $path = str_replace('{shortHash}', substr($hash, 0, 4), $path);
+        $path = str_replace('{resourceId}', $resource, $path);
+
+        $path = trim($path, DIRECTORY_SEPARATOR);
+        $path = explode(DIRECTORY_SEPARATOR, $path);
+
+        $fileName = array_pop($path);
+
+        return [implode(DIRECTORY_SEPARATOR, $path) . DIRECTORY_SEPARATOR, $fileName];
     }
 }

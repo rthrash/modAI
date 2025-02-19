@@ -16,7 +16,7 @@ class Text extends Processor
         set_time_limit(0);
 
         $fields = array_flip(self::$validFields);
-        $field = $this->getProperty('field');
+        $field = $this->getProperty('field', '');
 
         if (substr($field, 0, 3) === 'tv.') {
             $modAi = $this->modx->services->get('modai');

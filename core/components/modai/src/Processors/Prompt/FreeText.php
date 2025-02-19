@@ -14,7 +14,7 @@ class FreeText extends Processor
         set_time_limit(0);
 
         $prompt = $this->getProperty('prompt');
-        $field = $this->getProperty('field');
+        $field = $this->getProperty('field', '');
 
         if (empty($prompt)) {
             return $this->failure('Prompt is required.');

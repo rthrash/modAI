@@ -85,6 +85,11 @@ systemSettings:
   - key: image.quality
     area: image
     value: standard
+  - key: image.path
+    area: image
+    value: "assets/ai/{resourceId}/{hash}.png"
+  - key: image.download_domains
+    area: image
 
   - key: tvs
     area: tvs

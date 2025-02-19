@@ -218,7 +218,7 @@ Ext.onReady(function() {
         return aiWrapper;
     }
 
-    const createImagePrompt = (defaultPrompt, onSuccess) => {
+    const createImagePrompt = (defaultPrompt, mediaSource, fieldName, onSuccess) => {
         const imageWand = createWandEl();
         imageWand.addEventListener('click', () => {
             const createColumn = MODx.load({
@@ -227,6 +227,8 @@ Ext.onReady(function() {
                 record: {
                     resource: MODx.request.id,
                     prompt: defaultPrompt,
+                    mediaSource,
+                    fieldName,
                 },
                 listeners: {
                     success: {
@@ -289,12 +291,13 @@ Ext.onReady(function() {
         field.label.appendChild(wrapper);
     }
 
-    const attachImagePlus = (imgPlusPanel) => {
+    const attachImagePlus = (imgPlusPanel, fieldName) => {
         const imagePlus = Ext.getCmp(imgPlusPanel.firstChild.id);
 
         const imageWand = createImagePrompt(
-            // Ext.getCmp('modx-resource-introtext').getValue(),
             '',
+            imagePlus.imageBrowser.source,
+            fieldName,
             function(res) {
                 imagePlus.imageBrowser.setValue(res.a.result.object.url);
                 imagePlus.onImageChange(res.a.result.object.url)
@@ -368,10 +371,12 @@ Ext.onReady(function() {
             }
 
             const field = form.findField(`tv${tvId}`);
+            const fieldName = `tv.${tvName}`;
+
             if (!field) {
                 const imgPlusPanel = wrapper.dom.querySelector('.imageplus-panel-input');
                 if (imgPlusPanel) {
-                    attachImagePlus(imgPlusPanel);
+                    attachImagePlus(imgPlusPanel, fieldName);
                 }
                 continue;
             }
@@ -380,7 +385,6 @@ Ext.onReady(function() {
                 const prompt = MODx.config[`modai.tv.${tvName}.prompt`];
 
                 const label = wrapper.dom.querySelector('label');
-                const fieldName = `tv.${tvName}`;
 
                 if (prompt) {
                     label.appendChild(createForcedTextPrompt(field, fieldName));
@@ -392,6 +396,8 @@ Ext.onReady(function() {
             if (field.xtype === 'modx-panel-tv-image') {
                 const imageWand = createImagePrompt(
                     '',
+                    field.source,
+                    fieldName,
                     function(res) {
                         const eventData = {
                             relativeUrl: res.a.result.object.url,

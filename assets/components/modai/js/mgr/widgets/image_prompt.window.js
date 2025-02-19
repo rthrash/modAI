@@ -119,7 +119,7 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             cls: 'primary-button',
             scope: this,
             handler: this.submit,
-            disabled: true
+            disabled: false
         });
 
         this.pagination = {
@@ -140,6 +140,14 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             {
                 xtype: 'hidden',
                 name: 'resource'
+            },
+            {
+                xtype: 'hidden',
+                name: 'mediaSource'
+            },
+            {
+                xtype: 'hidden',
+                name: 'fieldName'
             },
             this.hidenUrl,
             this.prompt,

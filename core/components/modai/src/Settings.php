@@ -35,4 +35,21 @@ class Settings {
     public static function getSetting(modX $modx, string $key, string $default = null) {
         return $modx->getOption("modai.$key", null, $default);
     }
+
+    /**
+     * @throws RequiredSettingException
+     */
+    public static function getImageFieldSetting(modX $modx, string $field, string $setting, bool $required = true): string {
+        if (!empty($field)) {
+            $value = $modx->getOption("modai.image.$field.$setting", null, $modx->getOption("modai.image.$setting"), true);
+        } else {
+            $value = $modx->getOption("modai.image.$setting");
+        }
+
+        if ($required && empty($value)) {
+            throw new RequiredSettingException("modai.image.$setting");
+        }
+
+        return $value;
+    }
 }

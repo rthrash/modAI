@@ -44,3 +44,7 @@ $_lang['setting_modai.image.quality'] = 'Image Quallity';
 $_lang['setting_modai.image.quality_desc'] = 'Valid options are `standard` (default) and `hd`.';
 $_lang['setting_modai.tvs'] = 'Use with Template Variables';
 $_lang['setting_modai.tvs_desc'] = 'The Template Variable fields to attached modAI generative AI buttons to. Must be a text, textarea, image or Image+ Input Type.';
+$_lang['setting_modai.image.path'] = 'Image Path';
+$_lang['setting_modai.image.path_desc'] = 'Path including file name where the AI generated image will be stored. Available placeholders: {hash}, {shortHash}, {resourceId}.';
+$_lang['setting_modai.image.download_domains'] = 'Allowed Download Domains';
+$_lang['setting_modai.image.download_domains_desc'] = 'Additional domains to allow downloading generated images from.';

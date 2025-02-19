@@ -14,7 +14,7 @@ trait Model {
     }
 
     public function getModel(): string {
-        if (substr($this->model, 0,7) === 'custom_') {
+        if (strncmp($this->model, 'custom_', strlen('custom_')) === 0) {
             return substr($this->model, 7);
         }
 

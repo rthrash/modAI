@@ -5,15 +5,15 @@ use MODX\Revolution\modX;
 
 class AIServiceFactory {
     public static function new($model, modX &$modx): AIService {
-        if (substr($model, 0, 7) === 'gemini-') {
+        if (strncmp($model, 'gemini-', strlen('gemini-')) === 0) {
             return new Gemini($modx);
         }
 
-        if (substr($model, 0, 7) === 'claude-') {
+        if (strncmp($model, 'claude-', strlen('claude-')) === 0) {
             return new Claude($modx);
         }
 
-        if (substr($model, 0,7) === 'custom_') {
+        if (strncmp($model, 'custom_', strlen('custom_')) === 0) {
             $compatibility = $modx->getOption('modai.api.custom.compatibility');
             if ($compatibility === 'openai') {
                 return new CustomChatGPT($modx);
