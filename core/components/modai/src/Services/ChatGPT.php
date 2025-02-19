@@ -18,54 +18,6 @@ class ChatGPT implements AIService
         $this->modx =& $modx;
     }
 
-    public function generateImage(string $prompt, ImageConfig $config): array {
-        $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
-        if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.chatgpt.key');
-        }
-
-        $input = [
-            'prompt' => $prompt,
-            'model' => $config->getModel(),
-            'n' => $config->getN(),
-            'size' => $config->getSize(),
-            'quality' => $config->getQuality()
-        ];
-
-        $ch = curl_init(self::IMAGES_API);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $apiKey
-        ]);
-
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            $error_msg = curl_error($ch);
-            curl_close($ch);
-            throw new \Exception($error_msg);
-        }
-
-        curl_close($ch);
-
-        $result = json_decode($response, true);
-        if (!is_array($result)) {
-            throw new \Exception('Invalid response');
-        }
-
-        if (isset($result['error'])) {
-            throw new \Exception($result['error']['message']);
-        }
-
-        if (!isset($result['data'][0]['url'])) {
-            throw new \Exception("There was an error generating a response.");
-        }
-
-        return [ 'url' => $result['data'][0]['url'] ];
-    }
-
     /**
      * @throws \Exception
      */
@@ -194,6 +146,55 @@ class ChatGPT implements AIService
         }
 
         return $result['choices'][0]['message']['content'];
+    }
+
+
+    public function generateImage(string $prompt, ImageConfig $config): array {
+        $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
+        if (empty($apiKey)) {
+            throw new \Exception('Missing modai.api.chatgpt.key');
+        }
+
+        $input = [
+            'prompt' => $prompt,
+            'model' => $config->getModel(),
+            'n' => $config->getN(),
+            'size' => $config->getSize(),
+            'quality' => $config->getQuality()
+        ];
+
+        $ch = curl_init(self::IMAGES_API);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiKey
+        ]);
+
+        $response = curl_exec($ch);
+        if (curl_errno($ch)) {
+            $error_msg = curl_error($ch);
+            curl_close($ch);
+            throw new \Exception($error_msg);
+        }
+
+        curl_close($ch);
+
+        $result = json_decode($response, true);
+        if (!is_array($result)) {
+            throw new \Exception('Invalid response');
+        }
+
+        if (isset($result['error'])) {
+            throw new \Exception($result['error']['message']);
+        }
+
+        if (!isset($result['data'][0]['url'])) {
+            throw new \Exception("There was an error generating a response.");
+        }
+
+        return [ 'url' => $result['data'][0]['url'] ];
     }
 
 }
