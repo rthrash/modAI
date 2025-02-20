@@ -100,6 +100,7 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
         this.preview = new Ext.form.TextArea({
             hidden: true,
             anchor: '100%',
+            height: '300px'
         });
 
         this.copyClose = new Ext.Button({
