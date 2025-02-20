@@ -8,3 +8,9 @@ Wherever you see a field or a label with a “sparkle button” (✦) next to it
 - **content** – a freeform prompt box allows you to give instructions on the type of content to generate
 
 If you’re not happy with what modAI generates, click the sparkle button or generate buttons again to generate another variation. You can then use the prev/next navigation buttons to go between the options. When you save, it keeps the option shown and discards the rest.
+
+<seealso>
+   <category ref="related">
+       <a href="Configuration_Overview.md#generative_fields" />
+   </category>
+</seealso>

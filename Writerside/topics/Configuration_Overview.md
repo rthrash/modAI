@@ -2,7 +2,7 @@
 
 Use the [Supported Providers](Supported-Providers.md) section to set up your response provider's credentials.
 
-## Generative Fields
+## Generative Fields {id=generative_fields}
 
 The default fields modAI enables in the `modai.res.fields` setting are longtitle, description, introtext/summary, and content. You can add additional standard resource fields to this setting.
 
@@ -48,3 +48,9 @@ Each field that you attach modAI to can have settings overrides. This means that
 - `modai.api.claude.key` → `{your API key}`
 - `modai.res.introtext.model` → `claude-3-5-haiku-20241022`
 - `modai.res.introtext.temperature` → `0.9`
+
+<seealso>
+    <category ref="related">
+        <a href="Supported-Providers.md" />
+    </category>
+</seealso>

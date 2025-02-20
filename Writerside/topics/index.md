@@ -11,12 +11,24 @@ The modAI Plugin adds a sparkle button (✦) next to fields or labels in back-en
 ## Requirements
 
 - MODX Revolution 3.x
-- A ChatGPT API key from https://platform.openai.com/api-keys, Google Gemini API key from https://ai.google.dev/gemini-api/docs/api-key or Anthropic Claude API key from https://console.anthropic.com/settings/keys
-- Pre-paid credits for API calls for ChatGPT if using—this is different than the $20/month ChatGPT Pro subscription
+- An API Key from your [Supported Provider](Supported-Providers.md)
+- Pre-paid credits for API calls for ChatGPT if using—this is different from the $20/month ChatGPT Pro subscription
 
-**Note:** image and vision support is currently only supported with the ChatGPT APIs. Claude and Gemini only support text generation.
+<note> 
+    Image and vision support is currently only supported with the OpenAI and Gemini. Claude, Ollama and others only support text generation.
+</note>
 
 MODX’s modAI Extra works with the following Extras if installed:
 
-- **image+** – for things like Open Graph sharing previews or hero section images with robust output templating, resizing, cropping and format conversions in conjunction with **pThumb** https://extras.modx.com/package/imageplustvinput
-- **SEO Suite+** – for managing and previewing SEO-related information for your sites https://extras.modx.com/package/seosuite
+- **[image+](https://extras.modx.com/package/imageplustvinput)** – for things like Open Graph sharing previews or hero section images with robust output templating, resizing, cropping and format conversions in conjunction with pThumb
+- **[SEO Suite](https://extras.modx.com/package/seosuite)** – for managing and previewing SEO-related information for your sites
+
+<seealso>
+    <category ref="related">
+        <a href="Supported-Providers.md" />
+    </category>
+    <category ref="external">
+        <a href="https://extras.modx.com/package/imageplustvinput">Image+</a>
+        <a href="https://extras.modx.com/package/seosuite">SEO Suite</a>
+    </category>
+</seealso>

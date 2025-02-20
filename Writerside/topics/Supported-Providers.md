@@ -1,5 +1,10 @@
 # Supported Providers
 
+<warning id="key-warning">
+    Your keys will be exposed to manager users over network requests, so it is recommended to use a site-specific key 
+    that can be easily revoked.
+</warning>
+
 ## ChatGPT (OpenAI)
 
 ChatGPT is the default model assumed. Fill out the `modai.api.chatgpt.key` and adjust any models as desired.
@@ -44,4 +49,13 @@ To use the custom service, set the following fields:
 
 Then, you for each model you want to use, set the corresponding "model" field with the prefix "custom_" followed by the model name, e.g:
 
-- `modai.global.model` → `custom_llama3.1:8b`
+- `modai.global.model` → `custom_llama3.1:8b
+
+<seealso>
+   <category ref="external">
+       <a href="https://platform.openai.com/docs/guides/">OpenAI Guides</a>
+       <a href="https://ai.google.dev/gemini-api/docs/">Gemini Docs</a>
+       <a href="https://docs.anthropic.com/en/docs/">Anthropic Docs</a>
+       <a href="https://docs.openwebui.com">Open WebUI Docs</a>
+   </category>
+</seealso>
