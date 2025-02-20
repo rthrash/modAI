@@ -2,3 +2,4 @@ core/components/modai/vendor
 _packages
 .idea
 .vscode
+config.core.php
