@@ -195,14 +195,19 @@ Ext.onReady(function() {
                 listeners: {
                     success: {
                         fn: (r) => {
-                            cache.store(fieldName, r.object.content);
-                            Ext.Msg.hide();
+                            modAI.serviceExecutor(r.object).then((result) => {
+                                cache.store(fieldName, result.content);
+                                Ext.Msg.hide();
+                            }).catch((err) => {
+                                Ext.Msg.hide();
+                                Ext.Msg.alert("Failed", `Failed to generated. Please try again. ${err.message}`);
+                            });
                         }
                     },
                     failure: {
                         fn: function() {
-                            Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
                             Ext.Msg.hide();
+                            Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
                         } ,
                         scope: this
                     }
@@ -268,14 +273,19 @@ Ext.onReady(function() {
                 listeners: {
                     success: {
                         fn: (r) => {
-                            cache.store(fieldName, r.object.content);
-                            Ext.Msg.hide();
+                            modAI.serviceExecutor(r.object).then((result) => {
+                                cache.store(fieldName, result.content);
+                                Ext.Msg.hide();
+                            }).catch((err) => {
+                                Ext.Msg.hide();
+                                Ext.Msg.alert("Failed", `Failed to generated. Please try again. ${err.message}`);
+                            });
                         }
                     },
                     failure: {
                         fn: function() {
-                            Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
                             Ext.Msg.hide();
+                            Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
                         } ,
                         scope: this
                     }
@@ -332,16 +342,21 @@ Ext.onReady(function() {
                 listeners: {
                     success: {
                         fn: (r) => {
-                            imagePlus.altTextField.items.items[0].setValue(r.object.content);
-                            imagePlus.image.altTag = r.object.content;
-                            imagePlus.updateValue();
-                            Ext.Msg.hide();
+                            modAI.serviceExecutor(r.object).then((result) => {
+                                imagePlus.altTextField.items.items[0].setValue(result.content);
+                                imagePlus.image.altTag = result.content;
+                                imagePlus.updateValue();
+                                Ext.Msg.hide();
+                            }).catch((err) => {
+                                Ext.Msg.hide();
+                                Ext.Msg.alert("Failed", `Failed to generated. Please try again. ${err.message}`);
+                            });
                         }
                     },
                     failure: {
                         fn: function() {
-                            Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
                             Ext.Msg.hide();
+                            Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
                         } ,
                         scope: this
                     }

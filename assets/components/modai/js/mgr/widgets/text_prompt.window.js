@@ -182,14 +182,19 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
                         listeners: {
                             success: {
                                 fn: (r) => {
-                                    this.pagination.addItem({prompt: this.prompt.getValue(), content: r.object.content});
-                                    Ext.Msg.hide();
+                                    modAI.serviceExecutor(r.object).then((result) => {
+                                        this.pagination.addItem({prompt: this.prompt.getValue(), content: result.content});
+                                        Ext.Msg.hide();
+                                    }).catch((err) => {
+                                        Ext.Msg.hide();
+                                        Ext.Msg.alert("Failed", `Failed to generated. Please try again. ${err.message}`);
+                                    });
                                 }
                             },
                             failure: {
                                 fn: function() {
-                                    Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
                                     Ext.Msg.hide();
+                                    Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
                                 } ,
                                 scope: this
                             }

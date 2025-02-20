@@ -26,7 +26,7 @@ class Vision extends Processor
             $aiService = AIServiceFactory::new($model, $this->modx);
             $result = $aiService->getVision($prompt, $image, VisionConfig::new($model));
 
-            return $this->success('', ['content' => $result]);
+            return $this->success('', $result->toArray());
         } catch (\Exception $e) {
             return $this->failure($e->getMessage());
         }

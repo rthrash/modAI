@@ -40,6 +40,7 @@ if (in_array($action, ['resource/create', 'resource/update'])) {
 
     $modx->regClientCSS($assetsUrl . 'css/mgr.css');
     $modx->regClientStartupScript($assetsUrl . 'js/mgr/modai.js');
+    $modx->regClientStartupScript($assetsUrl . 'js/mgr/serviceExecutor.js');
     $modx->regClientStartupScript($assetsUrl . 'js/mgr/autosummary.js');
     $modx->regClientStartupScript($assetsUrl . 'js/mgr/widgets/image_prompt.window.js');
     $modx->regClientStartupScript($assetsUrl . 'js/mgr/widgets/text_prompt.window.js');

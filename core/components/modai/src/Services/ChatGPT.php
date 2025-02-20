@@ -4,6 +4,7 @@ namespace modAI\Services;
 use modAI\Services\Config\CompletionsConfig;
 use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
+use modAI\Services\Response\AIResponse;
 use MODX\Revolution\modX;
 
 class ChatGPT implements AIService
@@ -18,10 +19,7 @@ class ChatGPT implements AIService
         $this->modx =& $modx;
     }
 
-    /**
-     * @throws \Exception
-     */
-    public function getCompletions(array $data, CompletionsConfig $config): string
+    public function getCompletions(array $data, CompletionsConfig $config): AIResponse
     {
         $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($apiKey)) {
@@ -51,44 +49,20 @@ class ChatGPT implements AIService
             'messages' => $messages,
         ];
 
-        $ch = curl_init(self::COMPLETIONS_API);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $apiKey
-        ]);
-
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            $error_msg = curl_error($ch);
-            curl_close($ch);
-            throw new \Exception($error_msg);
-        }
-
-        curl_close($ch);
-
-        $result = json_decode($response, true);
-        if (!is_array($result)) {
-            throw new \Exception('Invalid response');
-        }
-
-        if (isset($result['error'])) {
-            throw new \Exception($result['error']['message']);
-        }
-
-        if (!isset($result['choices'][0]['message']['content'])) {
-            throw new \Exception("There was an error generating a response.");
-        }
-
-        return $result['choices'][0]['message']['content'];
+        return AIResponse::new('chatgpt')
+            ->withParser('content')
+            ->withUrl(self::COMPLETIONS_API)
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $apiKey
+            ])
+            ->withBody($input);
     }
 
     /**
      * @throws \Exception
      */
-    public function getVision(string $prompt, string $image, VisionConfig $config): string
+    public function getVision(string $prompt, string $image, VisionConfig $config): AIResponse
     {
         $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($apiKey)) {
@@ -114,42 +88,18 @@ class ChatGPT implements AIService
             ],
         ];
 
-        $ch = curl_init(self::COMPLETIONS_API);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $apiKey
-        ]);
-
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            $error_msg = curl_error($ch);
-            curl_close($ch);
-            throw new \Exception($error_msg);
-        }
-
-        curl_close($ch);
-
-        $result = json_decode($response, true);
-        if (!is_array($result)) {
-            throw new \Exception('Invalid response');
-        }
-
-        if (isset($result['error'])) {
-            throw new \Exception($result['error']['message']);
-        }
-
-        if (!isset($result['choices'][0]['message']['content'])) {
-            throw new \Exception("There was an error generating a response.");
-        }
-
-        return $result['choices'][0]['message']['content'];
+        return AIResponse::new('chatgpt')
+            ->withParser('content')
+            ->withUrl(self::COMPLETIONS_API)
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $apiKey
+            ])
+            ->withBody($input);
     }
 
 
-    public function generateImage(string $prompt, ImageConfig $config): array {
+    public function generateImage(string $prompt, ImageConfig $config): AIResponse {
         $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($apiKey)) {
             throw new \Exception('Missing modai.api.chatgpt.key');
@@ -163,38 +113,14 @@ class ChatGPT implements AIService
             'quality' => $config->getQuality()
         ];
 
-        $ch = curl_init(self::IMAGES_API);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . $apiKey
-        ]);
-
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            $error_msg = curl_error($ch);
-            curl_close($ch);
-            throw new \Exception($error_msg);
-        }
-
-        curl_close($ch);
-
-        $result = json_decode($response, true);
-        if (!is_array($result)) {
-            throw new \Exception('Invalid response');
-        }
-
-        if (isset($result['error'])) {
-            throw new \Exception($result['error']['message']);
-        }
-
-        if (!isset($result['data'][0]['url'])) {
-            throw new \Exception("There was an error generating a response.");
-        }
-
-        return [ 'url' => $result['data'][0]['url'] ];
+        return AIResponse::new('chatgpt')
+            ->withParser('image')
+            ->withUrl(self::IMAGES_API)
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+                'Authorization' => 'Bearer ' . $apiKey
+            ])
+            ->withBody($input);
     }
 
 }

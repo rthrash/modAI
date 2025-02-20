@@ -4,6 +4,7 @@ namespace modAI\Services;
 use modAI\Services\Config\CompletionsConfig;
 use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
+use modAI\Services\Response\AIResponse;
 use MODX\Revolution\modX;
 
 class Gemini implements AIService {
@@ -20,7 +21,7 @@ class Gemini implements AIService {
     /**
      * @throws \Exception
      */
-    public function getCompletions(array $data, CompletionsConfig $config): string
+    public function getCompletions(array $data, CompletionsConfig $config): AIResponse
     {
         $apiKey = $this->modx->getOption('modai.api.gemini.key');
         if (empty($apiKey)) {
@@ -62,40 +63,16 @@ class Gemini implements AIService {
             ];
         }
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-        ]);
-
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            $error_msg = curl_error($ch);
-            curl_close($ch);
-            throw new \Exception($error_msg);
-        }
-
-        curl_close($ch);
-
-        $result = json_decode($response, true);
-        if (!is_array($result)) {
-            throw new \Exception('Invalid response');
-        }
-
-        if (isset($result['error'])) {
-            throw new \Exception($result['error']['message']);
-        }
-
-        if (!isset($result['candidates'][0]['content']['parts'][0]['text'])) {
-            throw new \Exception("There was an error generating a response.");
-        }
-
-        return $result['candidates'][0]['content']['parts'][0]['text'];
+        return AIResponse::new('gemini')
+            ->withParser('content')
+            ->withUrl($url)
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+            ])
+            ->withBody($input);
     }
 
-    public function getVision(string $prompt, string $image, VisionConfig $config): string
+    public function getVision(string $prompt, string $image, VisionConfig $config): AIResponse
     {
         $apiKey = $this->modx->getOption('modai.api.gemini.key');
         if (empty($apiKey)) {
@@ -124,40 +101,16 @@ class Gemini implements AIService {
         $url = str_replace("{model}", $config->getModel(), $url);
         $url = str_replace("{apiKey}", $apiKey, $url);
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-        ]);
-
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            $error_msg = curl_error($ch);
-            curl_close($ch);
-            throw new \Exception($error_msg);
-        }
-
-        curl_close($ch);
-
-        $result = json_decode($response, true);
-        if (!is_array($result)) {
-            throw new \Exception('Invalid response');
-        }
-
-        if (isset($result['error'])) {
-            throw new \Exception($result['error']['message']);
-        }
-
-        if (!isset($result['candidates'][0]['content']['parts'][0]['text'])) {
-            throw new \Exception("There was an error generating a response.");
-        }
-
-        return $result['candidates'][0]['content']['parts'][0]['text'];
+        return AIResponse::new('gemini')
+            ->withParser('content')
+            ->withUrl($url)
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+            ])
+            ->withBody($input);
     }
 
-    public function generateImage(string $prompt, ImageConfig $config): array
+    public function generateImage(string $prompt, ImageConfig $config): AIResponse
     {
         $apiKey = $this->modx->getOption('modai.api.gemini.key');
         if (empty($apiKey)) {
@@ -177,28 +130,12 @@ class Gemini implements AIService {
             ]
         ];
 
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($input));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'Content-Type: application/json',
-        ]);
-
-        $response = curl_exec($ch);
-        if (curl_errno($ch)) {
-            $error_msg = curl_error($ch);
-            curl_close($ch);
-            throw new \Exception($error_msg);
-        }
-
-        curl_close($ch);
-
-        $result = json_decode($response, true);
-        if (!is_array($result)) {
-            throw new \Exception('Invalid response');
-        }
-
-        return ['base64' => 'data:image/png;base64, ' . $result['predictions'][0]['bytesBase64Encoded']];
+        return AIResponse::new('gemini')
+            ->withParser('image')
+            ->withUrl($url)
+            ->withHeaders([
+                'Content-Type' => 'application/json',
+            ])
+            ->withBody($input);
     }
 }

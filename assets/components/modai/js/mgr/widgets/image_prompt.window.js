@@ -136,7 +136,7 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             cls: 'primary-button',
             scope: this,
             handler: this.submit,
-            disabled: false
+            disabled: true
         });
 
         this.pagination = {
@@ -194,14 +194,19 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                         listeners: {
                             success: {
                                 fn: (r) => {
-                                    this.pagination.addItem({prompt: this.prompt.getValue(), ...r.object});
-                                    Ext.Msg.hide();
+                                    modAI.serviceExecutor(r.object).then((result) => {
+                                        this.pagination.addItem({prompt: this.prompt.getValue(), ...result});
+                                        Ext.Msg.hide();
+                                    }).catch((err) => {
+                                        Ext.Msg.hide();
+                                        Ext.Msg.alert("Failed", `Failed to generated. Please try again. ${err.message}`);
+                                    });
                                 }
                             },
                             failure: {
                                 fn: function() {
-                                    Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
                                     Ext.Msg.hide();
+                                    Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
                                 } ,
                                 scope: this
                             }

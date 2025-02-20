@@ -3,6 +3,7 @@ namespace modAI\Processors\Prompt;
 
 use modAI\RequiredSettingException;
 use modAI\Services\AIServiceFactory;
+use modAI\Services\ChatGPT;
 use modAI\Services\Config\CompletionsConfig;
 use modAI\Settings;
 use MODX\Revolution\Processors\Processor;
@@ -78,7 +79,7 @@ class Text extends Processor
             $aiService = AIServiceFactory::new($model, $this->modx);
             $result = $aiService->getCompletions([$content], CompletionsConfig::new($model)->maxTokens($maxTokens)->temperature($temperature)->systemInstructions($systemInstructions));
 
-            return $this->success('', ['content' => $result]);
+            return $this->success('', $result->toArray());
         } catch (\Exception $e) {
             return $this->failure($e->getMessage());
         }
