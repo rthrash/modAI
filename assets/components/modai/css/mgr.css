@@ -5,19 +5,26 @@
 .modai-generate,
 .modai-history_next,
 .modai-history_prev {
+    --button-h: 191;
+    --button-s: 100%;
+    --button-l: 44%;
+    --button-hover-darken: 15%;
+    --button-border-darken: 20%;
+    --button-color: hsl(var(--button-h), var(--button-s), var(--button-l));
+    --button-color-border: hsl( var(--button-h), var(--button-s), calc(var(--button-l) - var(--button-border-darken)) );;
+    --button-color-hover: hsl( var(--button-h), var(--button-s), calc(var(--button-l) - var(--button-hover-darken)) );;
     display: inline-block;
     cursor: pointer;
-    background: #00b5de;
+    background: var(--button-color);
     color: #ffffff;
-    border-radius: 7px;
+    border-radius: 4px;
     margin-right: 6px;
     padding-inline: 0.6em;
-    padding: 3px 6px;
+    padding: 4px 6px 2px;
     vertical-align: baseline;
-    border: 2px solid #ff9640;
-    border-top-color:#117ca3;
-    border-right-color:#ff5529;
-    border-left-color:#00decc;
+    border: 2px solid var(--button-color-border);
+    border-top-width: 1px;
+    border-left-width: 1px;
     height: 1.85em;
     transition: 200ms all;
 }
@@ -25,8 +32,7 @@
 .modai-history_next:hover,
 .modai-history_prev:hover {
     transform: scale(1.15);
-    background: #117ca3;
-    border-top-color:#00b5de;
+    background: var(--button-color-hover);
 }
 .modai-generate:disabled,
 .modai-history_next:disabled,
