@@ -1,0 +1,3 @@
+- [ ] Convert all text to lexicons
+- [ ] Implement Vision AI endpoints for TVs
+- [ ] Convert docs to Writerside

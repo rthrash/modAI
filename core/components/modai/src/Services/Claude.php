@@ -25,7 +25,7 @@ class Claude implements AIService
     {
         $apiKey = $this->modx->getOption('modai.api.claude.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.claude.key');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'claude']));
         }
 
         $messages = [];
@@ -63,12 +63,12 @@ class Claude implements AIService
 
     public function getVision(string $prompt, string $image, VisionConfig $config): AIResponse
     {
-        throw new \Exception("not implemented");
+        throw new \Exception($this->modx->lexicon('modai.error.not_implemented'));
     }
 
     public function generateImage(string $prompt, ImageConfig $config): AIResponse
     {
-        throw new \Exception("not implemented");
+        throw new \Exception($this->modx->lexicon('modai.error.not_implemented'));
     }
 
 }

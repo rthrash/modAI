@@ -18,15 +18,15 @@ class Image extends Processor {
         $mediaSource = (int)$this->getProperty('mediaSource', 0);
 
         if (empty($mediaSource)) {
-            return $this->failure("Media Source is required");
+            return $this->failure($this->modx->lexicon('modai.error.ms_required'));
         }
 
         if (empty($resource)) {
-            return $this->failure("Resource is required");
+            return $this->failure($this->modx->lexicon('modai.error.resource_required'));
         }
 
         if (empty($url) && empty($image)) {
-            return $this->failure('URL or Image is required');
+            return $this->failure($this->modx->lexicon('modai.error.image_required'));
         }
 
         $additionalDomains = Settings::getSetting($this->modx, 'image.download_domains', '');
@@ -47,7 +47,7 @@ class Image extends Processor {
         }
 
         if (!$domainAllowed) {
-            return $this->failure('Domain not allowed for image downloads.');
+            return $this->failure($this->modx->lexicon('modai.error.image_download_domain'));
         }
 
         $source = modMediaSource::getDefaultSource($this->modx, $mediaSource);

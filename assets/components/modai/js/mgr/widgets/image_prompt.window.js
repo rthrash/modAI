@@ -4,7 +4,7 @@ modAI.window.ImagePrompt = function(config) {
     const pagination = this.init();
 
     Ext.applyIf(config,{
-        title: 'Image',
+        title: _('modai.cmp.image'),
         closeAction: 'close',
         width: 600,
         autoHeight: true,
@@ -109,7 +109,7 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
         });
 
         this.prompt = new Ext.form.TextArea({
-            fieldLabel: 'Prompt',
+            fieldLabel: _('modai.cmp.prompt'),
             name: 'prompt',
             anchor: '100%',
             required: true,
@@ -177,12 +177,12 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                 handler: () => {
                     const prompt = this.prompt.getValue();
                     if (!prompt) {
-                        this.prompt.markInvalid("Prompt is required");
+                        this.prompt.markInvalid(_('modai.cmp.prompt_required'));
                         return;
                     }
                     this.prompt.clearInvalid();
 
-                    Ext.Msg.wait('Generating ...', 'Please wait');
+                    Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
                     MODx.Ajax.request({
                         url: MODx.config.connector_url,
                         timeout: 0,
@@ -199,14 +199,14 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                                         Ext.Msg.hide();
                                     }).catch((err) => {
                                         Ext.Msg.hide();
-                                        Ext.Msg.alert("Failed", `Failed to generated. Please try again. ${err.message}`);
+                                        Ext.Msg.alert(_('modai.cmp.failed'), _('modai.cmp.failed_try_again', {"msg": err.message}));
                                     });
                                 }
                             },
                             failure: {
                                 fn: function() {
                                     Ext.Msg.hide();
-                                    Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
+                                    Ext.Msg.alert(_('modai.cmp.failed'), _('modai.cmp.failed_try_again'));
                                 } ,
                                 scope: this
                             }

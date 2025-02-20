@@ -30,7 +30,7 @@ modAI.serviceExecutor = async (details) => {
                 const content = data?.choices?.[0]?.message?.content;
 
                 if (!content) {
-                    throw new Error("Failed to process your request.");
+                    throw new Error(_('modai.cmp.failed_request'));
                 }
 
                 return {
@@ -41,7 +41,7 @@ modAI.serviceExecutor = async (details) => {
                 const url = data?.data?.[0]?.url;
 
                 if (!url) {
-                    throw new Error("Failed to process your request.");
+                    throw new Error(_('modai.cmp.failed_request'));
                 }
 
                 return {
@@ -54,7 +54,7 @@ modAI.serviceExecutor = async (details) => {
                 const content = data?.content?.[0]?.text;
 
                 if (!content) {
-                    throw new Error("Failed to process your request.");
+                    throw new Error(_('modai.cmp.failed_request'));
                 }
 
                 return {
@@ -67,7 +67,7 @@ modAI.serviceExecutor = async (details) => {
                 const content = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
                 if (!content) {
-                    throw new Error("Failed to process your request.");
+                    throw new Error(_('modai.cmp.failed_request'));
                 }
 
                 return {
@@ -78,7 +78,7 @@ modAI.serviceExecutor = async (details) => {
                 const base64 = data?.predictions?.[0]?.bytesBase64Encoded;
 
                 if (!base64) {
-                    throw new Error("Failed to process your request.");
+                    throw new Error(_('modai.cmp.failed_request'));
                 }
 
                 return {
@@ -89,11 +89,11 @@ modAI.serviceExecutor = async (details) => {
     };
 
     if (!details.service || !details.parser) {
-        throw new Error("Service is required");
+        throw new Error(_('modai.cmp.service_required'));
     }
 
     if (!services[details.service]?.[details.parser]) {
-        throw new Error("Unsupported Service/Parser");
+        throw new Error(_('modai.cmp.service_unsupported'));
     }
 
     const data = await callService(details);

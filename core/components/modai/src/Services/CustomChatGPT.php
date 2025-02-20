@@ -26,12 +26,12 @@ class CustomChatGPT implements AIService
     {
         $apiKey = $this->modx->getOption('modai.api.custom.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.custom.key');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'custom']));
         }
 
         $baseUrl = $this->modx->getOption('modai.api.custom.url');
         if (empty($baseUrl)) {
-            throw new \Exception('Missing modai.api.custom.url');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_url'));
         }
 
         $messages = [];
@@ -77,12 +77,12 @@ class CustomChatGPT implements AIService
     {
         $apiKey = $this->modx->getOption('modai.api.custom.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.custom.key');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'custom']));
         }
 
         $baseUrl = $this->modx->getOption('modai.api.custom.url');
         if (empty($baseUrl)) {
-            throw new \Exception('Missing modai.api.custom.url');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_url'));
         }
 
         $input = [
@@ -120,12 +120,12 @@ class CustomChatGPT implements AIService
     public function generateImage(string $prompt, ImageConfig $config): AIResponse {
         $apiKey = $this->modx->getOption('modai.api.custom.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.custom.key');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'custom']));
         }
 
         $baseUrl = $this->modx->getOption('modai.api.custom.url');
         if (empty($baseUrl)) {
-            throw new \Exception('Missing modai.api.custom.url');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_url'));
         }
 
         $input = [

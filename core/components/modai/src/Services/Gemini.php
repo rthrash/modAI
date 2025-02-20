@@ -25,7 +25,7 @@ class Gemini implements AIService {
     {
         $apiKey = $this->modx->getOption('modai.api.gemini.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.gemini.key');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'gemini']));
         }
 
         $url = self::COMPLETIONS_API;
@@ -76,7 +76,7 @@ class Gemini implements AIService {
     {
         $apiKey = $this->modx->getOption('modai.api.gemini.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.gemini.key');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'gemini']));
         }
 
         $image = str_replace('data:image/png;base64,', '', $image);
@@ -114,7 +114,7 @@ class Gemini implements AIService {
     {
         $apiKey = $this->modx->getOption('modai.api.gemini.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.gemini.key');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'gemini']));
         }
 
         $url = self::IMAGES_API;

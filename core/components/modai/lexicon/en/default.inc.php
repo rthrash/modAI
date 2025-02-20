@@ -1,5 +1,19 @@
 <?php
 
+$_lang['modai.cmp.image'] = 'Image';
+$_lang['modai.cmp.text'] = 'Text';
+$_lang['modai.cmp.prompt'] = 'Prompt';
+$_lang['modai.cmp.prompt_required'] = 'Prompt is required';
+$_lang['modai.cmp.generate_image'] = 'Generate Image';
+$_lang['modai.cmp.generate_ing'] = 'Generating...';
+$_lang['modai.cmp.please_wait'] = 'Please wait';
+$_lang['modai.cmp.failed'] = 'Failed';
+$_lang['modai.cmp.failed_request'] = 'Failed to process your request.';
+$_lang['modai.cmp.failed_try_again'] = 'Failed to generate. Please try again. [[+msg]]';
+$_lang['modai.cmp.failed_copy'] = 'Failed to copy the generated text. Please try again.';
+$_lang['modai.cmp.service_required'] = 'Service is required';
+$_lang['modai.cmp.service_unsupported'] = 'Unsupported Service/Parser';
+
 $_lang['setting_modai.api.chatgpt.key'] = 'ChatGPT API Key';
 $_lang['setting_modai.api.chatgpt.key_desc'] = 'Your API key found at https://platform.openai.com/api-keys';
 $_lang['setting_modai.api.gemini.key'] = 'Gemini API Key';
@@ -48,3 +62,19 @@ $_lang['setting_modai.image.path'] = 'Image Path';
 $_lang['setting_modai.image.path_desc'] = 'Path including file name where the AI generated image will be stored. Available placeholders: {hash}, {shortHash}, {resourceId}.';
 $_lang['setting_modai.image.download_domains'] = 'Allowed Download Domains';
 $_lang['setting_modai.image.download_domains_desc'] = 'Additional domains to allow downloading generated images from.';
+
+$_lang['modai.error.compatability_mode'] = "Unsupported API compatibility mode (modai.api.custom.compatibility).";
+$_lang['modai.error.invalid_api_key'] = "Missing modai.api.[[+service]].key";
+$_lang['modai.error.invalid_url'] = "Missing modai.api.custom.url";
+$_lang['modai.error.not_implemented'] = "Method not implemented";
+$_lang['modai.error.image_requried'] = "Image is required";
+$_lang['modai.error.image_download_domain'] = "Domain not allowed for image downloads.";
+$_lang['modai.error.unsupported_tv'] = "Unsupported TV";
+$_lang['modai.error.unsupported_field'] = "Unsupported Field";
+$_lang['modai.error.no_resource_specified'] = "No resource specified";
+$_lang['modai.error.no_resource_found'] = "Resource not found";
+$_lang['modai.error.no_content'] = "Content is empty";
+$_lang['modai.error.image_required'] = "Image or URL is required";
+$_lang['modai.error.ms_required'] = "Media Source is required";
+$_lang['modai.error.prompt_required'] = "Prompt is required";
+$_lang['modai.error.resource_required'] = "Resource is required";

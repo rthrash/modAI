@@ -23,7 +23,7 @@ class ChatGPT implements AIService
     {
         $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.chatgpt.key');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'chatgpt']));
         }
 
         $messages = [];
@@ -66,7 +66,7 @@ class ChatGPT implements AIService
     {
         $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.chatgpt.key');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'chatgpt']));
         }
 
         $input = [
@@ -102,7 +102,7 @@ class ChatGPT implements AIService
     public function generateImage(string $prompt, ImageConfig $config): AIResponse {
         $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($apiKey)) {
-            throw new \Exception('Missing modai.api.chatgpt.key');
+            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'chatgpt']));
         }
 
         $input = [

@@ -6,7 +6,7 @@ modAI.window.TextPrompt = function(config) {
     const pagination = this.init(config);
 
     Ext.applyIf(config,{
-        title: 'Text',
+        title: _('modai.cmp.text'),
         closeAction: 'close',
         width: 600,
         autoHeight: true,
@@ -91,7 +91,7 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
         });
 
         this.prompt = new Ext.form.TextArea({
-            fieldLabel: 'Prompt',
+            fieldLabel: _('modai.cmp.prompt'),
             name: 'prompt',
             anchor: '100%',
             required: true,
@@ -118,14 +118,14 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
                             this.close();
                         })
                         .catch(() => {
-                            Ext.Msg.alert("Failed", "Failed to copy the generated text. Please try again.");
+                            Ext.Msg.alert(_('modai.cmp.failed'), _('modai.cmp.failed_copy'));
                         });
                 } else {
                     try {
                         document.execCommand("copy");
                         this.close();
                     } catch (err) {
-                        Ext.Msg.alert("Failed", "Failed to copy the generated text. Please try again.");
+                        Ext.Msg.alert(_('modai.cmp.failed'), _('modai.cmp.failed_copy'));
                     }
                 }
             },
@@ -165,12 +165,12 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
                 handler: () => {
                     const prompt = this.prompt.getValue();
                     if (!prompt) {
-                        this.prompt.markInvalid("Prompt is required");
+                        this.prompt.markInvalid(_('modai.cmp.prompt_required'));
                         return;
                     }
                     this.prompt.clearInvalid();
 
-                    Ext.Msg.wait('Generating ...', 'Please wait');
+                    Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
 
                     MODx.Ajax.request({
                         url: MODx.config.connector_url,
@@ -188,14 +188,14 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
                                         Ext.Msg.hide();
                                     }).catch((err) => {
                                         Ext.Msg.hide();
-                                        Ext.Msg.alert("Failed", `Failed to generated. Please try again. ${err.message}`);
+                                        Ext.Msg.alert(_('modai.cmp.failed'), _('modai.cmp.failed_try_again', {"msg": err.message}));
                                     });
                                 }
                             },
                             failure: {
                                 fn: function() {
                                     Ext.Msg.hide();
-                                    Ext.Msg.alert("Failed", "Failed to generated. Please try again.");
+                                    Ext.Msg.alert(_('modai.cmp.failed'), _('modai.cmp.failed_try_again'));
                                 } ,
                                 scope: this
                             }

@@ -16,7 +16,7 @@ class Vision extends Processor
 
         $image = $this->getProperty('image');
         if (empty($image)) {
-            return $this->failure('Image is required');
+            return $this->failure($this->modx->lexicon('modai.error.image_requried'));
         }
 
         try {

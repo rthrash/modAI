@@ -27,27 +27,27 @@ class Text extends Processor
             $tvName = substr($field, 3);
 
             if (!isset($tvs[$tvName])) {
-                return $this->failure('Unsupported TV.');
+                return $this->failure($this->modx->lexicon('modai.error.unsupported_tv'));
             }
         } else {
             if (!isset($fields[$field])) {
-                return $this->failure('Unsupported field.');
+                return $this->failure($this->modx->lexicon('modai.error.unsupported_field'));
             }
         }
 
         $id = $this->getProperty('id');
         if (empty($id)) {
-            return $this->failure('No resource specified.');
+            return $this->failure($this->modx->lexicon('modai.error.no_resource_specified'));
         }
 
         $resource = $this->modx->getObject('modResource', $id);
         if (!$resource) {
-            return $this->failure('Resource not found.');
+            return $this->failure($this->modx->lexicon('modai.error.no_resource_found'));
         }
 
         $content = $resource->getContent();
         if (empty($content)) {
-            return $this->failure('There\'s no content');
+            return $this->failure($this->modx->lexicon('modai.error.no_content'));
         }
 
         $systemInstructions = [];

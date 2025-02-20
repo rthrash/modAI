@@ -23,7 +23,7 @@ class AIServiceFactory {
                 return new CustomChatGPT($modx);
             }
 
-            throw new \Error("Unsupported API compatibility mode (modai.api.custom.compatibility).");
+            throw new \Error($modx->lexicon('modai.error.compatability_mode'));
         }
 
         switch ($model) {

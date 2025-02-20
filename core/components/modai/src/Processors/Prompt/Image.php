@@ -17,7 +17,7 @@ class Image extends Processor
         $field = $this->getProperty('fieldName', '');
 
         if (empty($prompt)) {
-            return $this->failure('Prompt is required');
+            return $this->failure($this->modx->lexicon('modai.error.prompt_required'));
         }
 
         try {

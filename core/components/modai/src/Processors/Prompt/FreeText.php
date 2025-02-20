@@ -17,7 +17,7 @@ class FreeText extends Processor
         $field = $this->getProperty('field', '');
 
         if (empty($prompt)) {
-            return $this->failure('Prompt is required.');
+            return $this->failure($this->modx->lexicon('modai.error.prompt_required'));
         }
 
         $systemInstructions = [];
