@@ -1,7 +1,9 @@
 modAI.window.ImagePrompt = function(config) {
     config = config || {};
 
-    const pagination = this.init();
+    this.addEvents('afterrender');
+
+    const pagination = this.init(config);
 
     Ext.applyIf(config,{
         title: _('modai.cmp.image'),
@@ -30,51 +32,43 @@ modAI.window.ImagePrompt = function(config) {
     modAI.window.ImagePrompt.superclass.constructor.call(this,config);
 };
 Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
-    _cache: {
-        visible: -1,
-        history: []
-    },
+    _history: null,
 
-    init: function() {
-        const syncUI = () => {
-            info.update({currentPage: this._cache.visible + 1, total: this._cache.history.length})
+    init: function(config) {
+        const syncUI = (data) => {
+            info.update({currentPage: data.current, total: data.total})
             info.show();
 
-            const currentItem = this._cache.history[this._cache.visible];
-
-            if (currentItem.url) {
-                this.hidenUrl.setValue(currentItem.url);
+            if (data.value.url) {
+                this.hidenUrl.setValue(data.value.url);
             } else {
                 this.hidenUrl.setValue('');
             }
 
-            if (currentItem.base64) {
-                this.hidenBase64.setValue(currentItem.base64);
+            if (data.value.base64) {
+                this.hidenBase64.setValue(data.value.base64);
             } else {
                 this.hidenBase64.setValue('');
             }
 
-            this.prompt.setValue(this._cache.history[this._cache.visible].prompt)
-            this.imagePreview.update({url: currentItem?.url || currentItem.base64});
+            this.prompt.setValue(data.value.prompt)
+            this.imagePreview.update({url: data.value?.url || data.value.base64});
 
-
-            if (this._cache.visible <= 0) {
-                prev.disable();
-            } else {
+            if (data.prevStatus) {
                 prev.enable();
+            } else {
+                prev.disable();
             }
 
-            if (this._cache.visible >= (this._cache.history.length - 1)) {
-                next.disable();
-            } else {
+            if (data.nextStatus) {
                 next.enable();
+            } else {
+                next.disable();
             }
         }
 
         const addItem = (item) => {
-            this._cache.visible = this._cache.history.push(item) - 1;
-
-            syncUI();
+            this._history.insert(item);
 
             this.imagePreview.show();
             this.downloadButton.enable();
@@ -86,8 +80,7 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             hidden: true,
             text: '<<',
             handler: () => {
-                this._cache.history[--this._cache.visible];
-                syncUI();
+                this._history.prev();
             }
         });
 
@@ -95,8 +88,7 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             hidden: true,
             text: '>>',
             handler: () => {
-                this._cache.history[++this._cache.visible];
-                syncUI();
+                this._history.next();
             }
         });
 
@@ -143,10 +135,19 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             addItem,
         };
 
-        this._cache = {
-            visible: -1,
-            history: []
-        };
+        this._history = modAI.history.init(config.cacheKey, syncUI);
+
+        if (this._history.cachedItem.values.length > 0) {
+            this.addListener('afterrender', () => {
+                this._history.syncUI();
+
+                this.imagePreview.show();
+                this.downloadButton.enable();
+                prev.show();
+                next.show();
+
+            }, this, {single: true});
+        }
 
         return [prev, next, info];
     },

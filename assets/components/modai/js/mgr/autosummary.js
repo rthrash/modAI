@@ -1,90 +1,29 @@
 Ext.onReady(function() {
 
-    const cache = {
-        _cache: {},
-        _setFieldValue (key, value) {
-            const cachedItem = this._cache[key];
+    const historyNavSync = (data) => {
+        data.context.els.forEach(({wrapper, field}) => {
+            const prevValue = field.getValue();
+            field.setValue(data.value);
+            field.fireEvent('change', field, data.value, prevValue);
 
-            cachedItem.els.forEach(({wrapper, field}) => {
-                const prevValue = field.getValue();
-                field.setValue(value);
-                field.fireEvent('change', field, value, prevValue);
-
-                wrapper.historyNav.info.update(cachedItem.visible + 1, cachedItem.values.length);
-
-                if (cachedItem.visible <= 0) {
-                    wrapper.historyNav.prevButton.disable();
-                } else {
-                    wrapper.historyNav.prevButton.enable();
-                }
-
-                if (cachedItem.visible === cachedItem.values.length - 1) {
-                    wrapper.historyNav.nextButton.disable();
-                } else {
-                    wrapper.historyNav.nextButton.enable();
-                }
-            });
-        },
-        init (key, field, wrapper) {
-            if (!this._cache[key]) {
-                this._cache[key] = {
-                    els: [{ field, wrapper }],
-                    visible: -1,
-                    values: []
-                };
+            if (data.total > 0) {
+                wrapper.historyNav.show();
             }
 
-            this._cache[key].els.push({ field, wrapper });
-            const currentValue = field.getValue();
-            if (currentValue) {
-                this._cache[key].values = [currentValue];
-                this._cache[key].visible = 0;
-            }
-        },
-        store (key, value) {
-            const cachedItem = this._cache[key];
+            wrapper.historyNav.info.update(data.current, data.total);
 
-            cachedItem.visible = cachedItem.values.push(value) - 1;
-
-            if (cachedItem.values.length > 1) {
-                cachedItem.els.forEach(({wrapper}) => {
-                    wrapper.historyNav.show();
-                });
+            if (data.prevStatus) {
+                wrapper.historyNav.prevButton.enable();
+            } else {
+                wrapper.historyNav.prevButton.disable();
             }
 
-            this._setFieldValue(key, cachedItem.values[cachedItem.visible]);
-        },
-        next (key) {
-            const cachedItem = this._cache[key];
-
-            if (cachedItem.visible === cachedItem.values.length - 1) {
-                return;
+            if (data.nextStatus) {
+                wrapper.historyNav.nextButton.enable();
+            } else {
+                wrapper.historyNav.nextButton.disable();
             }
-
-            this._setFieldValue(key, cachedItem.values[++cachedItem.visible]);
-        },
-        prev (key) {
-            const cachedItem = this._cache[key];
-
-            if (cachedItem.visible <= 0) {
-                return;
-            }
-
-            this._setFieldValue(key, cachedItem.values[--cachedItem.visible]);
-        }
-    };
-    const freePromptCache = {
-        _cache: {},
-        get(key) {
-            if (!this._cache[key]) {
-                this._cache[key] = {
-                    visible: -1,
-                    history: []
-                }
-            }
-
-            return this._cache[key];
-        }
+        });
     };
 
     const createWandEl = () => {
@@ -97,7 +36,7 @@ Ext.onReady(function() {
         return wandEl;
     }
 
-    const createHistoryNav = (field, fieldName) => {
+    const createHistoryNav = (cache) => {
         const prevButton = document.createElement('button');
         prevButton.type = 'button';
         prevButton.title = 'Previous Version';
@@ -110,7 +49,7 @@ Ext.onReady(function() {
         }
         prevButton.innerHTML = 'prev';
         prevButton.addEventListener('click', () => {
-            cache.prev(fieldName);
+            cache.prev();
         });
 
         const nextButton = document.createElement('button');
@@ -125,7 +64,7 @@ Ext.onReady(function() {
         }
         nextButton.innerHTML = 'next';
         nextButton.addEventListener('click', () => {
-            cache.next(fieldName);
+            cache.next();
         });
 
         const info = document.createElement('span');
@@ -158,14 +97,14 @@ Ext.onReady(function() {
         return wrapper;
     }
 
-    const createFreeTextPrompt = (cacheKey, fieldName) => {
+    const createFreeTextPrompt = (fieldName) => {
         const wandEl = createWandEl();
         wandEl.addEventListener('click', () => {
             const win = MODx.load({
                 xtype: 'modai-window-text_prompt',
                 title: 'Text',
                 field: fieldName,
-                cache: freePromptCache.get(cacheKey)
+                cacheKey: fieldName
             });
 
             win.show();
@@ -176,9 +115,6 @@ Ext.onReady(function() {
 
     const createForcedTextPrompt = (field, fieldName) => {
         const aiWrapper = document.createElement('span');
-        const historyNav = createHistoryNav(field, fieldName);
-
-        aiWrapper.historyNav = historyNav;
 
         const wandEl = createWandEl();
         wandEl.addEventListener('click', () => {
@@ -196,7 +132,8 @@ Ext.onReady(function() {
                     success: {
                         fn: (r) => {
                             modAI.serviceExecutor(r.object).then((result) => {
-                                cache.store(fieldName, result.content);
+                                // cache.store(fieldName, result.content);
+                                cache.insert(result.content);
                                 Ext.Msg.hide();
                             }).catch((err) => {
                                 Ext.Msg.hide();
@@ -216,9 +153,22 @@ Ext.onReady(function() {
         });
 
         aiWrapper.appendChild(wandEl);
-        aiWrapper.appendChild(historyNav);
 
-        cache.init(fieldName, field, aiWrapper);
+        const cache = modAI.history.init(
+            fieldName,
+            historyNavSync,
+            field.getValue()
+        );
+
+        if (!cache.cachedItem.context.els) {
+            cache.cachedItem.context.els = [];
+        }
+        cache.cachedItem.context.els.push({field, wrapper: aiWrapper});
+
+        const historyNav = createHistoryNav(cache);
+
+        aiWrapper.appendChild(historyNav);
+        aiWrapper.historyNav = historyNav;
 
         return aiWrapper;
     }
@@ -229,6 +179,7 @@ Ext.onReady(function() {
             const createColumn = MODx.load({
                 xtype: 'modai-window-image_prompt',
                 title: 'Image',
+                cacheKey: fieldName,
                 record: {
                     resource: MODx.request.id,
                     prompt: defaultPrompt,
@@ -254,9 +205,7 @@ Ext.onReady(function() {
         if (!field) return;
 
         const wrapper = document.createElement('span');
-        const historyNav = createHistoryNav(field, fieldName);
 
-        wrapper.historyNav = historyNav;
 
         const wandEl = createWandEl();
         wandEl.addEventListener('click', () => {
@@ -274,7 +223,7 @@ Ext.onReady(function() {
                     success: {
                         fn: (r) => {
                             modAI.serviceExecutor(r.object).then((result) => {
-                                cache.store(fieldName, result.content);
+                                cache.insert(result.content);
                                 Ext.Msg.hide();
                             }).catch((err) => {
                                 Ext.Msg.hide();
@@ -294,9 +243,22 @@ Ext.onReady(function() {
         });
 
         wrapper.appendChild(wandEl);
-        wrapper.appendChild(historyNav);
 
-        cache.init(fieldName, field, wrapper);
+        const cache = modAI.history.init(
+            fieldName,
+            historyNavSync,
+            field.getValue()
+        );
+
+        if (!cache.cachedItem.context.els) {
+            cache.cachedItem.context.els = [];
+        }
+        cache.cachedItem.context.els.push({field, wrapper});
+
+        const historyNav = createHistoryNav(cache);
+
+        wrapper.appendChild(historyNav);
+        wrapper.historyNav = historyNav;
 
         field.label.appendChild(wrapper);
     }
@@ -375,7 +337,7 @@ Ext.onReady(function() {
     const attachContent = () => {
         const cmp = Ext.getCmp('modx-resource-content');
         const label = cmp.el.dom.querySelector('label');
-        label.appendChild(createFreeTextPrompt('modx-resource-content', 'res.content'));
+        label.appendChild(createFreeTextPrompt('res.content'));
     };
 
     const attachTVs = () => {
@@ -405,7 +367,7 @@ Ext.onReady(function() {
                 if (prompt) {
                     label.appendChild(createForcedTextPrompt(field, fieldName));
                 } else {
-                    label.appendChild(createFreeTextPrompt(`tv${tvId}`, fieldName));
+                    label.appendChild(createFreeTextPrompt(fieldName));
                 }
             }
 

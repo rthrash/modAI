@@ -30,33 +30,33 @@ modAI.window.TextPrompt = function(config) {
     modAI.window.TextPrompt.superclass.constructor.call(this,config);
 };
 Ext.extend(modAI.window.TextPrompt,MODx.Window, {
+    _history: null,
+
     init: function(config) {
-        const syncUI = () => {
-            info.update({currentPage: this._cache.visible + 1, total: this._cache.history.length})
+        const syncUI = (data) => {
+            info.update({currentPage: data.current, total: data.total})
             info.show();
 
-            this.prompt.setValue(this._cache.history[this._cache.visible].prompt)
+            this.prompt.setValue(data.value.prompt)
             this.preview.show();
-            this.preview.setValue(this._cache.history[this._cache.visible].content);
+            this.preview.setValue(data.value.content);
 
 
-            if (this._cache.visible <= 0) {
-                prev.disable();
-            } else {
+            if (data.prevStatus) {
                 prev.enable();
+            } else {
+                prev.disable();
             }
 
-            if (this._cache.visible >= (this._cache.history.length - 1)) {
-                next.disable();
-            } else {
+            if (data.nextStatus) {
                 next.enable();
+            } else {
+                next.disable();
             }
         }
 
         const addItem = (item) => {
-            this._cache.visible = this._cache.history.push(item) - 1;
-
-            syncUI();
+            this._history.insert(item);
 
             this.preview.show();
             this.copyClose.enable();
@@ -68,8 +68,7 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
             hidden: true,
             text: '<<',
             handler: () => {
-                this._cache.history[--this._cache.visible];
-                syncUI();
+                this._history.prev();
             }
         });
 
@@ -77,8 +76,7 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
             hidden: true,
             text: '>>',
             handler: () => {
-                this._cache.history[++this._cache.visible];
-                syncUI();
+                this._history.next();
             }
         });
 
@@ -136,18 +134,18 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
             addItem,
         };
 
-        this._cache = config.cache;
+        this._history = modAI.history.init(config.cacheKey, syncUI);
 
-        if (this._cache.history.length > 0) {
+        if (this._history.cachedItem.values.length > 0) {
             this.addListener('afterrender', () => {
-                syncUI();
+                this._history.syncUI();
 
                 this.preview.show();
                 this.copyClose.enable();
                 prev.show();
                 next.show();
-            }, this, {single: true});
 
+            }, this, {single: true});
         }
 
         return [prev, next, info];
