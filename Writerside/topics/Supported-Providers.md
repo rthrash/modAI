@@ -1,9 +1,14 @@
 # Supported Providers
 
+### Executing AI requests
 <warning id="key-warning">
-    Your keys will be exposed to manager users over network requests, so it is recommended to use a site-specific key 
+    By default your keys will be exposed to manager users over network requests, so it is recommended to use a site-specific key 
     that can be easily revoked.
 </warning>
+
+Enabling system setting `modai.api.execute_on_server` will move the execution to the server side, hiding the network traffic.
+
+It can be enabled per service using `modai.api.{service}.execute_on_server}` format, for example, to enable this only for chatgpt, the setting would be: `modai.api.chatgpt.execute_on_server`.
 
 ## ChatGPT (OpenAI)
 
