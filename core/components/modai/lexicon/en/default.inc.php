@@ -62,6 +62,8 @@ $_lang['setting_modai.image.path'] = 'Image Path';
 $_lang['setting_modai.image.path_desc'] = 'Path including file name where the AI generated image will be stored. Available placeholders: {hash}, {shortHash}, {resourceId}.';
 $_lang['setting_modai.image.download_domains'] = 'Allowed Download Domains';
 $_lang['setting_modai.image.download_domains_desc'] = 'Additional domains to allow downloading generated images from.';
+$_lang['setting_modai.api.execute_on_server'] = 'Execute AI\'s request on server';
+$_lang['setting_modai.api.execute_on_server_desc'] = 'If enabled, allAI requests will be executed on server side. Be aware of increased load for your server.';
 
 $_lang['modai.error.compatability_mode'] = "Unsupported API compatibility mode (modai.api.custom.compatibility).";
 $_lang['modai.error.invalid_api_key'] = "Missing modai.api.[[+service]].key";

@@ -1,10 +1,12 @@
 <?php
 namespace modAI\Processors\Prompt;
 
+use modAI\Exceptions\LexiconException;
 use modAI\RequiredSettingException;
 use modAI\Services\AIServiceFactory;
 use modAI\Services\ChatGPT;
 use modAI\Services\Config\CompletionsConfig;
+use modAI\Services\Executor\ServiceExecutor;
 use modAI\Settings;
 use MODX\Revolution\Processors\Processor;
 
@@ -79,7 +81,9 @@ class Text extends Processor
             $aiService = AIServiceFactory::new($model, $this->modx);
             $result = $aiService->getCompletions([$content], CompletionsConfig::new($model)->maxTokens($maxTokens)->temperature($temperature)->systemInstructions($systemInstructions));
 
-            return $this->success('', $result->toArray());
+            return $this->success('', $result->generate());
+        } catch(LexiconException $e) {
+            return $this->failure($this->modx->lexicon($e->getLexicon(), $e->getLexiconParams()));
         } catch (\Exception $e) {
             return $this->failure($e->getMessage());
         }

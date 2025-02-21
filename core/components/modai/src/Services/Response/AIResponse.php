@@ -1,20 +1,27 @@
 <?php
 namespace modAI\Services\Response;
 
+use modAI\Exceptions\LexiconException;
+use modAI\Services\Executor\ServiceExecutor;
+use modAI\Settings;
+use MODX\Revolution\modX;
+
 class AIResponse {
+    private modX $modx;
     private string $service;
     private string $url;
     private string $parser;
     private array $headers = [];
     private array $body = [];
 
-    private function __construct(string $service)
+    private function __construct(modX &$modx, string $service)
     {
+        $this->modx =& $modx;
         $this->service = $service;
     }
 
-    public static function new(string $service): self {
-        return new self($service);
+    public static function new(modX &$modx, string $service): self {
+        return new self($modx, $service);
     }
 
     public function withUrl(string $url): self {
@@ -40,14 +47,51 @@ class AIResponse {
         return $this;
     }
 
-    public function toArray(): array
+    public function getService(): string
     {
+        return $this->service;
+    }
+
+    public function getUrl(): string
+    {
+        return $this->url;
+    }
+
+    public function getParser(): string
+    {
+        return $this->parser;
+    }
+
+    public function getHeaders(): array
+    {
+        return $this->headers;
+    }
+
+    public function getBody(): string
+    {
+        return json_encode($this->body);
+    }
+
+    /**
+     * @throws LexiconException
+     * @throws \Exception
+     */
+    public function generate(): array
+    {
+        $onServer = intval(Settings::getApiSetting($this->modx, $this->service, 'execute_on_server')) === 1;
+
+        if ($onServer) {
+            return ServiceExecutor::execute($this);
+        }
+
         return [
-            'service' => $this->service,
-            'parser' => $this->parser,
-            'url' => $this->url,
-            'headers' => $this->headers,
-            'body' => json_encode($this->body)
+            'forExecutor' => [
+                'service' => $this->getService(),
+                'parser' => $this->getParser(),
+                'url' => $this->getUrl(),
+                'headers' => $this->getHeaders(),
+                'body' => $this->getBody()
+            ]
         ];
     }
 

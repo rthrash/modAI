@@ -1,6 +1,7 @@
 <?php
 namespace modAI\Services;
 
+use modAI\Exceptions\LexiconException;
 use modAI\Services\Config\CompletionsConfig;
 use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
@@ -23,7 +24,7 @@ class ChatGPT implements AIService
     {
         $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($apiKey)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'chatgpt']));
+            throw new LexiconException('modai.error.invalid_api_key', ['service' => 'chatgpt']);
         }
 
         $messages = [];
@@ -49,7 +50,7 @@ class ChatGPT implements AIService
             'messages' => $messages,
         ];
 
-        return AIResponse::new('chatgpt')
+        return AIResponse::new($this->modx, 'chatgpt')
             ->withParser('content')
             ->withUrl(self::COMPLETIONS_API)
             ->withHeaders([
@@ -59,14 +60,11 @@ class ChatGPT implements AIService
             ->withBody($input);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function getVision(string $prompt, string $image, VisionConfig $config): AIResponse
     {
         $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($apiKey)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'chatgpt']));
+            throw new LexiconException('modai.error.invalid_api_key', ['service' => 'chatgpt']);
         }
 
         $input = [
@@ -88,7 +86,7 @@ class ChatGPT implements AIService
             ],
         ];
 
-        return AIResponse::new('chatgpt')
+        return AIResponse::new($this->modx,'chatgpt')
             ->withParser('content')
             ->withUrl(self::COMPLETIONS_API)
             ->withHeaders([
@@ -102,7 +100,7 @@ class ChatGPT implements AIService
     public function generateImage(string $prompt, ImageConfig $config): AIResponse {
         $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($apiKey)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'chatgpt']));
+            throw new LexiconException('modai.error.invalid_api_key', ['service' => 'chatgpt']);
         }
 
         $input = [
@@ -113,7 +111,7 @@ class ChatGPT implements AIService
             'quality' => $config->getQuality()
         ];
 
-        return AIResponse::new('chatgpt')
+        return AIResponse::new($this->modx,'chatgpt')
             ->withParser('image')
             ->withUrl(self::IMAGES_API)
             ->withHeaders([

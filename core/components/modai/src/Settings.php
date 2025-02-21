@@ -36,6 +36,10 @@ class Settings {
         return $modx->getOption("modai.$key", null, $default);
     }
 
+    public static function getApiSetting(modX $modx, string $service, string $key) {
+        return $modx->getOption("modai.api.$service.$key", null, $modx->getOption("modai.api.$key"));
+    }
+
     /**
      * @throws RequiredSettingException
      */

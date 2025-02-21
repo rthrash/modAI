@@ -32,7 +32,7 @@ class Image extends Processor
             $aiService = AIServiceFactory::new($model, $this->modx);
             $result = $aiService->generateImage($prompt, ImageConfig::new($model)->size($size)->quality($quality));
 
-            return $this->success('', $result->toArray());
+            return $this->success('', $result->generate());
         } catch (\Exception $e) {
             return $this->failure($e->getMessage());
         }

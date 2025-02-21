@@ -1,6 +1,7 @@
 <?php
 namespace modAI\Services;
 
+use modAI\Exceptions\LexiconException;
 use modAI\Services\Config\CompletionsConfig;
 use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
@@ -19,19 +20,16 @@ class CustomChatGPT implements AIService
         $this->modx =& $modx;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function getCompletions(array $data, CompletionsConfig $config): AIResponse
     {
         $apiKey = $this->modx->getOption('modai.api.custom.key');
         if (empty($apiKey)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'custom']));
+            throw new LexiconException('modai.error.invalid_api_key', ['service' => 'custom']);
         }
 
         $baseUrl = $this->modx->getOption('modai.api.custom.url');
         if (empty($baseUrl)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_url'));
+            throw new LexiconException('modai.error.invalid_url');
         }
 
         $messages = [];
@@ -60,7 +58,7 @@ class CustomChatGPT implements AIService
         $url = self::COMPLETIONS_API;
         $url = str_replace('{url}', $baseUrl, $url);
 
-        return AIResponse::new('chatgpt')
+        return AIResponse::new($this->modx,'chatgpt')
             ->withParser('content')
             ->withUrl($url)
             ->withHeaders([
@@ -70,19 +68,16 @@ class CustomChatGPT implements AIService
             ->withBody($input);
     }
 
-    /**
-     * @throws \Exception
-     */
     public function getVision(string $prompt, string $image, VisionConfig $config): AIResponse
     {
         $apiKey = $this->modx->getOption('modai.api.custom.key');
         if (empty($apiKey)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'custom']));
+            throw new LexiconException('modai.error.invalid_api_key', ['service' => 'custom']);
         }
 
         $baseUrl = $this->modx->getOption('modai.api.custom.url');
         if (empty($baseUrl)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_url'));
+            throw new LexiconException('modai.error.invalid_url');
         }
 
         $input = [
@@ -107,7 +102,7 @@ class CustomChatGPT implements AIService
         $url = self::COMPLETIONS_API;
         $url = str_replace('{url}', $baseUrl, $url);
 
-        return AIResponse::new('chatgpt')
+        return AIResponse::new($this->modx,'chatgpt')
             ->withParser('content')
             ->withUrl($url)
             ->withHeaders([
@@ -120,12 +115,12 @@ class CustomChatGPT implements AIService
     public function generateImage(string $prompt, ImageConfig $config): AIResponse {
         $apiKey = $this->modx->getOption('modai.api.custom.key');
         if (empty($apiKey)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'custom']));
+            throw new LexiconException('modai.error.invalid_api_key', ['service' => 'custom']);
         }
 
         $baseUrl = $this->modx->getOption('modai.api.custom.url');
         if (empty($baseUrl)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_url'));
+            throw new LexiconException('modai.error.invalid_url');
         }
 
         $input = [
@@ -139,7 +134,7 @@ class CustomChatGPT implements AIService
         $url = self::IMAGES_API;
         $url = str_replace('{url}', $baseUrl, $url);
 
-        return AIResponse::new('chatgpt')
+        return AIResponse::new($this->modx,'chatgpt')
             ->withParser('image')
             ->withUrl($url)
             ->withHeaders([

@@ -10,6 +10,10 @@ plugins:
       - OnManagerPageBeforeRender
 
 systemSettings:
+  - key: api.execute_on_server
+    area: api
+    type: combo-boolean
+    value: 0
   - key: api.chatgpt.key
     type: text-password
     area: api

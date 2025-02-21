@@ -1,6 +1,7 @@
 <?php
 namespace modAI\Services;
 
+use modAI\Exceptions\LexiconException;
 use modAI\Services\Config\CompletionsConfig;
 use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
@@ -18,14 +19,11 @@ class Gemini implements AIService {
         $this->modx =& $modx;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function getCompletions(array $data, CompletionsConfig $config): AIResponse
     {
         $apiKey = $this->modx->getOption('modai.api.gemini.key');
         if (empty($apiKey)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'gemini']));
+            throw new LexiconException('modai.error.invalid_api_key', ['service' => 'gemini']);
         }
 
         $url = self::COMPLETIONS_API;
@@ -63,7 +61,7 @@ class Gemini implements AIService {
             ];
         }
 
-        return AIResponse::new('gemini')
+        return AIResponse::new($this->modx,'gemini')
             ->withParser('content')
             ->withUrl($url)
             ->withHeaders([
@@ -76,7 +74,7 @@ class Gemini implements AIService {
     {
         $apiKey = $this->modx->getOption('modai.api.gemini.key');
         if (empty($apiKey)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'gemini']));
+            throw new LexiconException('modai.error.invalid_api_key', ['service' => 'gemini']);
         }
 
         $image = str_replace('data:image/png;base64,', '', $image);
@@ -101,7 +99,7 @@ class Gemini implements AIService {
         $url = str_replace("{model}", $config->getModel(), $url);
         $url = str_replace("{apiKey}", $apiKey, $url);
 
-        return AIResponse::new('gemini')
+        return AIResponse::new($this->modx,'gemini')
             ->withParser('content')
             ->withUrl($url)
             ->withHeaders([
@@ -114,7 +112,7 @@ class Gemini implements AIService {
     {
         $apiKey = $this->modx->getOption('modai.api.gemini.key');
         if (empty($apiKey)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'gemini']));
+            throw new LexiconException('modai.error.invalid_api_key', ['service' => 'gemini']);
         }
 
         $url = self::IMAGES_API;
@@ -130,7 +128,7 @@ class Gemini implements AIService {
             ]
         ];
 
-        return AIResponse::new('gemini')
+        return AIResponse::new($this->modx,'gemini')
             ->withParser('image')
             ->withUrl($url)
             ->withHeaders([

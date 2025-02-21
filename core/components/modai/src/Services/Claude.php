@@ -1,6 +1,7 @@
 <?php
 namespace modAI\Services;
 
+use modAI\Exceptions\LexiconException;
 use modAI\Services\Config\CompletionsConfig;
 use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
@@ -18,14 +19,11 @@ class Claude implements AIService
         $this->modx =& $modx;
     }
 
-    /**
-     * @throws \Exception
-     */
     public function getCompletions(array $data, CompletionsConfig $config): AIResponse
     {
         $apiKey = $this->modx->getOption('modai.api.claude.key');
         if (empty($apiKey)) {
-            throw new \Exception($this->modx->lexicon('modai.error.invalid_api_key', ['service' => 'claude']));
+            throw new LexiconException('modai.error.invalid_api_key', ['service' => 'claude']);
         }
 
         $messages = [];
@@ -50,7 +48,7 @@ class Claude implements AIService
             $input['system'] = $system;
         }
 
-        return AIResponse::new('claude')
+        return AIResponse::new($this->modx,'claude')
             ->withParser('content')
             ->withUrl(self::COMPLETIONS_API)
             ->withHeaders([
@@ -63,12 +61,12 @@ class Claude implements AIService
 
     public function getVision(string $prompt, string $image, VisionConfig $config): AIResponse
     {
-        throw new \Exception($this->modx->lexicon('modai.error.not_implemented'));
+        throw new LexiconException('modai.error.not_implemented');
     }
 
     public function generateImage(string $prompt, ImageConfig $config): AIResponse
     {
-        throw new \Exception($this->modx->lexicon('modai.error.not_implemented'));
+        throw new LexiconException('modai.error.not_implemented');
     }
 
 }

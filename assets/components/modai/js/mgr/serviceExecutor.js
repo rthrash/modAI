@@ -1,4 +1,10 @@
 modAI.serviceExecutor = async (details) => {
+    if (!details.forExecutor) {
+        return details;
+    }
+
+    const executorDetails = details.forExecutor;
+
     const callService = async (details) => {
         const res = await fetch(details.url, {
             method: 'POST',
@@ -88,15 +94,15 @@ modAI.serviceExecutor = async (details) => {
         }
     };
 
-    if (!details.service || !details.parser) {
+    if (!executorDetails.service || !executorDetails.parser) {
         throw new Error(_('modai.cmp.service_required'));
     }
 
-    if (!services[details.service]?.[details.parser]) {
+    if (!services[executorDetails.service]?.[executorDetails.parser]) {
         throw new Error(_('modai.cmp.service_unsupported'));
     }
 
-    const data = await callService(details);
+    const data = await callService(executorDetails);
 
-    return services[details.service][details.parser](data);
+    return services[executorDetails.service][executorDetails.parser](data);
 }
