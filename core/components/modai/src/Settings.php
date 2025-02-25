@@ -11,7 +11,7 @@ class RequiredSettingException extends \Exception {
 }
 
 class Settings {
-    private static function getOption(modX $modx, string $namespace, string $field, string $area, string $setting)
+    private static function getOption(modX $modx, string $namespace, string $field, string $area, string $setting): ?string
     {
         if (!empty($field)) {
             $value = $modx->getOption("$namespace.$field.$area.$setting");
@@ -47,7 +47,7 @@ class Settings {
     /**
      * @throws RequiredSettingException
      */
-    public static function getTextSetting(modX $modx, string $field, string $setting, string $namespace = 'modai', bool $required = true): string
+    public static function getTextSetting(modX $modx, string $field, string $setting, string $namespace = 'modai', bool $required = true): ?string
     {
         $value = self::getOption($modx, $namespace, $field, 'text', $setting);
 
@@ -61,7 +61,7 @@ class Settings {
     /**
      * @throws RequiredSettingException
      */
-    public static function getImageSetting(modX $modx, string $field, string $setting, string $namespace = 'modai', bool $required = true): string
+    public static function getImageSetting(modX $modx, string $field, string $setting, string $namespace = 'modai', bool $required = true): ?string
     {
         $value = self::getOption($modx, $namespace, $field, 'image', $setting);
 
@@ -75,7 +75,7 @@ class Settings {
     /**
      * @throws RequiredSettingException
      */
-    public static function getVisionSetting(modX $modx, string $field, string $setting, string $namespace = 'modai', bool $required = true): string
+    public static function getVisionSetting(modX $modx, string $field, string $setting, string $namespace = 'modai', bool $required = true): ?string
     {
         $value = self::getOption($modx, $namespace, $field, 'vision', $setting);
 
@@ -86,11 +86,13 @@ class Settings {
         return $value;
     }
 
-    public static function getSetting(modX $modx, string $key, string $default = null) {
+    public static function getSetting(modX $modx, string $key, string $default = null): ?string
+    {
         return $modx->getOption("modai.$key", null, $default);
     }
 
-    public static function getApiSetting(modX $modx, string $service, string $key) {
+    public static function getApiSetting(modX $modx, string $service, string $key): ?string
+    {
         return $modx->getOption("modai.api.$service.$key", null, $modx->getOption("modai.api.$key"));
     }
 }
