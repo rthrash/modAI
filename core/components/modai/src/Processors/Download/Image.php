@@ -2,6 +2,7 @@
 
 namespace modAI\Processors\Download;
 
+use modAI\RequiredSettingException;
 use modAI\Settings;
 use modAI\Utils;
 use MODX\Revolution\Processors\Processor;
@@ -11,18 +12,23 @@ class Image extends Processor {
     private $allowedDomains = ['https://oaidalleapiprodscus.blob.core.windows.net'];
 
     public function process() {
-        $resource = $this->getProperty('resource');
-        $field = $this->getProperty('fieldName', '');
         $url = $this->getProperty('url');
         $image = $this->getProperty('image');
+        $field = $this->getProperty('fieldName', '');
+        $namespace = $this->getProperty('namespace', 'modai');
+        $resource = (int)$this->getProperty('resource', 0);
         $mediaSource = (int)$this->getProperty('mediaSource', 0);
 
         if (empty($mediaSource)) {
-            return $this->failure($this->modx->lexicon('modai.error.ms_required'));
+            try {
+                $mediaSource = Settings::getImageSetting($this->modx, $field, 'media_source', $namespace);
+            } catch (RequiredSettingException $e) {
+                return $this->failure($e->getMessage());
+            }
         }
 
-        if (empty($resource)) {
-            return $this->failure($this->modx->lexicon('modai.error.resource_required'));
+        if (empty($mediaSource)) {
+            return $this->failure($this->modx->lexicon('modai.error.ms_required'));
         }
 
         if (empty($url) && empty($image)) {
@@ -57,7 +63,7 @@ class Image extends Processor {
         }
 
         try {
-            $path = Settings::getImageFieldSetting($this->modx, $field, 'path');
+            $path = Settings::getImageSetting($this->modx, $field, 'path');
         } catch (\Exception $e) {
             return $this->failure($e->getMessage());
         }
@@ -78,6 +84,9 @@ class Image extends Processor {
         $path = str_replace('{hash}', $hash, $path);
         $path = str_replace('{shortHash}', substr($hash, 0, 4), $path);
         $path = str_replace('{resourceId}', $resource, $path);
+        $path = str_replace('{year}', date('Y'), $path);
+        $path = str_replace('{month}', date('m'), $path);
+        $path = str_replace('{day}', date('d'), $path);
 
         $path = trim($path, DIRECTORY_SEPARATOR);
         $path = explode(DIRECTORY_SEPARATOR, $path);

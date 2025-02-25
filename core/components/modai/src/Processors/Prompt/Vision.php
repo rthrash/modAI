@@ -13,15 +13,16 @@ class Vision extends Processor
         set_time_limit(0);
 
         $field = $this->getProperty('fieldName');
-
+        $namespace = $this->getProperty('namespace', 'modai');
         $image = $this->getProperty('image');
+
         if (empty($image)) {
             return $this->failure($this->modx->lexicon('modai.error.image_requried'));
         }
 
         try {
-            $model = Settings::getVisionFieldSetting($this->modx, $field, 'model');
-            $prompt = Settings::getVisionFieldSetting($this->modx, $field, 'prompt');
+            $model = Settings::getVisionSetting($this->modx, $field, 'model', $namespace);
+            $prompt = Settings::getVisionSetting($this->modx, $field, 'prompt', $namespace);
 
             $aiService = AIServiceFactory::new($model, $this->modx);
             $result = $aiService->getVision($prompt, $image, VisionConfig::new($model));

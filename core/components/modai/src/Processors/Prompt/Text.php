@@ -4,9 +4,7 @@ namespace modAI\Processors\Prompt;
 use modAI\Exceptions\LexiconException;
 use modAI\RequiredSettingException;
 use modAI\Services\AIServiceFactory;
-use modAI\Services\ChatGPT;
 use modAI\Services\Config\CompletionsConfig;
-use modAI\Services\Executor\ServiceExecutor;
 use modAI\Settings;
 use MODX\Revolution\Processors\Processor;
 
@@ -17,6 +15,8 @@ class Text extends Processor
     public function process()
     {
         set_time_limit(0);
+
+        $namespace = $this->getProperty('namespace', 'modai');
 
         $fields = array_flip(self::$validFields);
         $field = $this->getProperty('field', '');
@@ -55,10 +55,12 @@ class Text extends Processor
         $systemInstructions = [];
 
         try {
-            $model = Settings::getFieldSetting($this->modx, $field, 'model');
-            $temperature = (float)Settings::getFieldSetting($this->modx, $field, 'temperature');
-            $maxTokens = (int)Settings::getFieldSetting($this->modx, $field, 'max_tokens');
-            $output = Settings::getFieldSetting($this->modx, $field, 'base.output', false);
+            $model = Settings::getTextSetting($this->modx, $field, 'model', $namespace);
+            $temperature = (float)Settings::getTextSetting($this->modx, $field, 'temperature', $namespace);
+            $maxTokens = (int)Settings::getTextSetting($this->modx, $field, 'max_tokens', $namespace);
+            $output = Settings::getTextSetting($this->modx, $field, 'base_output', $namespace, false);
+            $base = Settings::getTextSetting($this->modx, $field, 'base_prompt', $namespace, false);
+            $fieldPrompt = Settings::getTextSetting($this->modx, $field, 'prompt', $namespace);
         } catch (RequiredSettingException $e) {
             return $this->failure($e->getMessage());
         }
@@ -67,12 +69,10 @@ class Text extends Processor
             $systemInstructions[] = $output;
         }
 
-        $base = Settings::getPrompt($this->modx, 'global.base');
         if (!empty($base)) {
             $systemInstructions[] = $base;
         }
 
-        $fieldPrompt = Settings::getPrompt($this->modx, $field);
         if (!empty($fieldPrompt)) {
             $systemInstructions[] = $fieldPrompt;
         }

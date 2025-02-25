@@ -15,6 +15,8 @@ class FreeText extends Processor
 
         $prompt = $this->getProperty('prompt');
         $field = $this->getProperty('field', '');
+        $context = $this->getProperty('context', '');
+        $namespace = $this->getProperty('namespace', 'modai');
 
         if (empty($prompt)) {
             return $this->failure($this->modx->lexicon('modai.error.prompt_required'));
@@ -23,10 +25,12 @@ class FreeText extends Processor
         $systemInstructions = [];
 
         try {
-            $model = Settings::getFieldSetting($this->modx, $field, 'model');
-            $temperature = (float)Settings::getFieldSetting($this->modx, $field, 'temperature');
-            $maxTokens = (int)Settings::getFieldSetting($this->modx, $field, 'max_tokens');
-            $output = Settings::getFieldSetting($this->modx, $field, 'base.output', false);
+            $model = Settings::getTextSetting($this->modx, $field, 'model', $namespace);
+            $temperature = (float)Settings::getTextSetting($this->modx, $field, 'temperature', $namespace);
+            $maxTokens = (int)Settings::getTextSetting($this->modx, $field, 'max_tokens', $namespace);
+            $output = Settings::getTextSetting($this->modx, $field, 'base_output', $namespace, false);
+            $base = Settings::getTextSetting($this->modx, $field, 'base_prompt', $namespace, false);
+            $contextPrompt = Settings::getTextSetting($this->modx, $field, 'context_prompt', $namespace, false);
         } catch (RequiredSettingException $e) {
             return $this->failure($e->getMessage());
         }
@@ -35,9 +39,12 @@ class FreeText extends Processor
             $systemInstructions[] = $output;
         }
 
-        $base = Settings::getPrompt($this->modx, 'global.base');
         if (!empty($base)) {
             $systemInstructions[] = $base;
+        }
+
+        if (!empty($context) && !empty($contextPrompt)) {
+            $systemInstructions[] = str_replace('{context}', $context, $contextPrompt);
         }
 
         try {

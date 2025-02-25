@@ -7,7 +7,7 @@ modAI.history = {
         const nextStatus = (cachedItem.visible !== cachedItem.values.length - 1);
 
         return {
-            value: cachedItem.values[cachedItem.visible],
+            value: cachedItem.values[cachedItem.visible] ?? null,
             nextStatus,
             prevStatus,
             current: cachedItem.visible + 1,

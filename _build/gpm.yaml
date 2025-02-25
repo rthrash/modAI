@@ -1,5 +1,5 @@
 name: modAI
-version: 0.9.0-beta
+version: 0.10.0-beta
 lowCaseName: modai
 namespace: modAI
 author: 'John Peca'
@@ -35,64 +35,72 @@ systemSettings:
     area: api
     value: openai
 
-  - key: global.base.output
-    area: global
+  - key: global.text.base_output
+    area: text
     type: textarea
     value: '- This content will be used inside a web content management system.\n- The output should be usable without editing or modification.\n- This is not a conversation; do not include justification or explanation.\n- When returning results, do not wrap them in anything like quotes.'
-  - key: global.base.prompt
-    area: global
+  - key: global.text.base_prompt
+    area: text
     type: textarea
-  - key: global.max_tokens
-    area: global
+  - key: global.text.context_prompt
+    area: text
+    type: textarea
+    value: "Here's context for user's message, act only on this: {context}"
+  - key: global.text.max_tokens
+    area: text
     value: 2048
-  - key: global.model
-    area: global
+  - key: global.text.model
+    area: text
     value: gpt-4o
-  - key: global.temperature
-    area: global
+  - key: global.text.temperature
+    area: text
     value: 0.7
 
   - key: res.fields
     area: resources
     value: 'longtitle,introtext,description,content'
 
-  - key: res.pagetitle.prompt
+  - key: res.pagetitle.text.prompt
     area: resources
     type: textarea
     value: "- You are an SEO expert\n- Your task is to generate a Page Title from from the page content for use as the main H1 tag on the page.\n- The Title shouldn't exceed 60 characters, though shorter is also OK\n- Don't use any HTML or markdown tags"
-  - key: res.longtitle.prompt
+  - key: res.longtitle.text.prompt
     area: resources
     type: textarea
     value: "- You are an SEO expert\n- Your task is to generate an optimal Meta Title from the page content.\n- The Meta Title can't exceed 70 characters\n- Don't use any HTML or markdown tags\n- Don't wrap the Meta Title in quotes"
-  - key: res.introtext.prompt
+  - key: res.introtext.text.prompt
     area: resources
     type: textarea
     value: "- You are an assistant that summarizes content.\n- Your task is to generate concise summary of the page content.\n- Don't use any HTML or markdown tags"
-  - key: res.description.prompt
+  - key: res.description.text.prompt
     area: resources
     type: textarea
     value: "- You are an SEO expert\n- Your task is to generate SEO Meta Description\n- Description can't exceed 155 characters\n- Don't use any HTML or markdown tags"
 
-  - key: vision.model
+  - key: global.vision.model
     area: vision
     value: gpt-4o-mini
-  - key: vision.prompt
+  - key: global.vision.prompt
     area: vision
     value: "Create an optimal alt tag for accessibility for this image that is no longer than 120 characters and not using any punctuation, quotes, or special characters"
 
-  - key: image.model
+  - key: global.image.model
     area: image
     value: dall-e-3
-  - key: image.size
+  - key: global.image.size
     area: image
     value: "1792x1024"
-  - key: image.quality
+  - key: global.image.quality
     area: image
     value: standard
-  - key: image.path
+  - key: global.image.path
     area: image
     value: "assets/ai/{resourceId}/{hash}.png"
-  - key: image.download_domains
+  - key: global.image.media_source
+    area: image
+    type: modx-combo-source
+    value: 1
+  - key: global.image.download_domains
     area: image
 
   - key: tvs

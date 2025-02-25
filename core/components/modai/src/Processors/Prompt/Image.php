@@ -15,15 +15,16 @@ class Image extends Processor
 
         $prompt = $this->getProperty('prompt');
         $field = $this->getProperty('fieldName', '');
+        $namespace = $this->getProperty('namespace', 'modai');
 
         if (empty($prompt)) {
             return $this->failure($this->modx->lexicon('modai.error.prompt_required'));
         }
 
         try {
-            $model = Settings::getImageFieldSetting($this->modx, $field, 'model');
-            $size = Settings::getImageFieldSetting($this->modx, $field, 'size');
-            $quality = Settings::getImageFieldSetting($this->modx, $field, 'quality');
+            $model = Settings::getImageSetting($this->modx, $field, 'model', $namespace);
+            $size = Settings::getImageSetting($this->modx, $field, 'size', $namespace);
+            $quality = Settings::getImageSetting($this->modx, $field, 'quality', $namespace);
         } catch (\Exception $e) {
             return $this->failure($e->getMessage());
         }
