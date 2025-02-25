@@ -14,7 +14,7 @@ class Image extends Processor
         set_time_limit(0);
 
         $prompt = $this->getProperty('prompt');
-        $field = $this->getProperty('fieldName', '');
+        $field = $this->getProperty('field', '');
         $namespace = $this->getProperty('namespace', 'modai');
 
         if (empty($prompt)) {

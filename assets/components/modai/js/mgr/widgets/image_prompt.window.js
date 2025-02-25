@@ -165,7 +165,7 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             },
             {
                 xtype: 'hidden',
-                name: 'fieldName'
+                name: 'field'
             },
             this.hidenUrl,
             this.hidenBase64,

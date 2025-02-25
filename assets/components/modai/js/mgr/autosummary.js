@@ -184,7 +184,7 @@ Ext.onReady(function() {
                     resource: MODx.request.id,
                     prompt: defaultPrompt,
                     mediaSource,
-                    fieldName,
+                    field: fieldName,
                 },
                 listeners: {
                     success: {
@@ -299,7 +299,7 @@ Ext.onReady(function() {
                 params: {
                     action: 'modAI\\Processors\\Prompt\\Vision',
                     image: base64Data,
-                    fieldName
+                    field: fieldName
                 },
                 listeners: {
                     success: {

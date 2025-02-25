@@ -12,7 +12,7 @@ class Vision extends Processor
     {
         set_time_limit(0);
 
-        $field = $this->getProperty('fieldName');
+        $field = $this->getProperty('field');
         $namespace = $this->getProperty('namespace', 'modai');
         $image = $this->getProperty('image');
 
