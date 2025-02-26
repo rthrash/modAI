@@ -141,51 +141,27 @@
     modAI.executor = {
         mgr: {
             download: {
-                image: async (params, onSuccess, onFailure) => {
-                    try {
-                        const data = await modxFetch('Download\\Image', params);
-                        onSuccess(data.object);
-                    } catch (err) {
-                        onFailure(err.message);
-                    }
+                image: async (params) => {
+                    const data = await modxFetch('Download\\Image', params);
+                    return data.object;
                 }
             },
             prompt: {
-                freeText: async (params, onSuccess, onFailure) => {
-                    try {
-                        const data = await modxFetch('Prompt\\FreeText', params);
-                        const executorResult = await serviceExecutor(data.object);
-                        onSuccess(executorResult);
-                    } catch (err) {
-                        onFailure(err.message);
-                    }
+                freeText: async (params) => {
+                    const data = await modxFetch('Prompt\\FreeText', params);
+                    return serviceExecutor(data.object);
                 },
-                text: async (params, onSuccess, onFailure) => {
-                    try {
-                        const data = await modxFetch('Prompt\\Text', params);
-                        const executorResult = await serviceExecutor(data.object);
-                        onSuccess(executorResult);
-                    } catch (err) {
-                        onFailure(err.message);
-                    }
+                text: async (params) => {
+                    const data = await modxFetch('Prompt\\Text', params);
+                    return serviceExecutor(data.object);
                 },
-                vision: async (params, onSuccess, onFailure) => {
-                    try {
-                        const data = await modxFetch('Prompt\\Vision', params);
-                        const executorResult = await serviceExecutor(data.object);
-                        onSuccess(executorResult);
-                    } catch (err) {
-                        onFailure(err.message);
-                    }
+                vision: async (params) => {
+                    const data = await modxFetch('Prompt\\Vision', params);
+                    return serviceExecutor(data.object);
                 },
-                image: async (params, onSuccess, onFailure) => {
-                    try {
-                        const data = await modxFetch('Prompt\\Image', params);
-                        const executorResult = await serviceExecutor(data.object);
-                        onSuccess(executorResult);
-                    } catch (err) {
-                        onFailure(err.message);
-                    }
+                image: async (params) => {
+                    const data = await modxFetch('Prompt\\Image', params);
+                    return serviceExecutor(data.object);
                 }
             }
         }

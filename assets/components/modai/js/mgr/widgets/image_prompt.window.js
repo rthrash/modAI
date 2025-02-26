@@ -127,21 +127,19 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             text: _('save'),
             cls: 'primary-button',
             scope: this,
-            handler: () => {
+            handler: async () => {
                 Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
 
-                modAI.executor.mgr.download.image(
-                    this.fp.getForm().getValues(),
-                    (result) => {
-                        this.fireEvent('success', result);
-                        Ext.Msg.hide();
-                        this.close();
-                    },
-                    (msg) => {
-                        Ext.Msg.hide();
-                        Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
-                    }
-                );
+                try {
+                    const result = await modAI.executor.mgr.download.image(this.fp.getForm().getValues());
+                    this.fireEvent('success', result);
+                    Ext.Msg.hide();
+                    this.close();
+                } catch (err) {
+                    Ext.Msg.hide();
+                    Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
+                }
+
             },
             disabled: true
         });
@@ -190,7 +188,7 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                 xtype: 'button',
                 anchor: '100%',
                 text: 'Generate Image',
-                handler: () => {
+                handler: async () => {
                     const prompt = this.prompt.getValue();
                     if (!prompt) {
                         this.prompt.markInvalid(_('modai.cmp.prompt_required'));
@@ -199,17 +197,18 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                     this.prompt.clearInvalid();
 
                     Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
-                    modAI.executor.mgr.prompt.image(
-                        { prompt: this.prompt.getValue(), field: config.record.fieldName || '' },
-                        (result) => {
-                            this.pagination.addItem({prompt: this.prompt.getValue(), ...result});
-                            Ext.Msg.hide();
-                        },
-                        (msg) => {
-                            Ext.Msg.hide();
-                            Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
-                        }
-                    )
+
+                    try {
+                        const result = await modAI.executor.mgr.prompt.image({
+                            prompt: this.prompt.getValue(),
+                            field: config.record.fieldName || ''
+                        });
+                        this.pagination.addItem({prompt: this.prompt.getValue(), ...result});
+                        Ext.Msg.hide();
+                    } catch (err) {
+                        Ext.Msg.hide();
+                        Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
+                    }
                 }
             },
             this.imagePreview

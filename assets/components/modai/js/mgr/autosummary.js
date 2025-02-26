@@ -117,20 +117,20 @@ Ext.onReady(function() {
         const aiWrapper = document.createElement('span');
 
         const wandEl = createWandEl();
-        wandEl.addEventListener('click', () => {
+        wandEl.addEventListener('click', async () => {
             Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
 
-            modAI.executor.mgr.prompt.text(
-                { id: MODx.request.id, field: fieldName },
-                (result) => {
-                    cache.insert(result.content);
-                    Ext.Msg.hide();
-                },
-                (msg) => {
-                    Ext.Msg.hide();
-                    Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
-                }
-            )
+            try {
+                const result = await modAI.executor.mgr.prompt.text({
+                    id: MODx.request.id,
+                    field: fieldName
+                });
+                cache.insert(result.content);
+                Ext.Msg.hide();
+            } catch (err) {
+                Ext.Msg.hide();
+                Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
+            }
         });
 
         aiWrapper.appendChild(wandEl);
@@ -189,20 +189,20 @@ Ext.onReady(function() {
 
 
         const wandEl = createWandEl();
-        wandEl.addEventListener('click', () => {
+        wandEl.addEventListener('click', async () => {
             Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
 
-            modAI.executor.mgr.prompt.text(
-                { id: MODx.request.id, field: fieldName },
-                (result) => {
-                    cache.insert(result.content);
-                    Ext.Msg.hide();
-                },
-                (msg) => {
-                    Ext.Msg.hide();
-                    Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
-                }
-            )
+            try {
+                const result = await modAI.executor.mgr.prompt.text({
+                    id: MODx.request.id,
+                    field: fieldName
+                });
+                cache.insert(result.content);
+                Ext.Msg.hide();
+            } catch (err) {
+                Ext.Msg.hide();
+                Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
+            }
         });
 
         wrapper.appendChild(wandEl);
@@ -241,7 +241,7 @@ Ext.onReady(function() {
 
         const altTextWand = createWandEl();
         altTextWand.style.marginTop = '6px';
-        altTextWand.addEventListener('click', () => {
+        altTextWand.addEventListener('click', async () => {
             const imgElement = imagePlus.imagePreview.el.dom;
 
             const canvas = document.createElement('canvas');
@@ -256,19 +256,20 @@ Ext.onReady(function() {
 
             Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
 
-            modAI.executor.mgr.prompt.vision(
-                { image: base64Data, field: fieldName },
-                (result) => {
-                    imagePlus.altTextField.items.items[0].setValue(result.content);
-                    imagePlus.image.altTag = result.content;
-                    imagePlus.updateValue();
-                    Ext.Msg.hide();
-                },
-                (msg) => {
-                    Ext.Msg.hide();
-                    Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
-                }
-            )
+            try {
+                const result = await modAI.executor.mgr.prompt.vision({
+                    image: base64Data,
+                    field: fieldName
+                });
+                imagePlus.altTextField.items.items[0].setValue(result.content);
+                imagePlus.image.altTag = result.content;
+                imagePlus.updateValue();
+                Ext.Msg.hide();
+            } catch (err) {
+                Ext.Msg.hide();
+                Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
+            }
+
         });
 
         imagePlus.altTextField.el.dom.style.display = 'flex';

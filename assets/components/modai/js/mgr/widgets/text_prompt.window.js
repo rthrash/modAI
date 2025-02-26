@@ -160,7 +160,7 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
                 xtype: 'button',
                 anchor: '100%',
                 text: 'Generate',
-                handler: () => {
+                handler: async () => {
                     const prompt = this.prompt.getValue();
                     if (!prompt) {
                         this.prompt.markInvalid(_('modai.cmp.prompt_required'));
@@ -170,17 +170,17 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
 
                     Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
 
-                    modAI.executor.mgr.prompt.freeText(
-                        { prompt: this.prompt.getValue(), field: config.fieldName || '' },
-                        (result) => {
-                            this.pagination.addItem({prompt: this.prompt.getValue(), content: result.content});
-                            Ext.Msg.hide();
-                        },
-                        (msg) => {
-                            Ext.Msg.hide();
-                            Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
-                        }
-                    )
+                    try {
+                        const result = await modAI.executor.mgr.prompt.freeText({
+                            prompt: this.prompt.getValue(),
+                            field: config.fieldName || ''
+                        });
+                        this.pagination.addItem({prompt: this.prompt.getValue(), content: result.content});
+                        Ext.Msg.hide();
+                    } catch (err) {
+                        Ext.Msg.hide();
+                        Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
+                    }
                 }
             },
             this.preview
