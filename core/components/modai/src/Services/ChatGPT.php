@@ -43,12 +43,11 @@ class ChatGPT implements AIService
             ];
         }
 
-        $input = [
-            'model' => $config->getModel(),
-            'max_tokens' => $config->getMaxTokens(),
-            'temperature' => $config->getTemperature(),
-            'messages' => $messages,
-        ];
+        $input = $config->getCustomOptions();
+        $input['model'] = $config->getModel();
+        $input['max_tokens'] = $config->getMaxTokens();
+        $input['temperature'] = $config->getTemperature();
+        $input['messages'] = $messages;
 
         return AIResponse::new($this->modx, 'chatgpt')
             ->withParser('content')
@@ -67,23 +66,22 @@ class ChatGPT implements AIService
             throw new LexiconException('modai.error.invalid_api_key', ['service' => 'chatgpt']);
         }
 
-        $input = [
-            'model' => $config->getModel(),
-            'messages' => [
-                [
-                    'role' => 'user',
-                    'content' => [
-                        [
-                            "type"=> "text",
-                            "text"=> $prompt,
-                        ],
-                        [
-                            "type" => "image_url",
-                            "image_url" => ["url" => $image],
-                        ],
-                    ]
+        $input = $config->getCustomOptions();
+        $input['model'] = $config->getModel();
+        $input['messages'] = [
+            [
+                'role' => 'user',
+                'content' => [
+                    [
+                        "type"=> "text",
+                        "text"=> $prompt,
+                    ],
+                    [
+                        "type" => "image_url",
+                        "image_url" => ["url" => $image],
+                    ],
                 ]
-            ],
+            ]
         ];
 
         return AIResponse::new($this->modx,'chatgpt')
@@ -103,14 +101,13 @@ class ChatGPT implements AIService
             throw new LexiconException('modai.error.invalid_api_key', ['service' => 'chatgpt']);
         }
 
-        $input = [
-            'prompt' => $prompt,
-            'model' => $config->getModel(),
-            'n' => $config->getN(),
-            'size' => $config->getSize(),
-            'quality' => $config->getQuality(),
-            'style' => $config->getStyle(),
-        ];
+        $input = $config->getCustomOptions();
+        $input['prompt'] = $prompt;
+        $input['model'] = $config->getModel();
+        $input['n'] = $config->getN();
+        $input['size'] = $config->getSize();
+        $input['quality'] = $config->getQuality();
+        $input['style'] = $config->getStyle();
 
         return AIResponse::new($this->modx,'chatgpt')
             ->withParser('image')

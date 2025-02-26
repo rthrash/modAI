@@ -37,12 +37,11 @@ class Claude implements AIService
             ];
         }
 
-        $input = [
-            "model" => $config->getModel(),
-            "max_tokens"=> $config->getMaxTokens(),
-            "temperature"=> $config->getTemperature(),
-            "messages" => $messages
-        ];
+        $input = $config->getCustomOptions();
+        $input["model"] = $config->getModel();
+        $input["max_tokens"] = $config->getMaxTokens();
+        $input["temperature"] = $config->getTemperature();
+        $input["messages"] = $messages;
 
         if (!empty($system)) {
             $input['system'] = $system;

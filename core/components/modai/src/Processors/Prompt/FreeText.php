@@ -31,6 +31,7 @@ class FreeText extends Processor
             $output = Settings::getTextSetting($this->modx, $field, 'base_output', $namespace, false);
             $base = Settings::getTextSetting($this->modx, $field, 'base_prompt', $namespace, false);
             $contextPrompt = Settings::getTextSetting($this->modx, $field, 'context_prompt', $namespace, false);
+            $customOptions = Settings::getTextSetting($this->modx, $field, 'custom_options', $namespace, false);
 
             if (!empty($output)) {
                 $systemInstructions[] = $output;
@@ -45,7 +46,14 @@ class FreeText extends Processor
             }
 
             $aiService = AIServiceFactory::new($model, $this->modx);
-            $result = $aiService->getCompletions([$prompt], CompletionsConfig::new($model)->maxTokens($maxTokens)->temperature($temperature)->systemInstructions($systemInstructions));
+            $result = $aiService->getCompletions(
+                [$prompt],
+                CompletionsConfig::new($model)
+                    ->customOptions($customOptions)
+                    ->maxTokens($maxTokens)
+                    ->temperature($temperature)
+                    ->systemInstructions($systemInstructions)
+            );
 
             return $this->success('', $result->generate());
         } catch(LexiconException $e) {

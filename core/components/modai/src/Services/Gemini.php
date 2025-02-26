@@ -45,14 +45,13 @@ class Gemini implements AIService {
             ];
         }
 
-        $input = [
-            "contents" => [
-                "parts" => $messages,
-            ],
-            "generationConfig"=> [
-                "temperature"=> $config->getTemperature(),
-                "maxOutputTokens"=> $config->getMaxTokens(),
-            ]
+        $input = $config->getCustomOptions();
+        $input["contents"] = [
+            "parts" => $messages,
+        ];
+        $input["generationConfig"] = [
+            "temperature" => $config->getTemperature(),
+            "maxOutputTokens" => $config->getMaxTokens(),
         ];
 
         if (!empty($systemInstruction)) {
@@ -79,20 +78,19 @@ class Gemini implements AIService {
 
         $image = str_replace('data:image/png;base64,', '', $image);
 
-        $input = [
-            'contents' => [
-                'parts' => [
-                    [
-                        "text" => $prompt,
-                    ],
-                    [
-                        "inline_data" => [
-                            "mime_type" => "image/png",
-                            "data" => $image,
-                        ]
-                    ],
-                ]
-            ],
+        $input = $config->getCustomOptions();
+        $input['contents'] = [
+            'parts' => [
+                [
+                    "text" => $prompt,
+                ],
+                [
+                    "inline_data" => [
+                        "mime_type" => "image/png",
+                        "data" => $image,
+                    ]
+                ],
+            ]
         ];
 
         $url = self::COMPLETIONS_API;
@@ -119,13 +117,12 @@ class Gemini implements AIService {
         $url = str_replace("{model}", $config->getModel(), $url);
         $url = str_replace("{apiKey}", $apiKey, $url);
 
-        $input = [
-            "instances" => [
-                "prompt" => $prompt,
-            ],
-            "parameters" => [
-                "sampleCount" => $config->getN()
-            ]
+        $input = $config->getCustomOptions();
+        $input["instances"] = [
+            "prompt" => $prompt,
+        ];
+        $input["parameters"] = [
+            "sampleCount" => $config->getN()
         ];
 
         return AIResponse::new($this->modx,'gemini')

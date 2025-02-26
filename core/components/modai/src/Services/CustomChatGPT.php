@@ -48,12 +48,11 @@ class CustomChatGPT implements AIService
             ];
         }
 
-        $input = [
-            'model' => $config->getModel(),
-            'max_tokens' => $config->getMaxTokens(),
-            'temperature' => $config->getTemperature(),
-            'messages' => $messages,
-        ];
+        $input = $config->getCustomOptions();
+        $input['model'] = $config->getModel();
+        $input['max_tokens'] = $config->getMaxTokens();
+        $input['temperature'] = $config->getTemperature();
+        $input['messages'] = $messages;
 
         $url = self::COMPLETIONS_API;
         $url = str_replace('{url}', $baseUrl, $url);
@@ -80,23 +79,22 @@ class CustomChatGPT implements AIService
             throw new LexiconException('modai.error.invalid_url');
         }
 
-        $input = [
-            'model' => $config->getModel(),
-            'messages' => [
-                [
-                    'role' => 'user',
-                    'content' => [
-                        [
-                            "type"=> "text",
-                            "text"=> $prompt,
-                        ],
-                        [
-                            "type" => "image_url",
-                            "image_url" => ["url" => $image],
-                        ],
-                    ]
+        $input = $config->getCustomOptions();
+        $input['model'] = $config->getModel();
+        $input['messages'] = [
+            [
+                'role' => 'user',
+                'content' => [
+                    [
+                        "type"=> "text",
+                        "text"=> $prompt,
+                    ],
+                    [
+                        "type" => "image_url",
+                        "image_url" => ["url" => $image],
+                    ],
                 ]
-            ],
+            ]
         ];
 
         $url = self::COMPLETIONS_API;
@@ -123,13 +121,12 @@ class CustomChatGPT implements AIService
             throw new LexiconException('modai.error.invalid_url');
         }
 
-        $input = [
-            'prompt' => $prompt,
-            'model' => $config->getModel(),
-            'n' => $config->getN(),
-            'size' => $config->getSize(),
-            'quality' => $config->getQuality()
-        ];
+        $input = $config->getCustomOptions();
+        $input['prompt'] = $prompt;
+        $input['model'] = $config->getModel();
+        $input['n'] = $config->getN();
+        $input['size'] = $config->getSize();
+        $input['quality'] = $config->getQuality();
 
         $url = self::IMAGES_API;
         $url = str_replace('{url}', $baseUrl, $url);

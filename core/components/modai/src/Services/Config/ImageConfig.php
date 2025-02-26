@@ -2,7 +2,7 @@
 namespace modAI\Services\Config;
 
 class ImageConfig {
-    use Model;
+    use Model, CustomOptions;
 
     private int $n = 1;
     private string $size;

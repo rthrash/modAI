@@ -2,7 +2,8 @@
 namespace modAI\Services\Config;
 
 class CompletionsConfig {
-    use Model;
+    use Model, CustomOptions;
+
     private float $temperature;
     private int $maxTokens;
     private array $systemInstructions = [];

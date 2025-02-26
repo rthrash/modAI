@@ -24,9 +24,15 @@ class Vision extends Processor
         try {
             $model = Settings::getVisionSetting($this->modx, $field, 'model', $namespace);
             $prompt = Settings::getVisionSetting($this->modx, $field, 'prompt', $namespace);
+            $customOptions = Settings::getVisionSetting($this->modx, $field, 'custom_options', $namespace, false);
 
             $aiService = AIServiceFactory::new($model, $this->modx);
-            $result = $aiService->getVision($prompt, $image, VisionConfig::new($model));
+            $result = $aiService->getVision(
+                $prompt,
+                $image,
+                VisionConfig::new($model)
+                    ->customOptions($customOptions)
+            );
 
             return $this->success('', $result->generate());
         } catch(LexiconException $e) {

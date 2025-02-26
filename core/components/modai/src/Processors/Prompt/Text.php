@@ -61,6 +61,7 @@ class Text extends Processor
             $output = Settings::getTextSetting($this->modx, $field, 'base_output', $namespace, false);
             $base = Settings::getTextSetting($this->modx, $field, 'base_prompt', $namespace, false);
             $fieldPrompt = Settings::getTextSetting($this->modx, $field, 'prompt', $namespace);
+            $customOptions = Settings::getTextSetting($this->modx, $field, 'custom_options', $namespace, false);
         } catch (RequiredSettingException $e) {
             return $this->failure($e->getMessage());
         }
@@ -79,7 +80,14 @@ class Text extends Processor
 
         try {
             $aiService = AIServiceFactory::new($model, $this->modx);
-            $result = $aiService->getCompletions([$content], CompletionsConfig::new($model)->maxTokens($maxTokens)->temperature($temperature)->systemInstructions($systemInstructions));
+            $result = $aiService->getCompletions(
+                [$content],
+                CompletionsConfig::new($model)
+                    ->customOptions($customOptions)
+                    ->maxTokens($maxTokens)
+                    ->temperature($temperature)
+                    ->systemInstructions($systemInstructions)
+            );
 
             return $this->success('', $result->generate());
         } catch(LexiconException $e) {
