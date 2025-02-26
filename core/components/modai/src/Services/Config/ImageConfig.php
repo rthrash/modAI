@@ -7,6 +7,7 @@ class ImageConfig {
     private int $n = 1;
     private string $size;
     private string $quality;
+    private string $style;
 
     public function size(string $size): self {
         $this->size = $size;
@@ -16,6 +17,12 @@ class ImageConfig {
 
     public function quality(string $quality): self {
         $this->quality = $quality;
+
+        return $this;
+    }
+
+    public function style(string $style): self {
+        $this->style = $style;
 
         return $this;
     }
@@ -33,6 +40,11 @@ class ImageConfig {
     public function getQuality(): string
     {
         return $this->quality;
+    }
+
+    public function getStyle(): string
+    {
+        return $this->style;
     }
 
 }

@@ -26,9 +26,10 @@ class Image extends Processor
             $model = Settings::getImageSetting($this->modx, $field, 'model', $namespace);
             $size = Settings::getImageSetting($this->modx, $field, 'size', $namespace);
             $quality = Settings::getImageSetting($this->modx, $field, 'quality', $namespace);
+            $style = Settings::getImageSetting($this->modx, $field, 'style', $namespace);
 
             $aiService = AIServiceFactory::new($model, $this->modx);
-            $result = $aiService->generateImage($prompt, ImageConfig::new($model)->size($size)->quality($quality));
+            $result = $aiService->generateImage($prompt, ImageConfig::new($model)->size($size)->quality($quality)->style($style));
 
             return $this->success('', $result->generate());
         } catch(LexiconException $e) {

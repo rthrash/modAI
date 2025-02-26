@@ -108,7 +108,8 @@ class ChatGPT implements AIService
             'model' => $config->getModel(),
             'n' => $config->getN(),
             'size' => $config->getSize(),
-            'quality' => $config->getQuality()
+            'quality' => $config->getQuality(),
+            'style' => $config->getStyle(),
         ];
 
         return AIResponse::new($this->modx,'chatgpt')

@@ -87,6 +87,9 @@ systemSettings:
   - key: global.image.model
     area: image
     value: dall-e-3
+  - key: global.image.style
+    area: image
+    value: vivid
   - key: global.image.size
     area: image
     value: "1792x1024"
