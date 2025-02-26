@@ -89,4 +89,7 @@ class Text extends Processor
         }
     }
 
+    public function getLanguageTopics() {
+        return ['modai:default'];
+    }
 }

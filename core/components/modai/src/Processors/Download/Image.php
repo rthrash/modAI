@@ -98,4 +98,8 @@ class Image extends Processor {
 
         return [implode(DIRECTORY_SEPARATOR, $path) . DIRECTORY_SEPARATOR, $fileName];
     }
+
+    public function getLanguageTopics() {
+        return ['modai:default'];
+    }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace modAI\Processors\Prompt;
 
-use modAI\RequiredSettingException;
+use modAI\Exceptions\LexiconException;
 use modAI\Services\AIServiceFactory;
 use modAI\Services\Config\CompletionsConfig;
 use modAI\Settings;
@@ -31,30 +31,31 @@ class FreeText extends Processor
             $output = Settings::getTextSetting($this->modx, $field, 'base_output', $namespace, false);
             $base = Settings::getTextSetting($this->modx, $field, 'base_prompt', $namespace, false);
             $contextPrompt = Settings::getTextSetting($this->modx, $field, 'context_prompt', $namespace, false);
-        } catch (RequiredSettingException $e) {
-            return $this->failure($e->getMessage());
-        }
 
-        if (!empty($output)) {
-            $systemInstructions[] = $output;
-        }
+            if (!empty($output)) {
+                $systemInstructions[] = $output;
+            }
 
-        if (!empty($base)) {
-            $systemInstructions[] = $base;
-        }
+            if (!empty($base)) {
+                $systemInstructions[] = $base;
+            }
 
-        if (!empty($context) && !empty($contextPrompt)) {
-            $systemInstructions[] = str_replace('{context}', $context, $contextPrompt);
-        }
+            if (!empty($context) && !empty($contextPrompt)) {
+                $systemInstructions[] = str_replace('{context}', $context, $contextPrompt);
+            }
 
-        try {
             $aiService = AIServiceFactory::new($model, $this->modx);
             $result = $aiService->getCompletions([$prompt], CompletionsConfig::new($model)->maxTokens($maxTokens)->temperature($temperature)->systemInstructions($systemInstructions));
 
             return $this->success('', $result->generate());
+        } catch(LexiconException $e) {
+            return $this->failure($this->modx->lexicon($e->getLexicon(), $e->getLexiconParams()));
         } catch (\Exception $e) {
             return $this->failure($e->getMessage());
         }
     }
 
+    public function getLanguageTopics() {
+        return ['modai:default'];
+    }
 }

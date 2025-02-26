@@ -1,7 +1,6 @@
 <?php
 /**
- * AutoSummaryPlugin
- * Updated version: Safely retrieves the action property and injects our assets.
+ * @var \MODX\Revolution\modX $modx
  */
 
 if ($modx->event->name !== 'OnManagerPageBeforeRender') {

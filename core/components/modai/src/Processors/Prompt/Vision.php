@@ -1,6 +1,7 @@
 <?php
 namespace modAI\Processors\Prompt;
 
+use modAI\Exceptions\LexiconException;
 use modAI\Services\AIServiceFactory;
 use modAI\Services\Config\VisionConfig;
 use modAI\Settings;
@@ -28,9 +29,14 @@ class Vision extends Processor
             $result = $aiService->getVision($prompt, $image, VisionConfig::new($model));
 
             return $this->success('', $result->generate());
+        } catch(LexiconException $e) {
+            return $this->failure($this->modx->lexicon($e->getLexicon(), $e->getLexiconParams()));
         } catch (\Exception $e) {
             return $this->failure($e->getMessage());
         }
     }
 
+    public function getLanguageTopics() {
+        return ['modai:default'];
+    }
 }
