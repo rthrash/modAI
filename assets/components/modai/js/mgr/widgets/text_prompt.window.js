@@ -170,35 +170,17 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
 
                     Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
 
-                    MODx.Ajax.request({
-                        url: MODx.config.connector_url,
-                        timeout: 0,
-                        params: {
-                            action: 'modAI\\Processors\\Prompt\\FreeText',
-                            prompt: this.prompt.getValue(),
-                            field: config.fieldName || ''
+                    modAI.executor.mgr.prompt.freeText(
+                        { prompt: this.prompt.getValue(), field: config.fieldName || '' },
+                        (result) => {
+                            this.pagination.addItem({prompt: this.prompt.getValue(), content: result.content});
+                            Ext.Msg.hide();
                         },
-                        listeners: {
-                            success: {
-                                fn: (r) => {
-                                    modAI.serviceExecutor(r.object).then((result) => {
-                                        this.pagination.addItem({prompt: this.prompt.getValue(), content: result.content});
-                                        Ext.Msg.hide();
-                                    }).catch((err) => {
-                                        Ext.Msg.hide();
-                                        Ext.Msg.alert(_('modai.cmp.failed'), _('modai.cmp.failed_try_again', {"msg": err.message}));
-                                    });
-                                }
-                            },
-                            failure: {
-                                fn: function() {
-                                    Ext.Msg.hide();
-                                    Ext.Msg.alert(_('modai.cmp.failed'), _('modai.cmp.failed_try_again'));
-                                } ,
-                                scope: this
-                            }
+                        (msg) => {
+                            Ext.Msg.hide();
+                            Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
                         }
-                    });
+                    )
                 }
             },
             this.preview

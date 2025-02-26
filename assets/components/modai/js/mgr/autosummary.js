@@ -120,36 +120,17 @@ Ext.onReady(function() {
         wandEl.addEventListener('click', () => {
             Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
 
-            MODx.Ajax.request({
-                url: MODx.config.connector_url,
-                timeout: 0,
-                params: {
-                    action: 'modAI\\Processors\\Prompt\\Text',
-                    id: MODx.request.id,
-                    field: fieldName
+            modAI.executor.mgr.prompt.text(
+                { id: MODx.request.id, field: fieldName },
+                (result) => {
+                    cache.insert(result.content);
+                    Ext.Msg.hide();
                 },
-                listeners: {
-                    success: {
-                        fn: (r) => {
-                            modAI.serviceExecutor(r.object).then((result) => {
-                                // cache.store(fieldName, result.content);
-                                cache.insert(result.content);
-                                Ext.Msg.hide();
-                            }).catch((err) => {
-                                Ext.Msg.hide();
-                                Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
-                            });
-                        }
-                    },
-                    failure: {
-                        fn: function() {
-                            Ext.Msg.hide();
-                            Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again'));
-                        } ,
-                        scope: this
-                    }
+                (msg) => {
+                    Ext.Msg.hide();
+                    Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
                 }
-            });
+            )
         });
 
         aiWrapper.appendChild(wandEl);
@@ -211,35 +192,17 @@ Ext.onReady(function() {
         wandEl.addEventListener('click', () => {
             Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
 
-            MODx.Ajax.request({
-                url: MODx.config.connector_url,
-                timeout: 0,
-                params: {
-                    action: 'modAI\\Processors\\Prompt\\Text',
-                    id: MODx.request.id,
-                    field: fieldName
+            modAI.executor.mgr.prompt.text(
+                { id: MODx.request.id, field: fieldName },
+                (result) => {
+                    cache.insert(result.content);
+                    Ext.Msg.hide();
                 },
-                listeners: {
-                    success: {
-                        fn: (r) => {
-                            modAI.serviceExecutor(r.object).then((result) => {
-                                cache.insert(result.content);
-                                Ext.Msg.hide();
-                            }).catch((err) => {
-                                Ext.Msg.hide();
-                                Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
-                            });
-                        }
-                    },
-                    failure: {
-                        fn: function() {
-                            Ext.Msg.hide();
-                            Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again'));
-                        } ,
-                        scope: this
-                    }
+                (msg) => {
+                    Ext.Msg.hide();
+                    Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
                 }
-            });
+            )
         });
 
         wrapper.appendChild(wandEl);
@@ -271,8 +234,8 @@ Ext.onReady(function() {
             imagePlus.imageBrowser.source,
             fieldName,
             function(res) {
-                imagePlus.imageBrowser.setValue(res.a.result.object.url);
-                imagePlus.onImageChange(res.a.result.object.url)
+                imagePlus.imageBrowser.setValue(res.url);
+                imagePlus.onImageChange(res.url)
             }
         );
 
@@ -293,37 +256,19 @@ Ext.onReady(function() {
 
             Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
 
-            MODx.Ajax.request({
-                url: MODx.config.connector_url,
-                timeout: 0,
-                params: {
-                    action: 'modAI\\Processors\\Prompt\\Vision',
-                    image: base64Data,
-                    field: fieldName
+            modAI.executor.mgr.prompt.vision(
+                { image: base64Data, field: fieldName },
+                (result) => {
+                    imagePlus.altTextField.items.items[0].setValue(result.content);
+                    imagePlus.image.altTag = result.content;
+                    imagePlus.updateValue();
+                    Ext.Msg.hide();
                 },
-                listeners: {
-                    success: {
-                        fn: (r) => {
-                            modAI.serviceExecutor(r.object).then((result) => {
-                                imagePlus.altTextField.items.items[0].setValue(result.content);
-                                imagePlus.image.altTag = result.content;
-                                imagePlus.updateValue();
-                                Ext.Msg.hide();
-                            }).catch((err) => {
-                                Ext.Msg.hide();
-                                Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
-                            });
-                        }
-                    },
-                    failure: {
-                        fn: function() {
-                            Ext.Msg.hide();
-                            Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again'));
-                        } ,
-                        scope: this
-                    }
+                (msg) => {
+                    Ext.Msg.hide();
+                    Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
                 }
-            });
+            )
         });
 
         imagePlus.altTextField.el.dom.style.display = 'flex';
@@ -378,8 +323,8 @@ Ext.onReady(function() {
                     fieldName,
                     function(res) {
                         const eventData = {
-                            relativeUrl: res.a.result.object.url,
-                            url: res.a.result.object.url
+                            relativeUrl: res.url,
+                            url: res.url
                         };
 
                         field.items.items[1].fireEvent('select', eventData)

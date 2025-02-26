@@ -127,7 +127,22 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
             text: _('save'),
             cls: 'primary-button',
             scope: this,
-            handler: this.submit,
+            handler: () => {
+                Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
+
+                modAI.executor.mgr.download.image(
+                    this.fp.getForm().getValues(),
+                    (result) => {
+                        this.fireEvent('success', result);
+                        Ext.Msg.hide();
+                        this.close();
+                    },
+                    (msg) => {
+                        Ext.Msg.hide();
+                        Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
+                    }
+                );
+            },
             disabled: true
         });
 
@@ -184,35 +199,17 @@ Ext.extend(modAI.window.ImagePrompt,MODx.Window, {
                     this.prompt.clearInvalid();
 
                     Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
-                    MODx.Ajax.request({
-                        url: MODx.config.connector_url,
-                        timeout: 0,
-                        params: {
-                            action: 'modAI\\Processors\\Prompt\\Image',
-                            prompt: this.prompt.getValue(),
-                            fieldName: config.record.fieldName || ''
+                    modAI.executor.mgr.prompt.image(
+                        { prompt: this.prompt.getValue(), field: config.record.fieldName || '' },
+                        (result) => {
+                            this.pagination.addItem({prompt: this.prompt.getValue(), ...result});
+                            Ext.Msg.hide();
                         },
-                        listeners: {
-                            success: {
-                                fn: (r) => {
-                                    modAI.serviceExecutor(r.object).then((result) => {
-                                        this.pagination.addItem({prompt: this.prompt.getValue(), ...result});
-                                        Ext.Msg.hide();
-                                    }).catch((err) => {
-                                        Ext.Msg.hide();
-                                        Ext.Msg.alert(_('modai.cmp.failed'), _('modai.cmp.failed_try_again', {"msg": err.message}));
-                                    });
-                                }
-                            },
-                            failure: {
-                                fn: function() {
-                                    Ext.Msg.hide();
-                                    Ext.Msg.alert(_('modai.cmp.failed'), _('modai.cmp.failed_try_again'));
-                                } ,
-                                scope: this
-                            }
+                        (msg) => {
+                            Ext.Msg.hide();
+                            Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": msg}));
                         }
-                    });
+                    )
                 }
             },
             this.imagePreview

@@ -11,6 +11,7 @@ class Image extends Processor
 {
     public function process()
     {
+        return $this->success('', ['url' => "https://oaidalleapiprodscus.blob.core.windows.net/private/org-mVSFcxs98WiJjLumY11bjhrz/user-9JkYqLT6GTOuJBFdlVL6iJFG/img-fNJLWDbAbSp30duoakZHlkT5.png?st=2025-02-26T09%3A37%3A52Z&se=2025-02-26T11%3A37%3A52Z&sp=r&sv=2024-08-04&sr=b&rscd=inline&rsct=image/png&skoid=d505667d-d6c1-4a0a-bac7-5c84a87759f8&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2025-02-25T20%3A07%3A56Z&ske=2025-02-26T20%3A07%3A56Z&sks=b&skv=2024-08-04&sig=6pAjPpBEVJ56U6rLdQjvnZXKVPcjp8XnuX/pXJhYvPQ%3D"]);
         set_time_limit(0);
 
         $prompt = $this->getProperty('prompt');
