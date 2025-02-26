@@ -14,7 +14,7 @@ class Image extends Processor {
     public function process() {
         $url = $this->getProperty('url');
         $image = $this->getProperty('image');
-        $field = $this->getProperty('fieldName', '');
+        $field = $this->getProperty('field', '');
         $namespace = $this->getProperty('namespace', 'modai');
         $resource = (int)$this->getProperty('resource', 0);
         $mediaSource = (int)$this->getProperty('mediaSource', 0);
@@ -74,7 +74,10 @@ class Image extends Processor {
 
         $source->createObject($filePath[0], $filePath[1], $image);
 
-        return $this->success('', ['url' => $filePath[0].$filePath[1]]);
+        return $this->success('', [
+            'url' => $filePath[0].$filePath[1],
+            'fullUrl' => $source->getObjectUrl($filePath[0].$filePath[1])
+        ]);
     }
 
     private function createFilePath($path, $resource): array
