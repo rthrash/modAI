@@ -1,10 +1,14 @@
 Ext.onReady(function() {
 
-    const historyNavSync = (data) => {
+    const historyNavSync = (data, noStore) => {
         data.context.els.forEach(({wrapper, field}) => {
             const prevValue = field.getValue();
             field.setValue(data.value);
             field.fireEvent('change', field, data.value, prevValue);
+
+            if (noStore) {
+                field.el.dom.scrollTop = field.el.dom.scrollHeight;
+            }
 
             if (data.total > 0) {
                 wrapper.historyNav.show();
@@ -196,6 +200,8 @@ Ext.onReady(function() {
                 const result = await modAI.executor.mgr.prompt.text({
                     id: MODx.request.id,
                     field: fieldName
+                }, (data) => {
+                    cache.insert(data.content, true);
                 });
                 cache.insert(result.content);
                 Ext.Msg.hide();
@@ -260,6 +266,11 @@ Ext.onReady(function() {
                 const result = await modAI.executor.mgr.prompt.vision({
                     image: base64Data,
                     field: fieldName
+                }, (data) => {
+                    imagePlus.altTextField.items.items[0].setValue(data.content);
+                    imagePlus.altTextField.items.items[0].el.dom.scrollTop = imagePlus.altTextField.items.items[0].el.dom.scrollHeight;
+                    imagePlus.image.altTag = data.content;
+                    imagePlus.updateValue();
                 });
                 imagePlus.altTextField.items.items[0].setValue(result.content);
                 imagePlus.image.altTag = result.content;

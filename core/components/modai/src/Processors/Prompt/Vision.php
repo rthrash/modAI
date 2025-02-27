@@ -22,6 +22,7 @@ class Vision extends Processor
         }
 
         try {
+            $stream = intval(Settings::getVisionSetting($this->modx, $field, 'stream', $namespace)) === 1;
             $model = Settings::getVisionSetting($this->modx, $field, 'model', $namespace);
             $prompt = Settings::getVisionSetting($this->modx, $field, 'prompt', $namespace);
             $customOptions = Settings::getVisionSetting($this->modx, $field, 'custom_options', $namespace, false);
@@ -32,6 +33,7 @@ class Vision extends Processor
                 $image,
                 VisionConfig::new($model)
                     ->customOptions($customOptions)
+                    ->stream($stream)
             );
 
             return $this->success('', $result->generate());

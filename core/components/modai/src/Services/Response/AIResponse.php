@@ -13,6 +13,7 @@ class AIResponse {
     private string $parser;
     private array $headers = [];
     private array $body = [];
+    private bool $stream = false;
 
     private function __construct(modX &$modx, string $service)
     {
@@ -47,6 +48,12 @@ class AIResponse {
         return $this;
     }
 
+    public function withStream(bool $stream): self
+    {
+        $this->stream = $stream;
+        return $this;
+    }
+
     public function getService(): string
     {
         return $this->service;
@@ -72,6 +79,11 @@ class AIResponse {
         return json_encode($this->body);
     }
 
+    public function getStream(): bool
+    {
+        return $this->stream;
+    }
+
     /**
      * @throws LexiconException
      * @throws \Exception
@@ -87,6 +99,7 @@ class AIResponse {
         return [
             'forExecutor' => [
                 'service' => $this->getService(),
+                'stream' => $this->getStream(),
                 'parser' => $this->getParser(),
                 'url' => $this->getUrl(),
                 'headers' => $this->getHeaders(),

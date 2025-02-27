@@ -6,6 +6,7 @@ use modAI\Services\Config\CompletionsConfig;
 use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
 use modAI\Services\Response\AIResponse;
+use modAI\Settings;
 use MODX\Revolution\modX;
 
 class CustomChatGPT implements AIService
@@ -55,10 +56,18 @@ class CustomChatGPT implements AIService
         $input['temperature'] = $config->getTemperature();
         $input['messages'] = $messages;
 
+        $onServer = intval(Settings::getApiSetting($this->modx, 'chatgpt', 'execute_on_server')) === 1;
+        $stream = !$onServer && $config->isStream();
+
+        if ($stream) {
+            $input['stream'] = true;
+        }
+
         $url = self::COMPLETIONS_API;
         $url = str_replace('{url}', $baseUrl, $url);
 
         return AIResponse::new($this->modx,'chatgpt')
+            ->withStream($stream)
             ->withParser('content')
             ->withUrl($url)
             ->withHeaders([
@@ -98,10 +107,18 @@ class CustomChatGPT implements AIService
             ]
         ];
 
+        $onServer = intval(Settings::getApiSetting($this->modx, 'chatgpt', 'execute_on_server')) === 1;
+        $stream = !$onServer && $config->isStream();
+
+        if ($stream) {
+            $input['stream'] = true;
+        }
+
         $url = self::COMPLETIONS_API;
         $url = str_replace('{url}', $baseUrl, $url);
 
         return AIResponse::new($this->modx,'chatgpt')
+            ->withStream($stream)
             ->withParser('content')
             ->withUrl($url)
             ->withHeaders([

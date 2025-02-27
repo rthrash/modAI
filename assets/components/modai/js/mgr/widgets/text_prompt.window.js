@@ -33,7 +33,7 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
     _history: null,
 
     init: function(config) {
-        const syncUI = (data) => {
+        const syncUI = (data, noStore) => {
             info.update({currentPage: data.current, total: data.total})
             info.show();
 
@@ -41,6 +41,9 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
             this.preview.show();
             this.preview.setValue(data.value.content);
 
+            if (noStore) {
+                this.preview.el.dom.scrollTop = this.preview.el.dom.scrollHeight;
+            }
 
             if (data.prevStatus) {
                 prev.enable();
@@ -55,8 +58,8 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
             }
         }
 
-        const addItem = (item) => {
-            this._history.insert(item);
+        const addItem = (item, noStore = false) => {
+            this._history.insert(item, noStore);
 
             this.preview.show();
             this.copyClose.enable();
@@ -174,6 +177,8 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
                         const result = await modAI.executor.mgr.prompt.freeText({
                             prompt: this.prompt.getValue(),
                             field: config.fieldName || ''
+                        }, (data) => {
+                            this.pagination.addItem({prompt: this.prompt.getValue(), content: data.content}, true);
                         });
                         this.pagination.addItem({prompt: this.prompt.getValue(), content: result.content});
                         Ext.Msg.hide();

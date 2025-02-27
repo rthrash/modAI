@@ -6,12 +6,14 @@ use modAI\Services\Config\CompletionsConfig;
 use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
 use modAI\Services\Response\AIResponse;
+use modAI\Settings;
 use MODX\Revolution\modX;
 
 class Gemini implements AIService {
     private modX $modx;
 
     const COMPLETIONS_API = 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={apiKey}';
+    const COMPLETIONS_STREAM_API = 'https://generativelanguage.googleapis.com/v1beta/models/{model}:streamGenerateContent?key={apiKey}';
     const IMAGES_API = 'https://generativelanguage.googleapis.com/v1beta/models/{model}:predict?key={apiKey}';
 
     public function __construct(modX &$modx)
@@ -27,6 +29,14 @@ class Gemini implements AIService {
         }
 
         $url = self::COMPLETIONS_API;
+
+        $onServer = intval(Settings::getApiSetting($this->modx, 'gemini', 'execute_on_server')) === 1;
+        $stream = !$onServer && $config->isStream();
+
+        if ($stream) {
+            $url = self::COMPLETIONS_STREAM_API;
+        }
+
         $url = str_replace("{model}", $config->getModel(), $url);
         $url = str_replace("{apiKey}", $apiKey, $url);
 
@@ -62,6 +72,7 @@ class Gemini implements AIService {
         }
 
         return AIResponse::new($this->modx,'gemini')
+            ->withStream($stream)
             ->withParser('content')
             ->withUrl($url)
             ->withHeaders([
@@ -95,10 +106,19 @@ class Gemini implements AIService {
         ];
 
         $url = self::COMPLETIONS_API;
+
+        $onServer = intval(Settings::getApiSetting($this->modx, 'gemini', 'execute_on_server')) === 1;
+        $stream = !$onServer && $config->isStream();
+
+        if ($stream) {
+            $url = self::COMPLETIONS_STREAM_API;
+        }
+
         $url = str_replace("{model}", $config->getModel(), $url);
         $url = str_replace("{apiKey}", $apiKey, $url);
 
         return AIResponse::new($this->modx,'gemini')
+            ->withStream($stream)
             ->withParser('content')
             ->withUrl($url)
             ->withHeaders([

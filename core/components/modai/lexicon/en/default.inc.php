@@ -39,10 +39,20 @@ $_lang['setting_modai.global.text.temperature'] = 'Default AI Temperature';
 $_lang['setting_modai.global.text.temperature_desc'] = 'Higher values like 0.8 will be more random and creative, while values lower than 0.2 will be more focused and deterministic.';
 $_lang['setting_modai.global.text.context_prompt'] = 'Context Prompt';
 $_lang['setting_modai.global.text.context_prompt_desc'] = 'Prompt that will be used when passing an additional context to the chat.';
+$_lang['setting_modai.global.text.stream'] = 'Stream';
+$_lang['setting_modai.global.text.stream_desc'] = 'If enabled and execute on server is disabled, supported models will stream the response.';
+$_lang['setting_modai.global.text.custom_options'] = 'Custom Options';
+$_lang['setting_modai.global.text.custom_options_desc'] = 'A JSON object of custom options passed to the body of the AI request.';
+
 $_lang['setting_modai.global.vision.model'] = 'Vision Model';
 $_lang['setting_modai.global.vision.model_desc'] = 'Create text from image inputs. Valid options are o1, gpt-4o, gpt-4o-mini, and gpt-4-turbo.';
 $_lang['setting_modai.global.vision.prompt'] = 'Vision Prompt';
 $_lang['setting_modai.global.vision.prompt_desc'] = 'By default, this should create a 120 character alt tag based on the vision API output.';
+$_lang['setting_modai.global.vision.stream'] = 'Stream';
+$_lang['setting_modai.global.vision.stream_desc'] = 'If enabled and execute on server is disabled, supported models will stream the response.';
+$_lang['setting_modai.global.vision.custom_options'] = 'Custom Options';
+$_lang['setting_modai.global.vision.custom_options_desc'] = 'A JSON object of custom options passed to the body of the AI request.';
+
 $_lang['setting_modai.global.image.model'] = 'Image Model';
 $_lang['setting_modai.global.image.model_desc'] = 'Valid options are `dall-e-2` and `dall-e-3` (default). See https://platform.openai.com/docs/guides/images/image-generation-beta for full details including DALL-E-2 specifics.';
 $_lang['setting_modai.global.image.size'] = 'Image Dimensions';
@@ -55,6 +65,8 @@ $_lang['setting_modai.global.image.download_domains'] = 'Allowed Download Domain
 $_lang['setting_modai.global.image.download_domains_desc'] = 'Additional domains to allow downloading generated images from.';
 $_lang['setting_modai.global.image.media_source'] = 'Media Source';
 $_lang['setting_modai.global.image.media_source_desc'] = 'Default media source for image uploads (unless field specifies it\'s own).';
+$_lang['setting_modai.global.image.custom_options'] = 'Custom Options';
+$_lang['setting_modai.global.image.custom_options_desc'] = 'A JSON object of custom options passed to the body of the AI request.';
 
 $_lang['setting_modai.res.fields'] = 'Use with MODX Resource Fields';
 $_lang['setting_modai.res.fields_desc'] = 'The default Resource fields to attached modAI generative AI buttons to.';

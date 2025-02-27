@@ -25,6 +25,7 @@ class FreeText extends Processor
         $systemInstructions = [];
 
         try {
+            $stream = intval(Settings::getTextSetting($this->modx, $field, 'stream', $namespace)) === 1;
             $model = Settings::getTextSetting($this->modx, $field, 'model', $namespace);
             $temperature = (float)Settings::getTextSetting($this->modx, $field, 'temperature', $namespace);
             $maxTokens = (int)Settings::getTextSetting($this->modx, $field, 'max_tokens', $namespace);
@@ -53,6 +54,7 @@ class FreeText extends Processor
                     ->maxTokens($maxTokens)
                     ->temperature($temperature)
                     ->systemInstructions($systemInstructions)
+                    ->stream($stream)
             );
 
             return $this->success('', $result->generate());

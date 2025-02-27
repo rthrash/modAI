@@ -7,6 +7,7 @@ class CompletionsConfig {
     private float $temperature;
     private int $maxTokens;
     private string $systemInstructions = '';
+    private bool $stream = false;
 
     public function temperature(float $temperature): self {
         $this->temperature = $temperature;
@@ -26,6 +27,12 @@ class CompletionsConfig {
         return $this;
     }
 
+    public function stream(bool $stream): self {
+        $this->stream = $stream;
+
+        return $this;
+    }
+
     public function getTemperature(): float
     {
         return $this->temperature;
@@ -41,5 +48,9 @@ class CompletionsConfig {
         return $this->systemInstructions;
     }
 
+    public function isStream(): bool
+    {
+        return $this->stream;
+    }
 
 }

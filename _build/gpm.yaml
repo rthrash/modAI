@@ -64,6 +64,10 @@ systemSettings:
     area: text
     type: textarea
     value:
+  - key: global.text.stream
+    area: text
+    type: combo-boolean
+    value: 0
 
   - key: global.vision.model
     area: vision
@@ -76,6 +80,10 @@ systemSettings:
     area: vision
     type: textarea
     value:
+  - key: global.vision.stream
+    area: vision
+    type: combo-boolean
+    value: 0
 
   - key: global.image.model
     area: image

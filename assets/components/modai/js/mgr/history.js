@@ -1,13 +1,13 @@
 modAI.history = {
     _cache: {},
-    _formatOutput(key) {
+    _formatOutput(key, value = undefined) {
         const cachedItem = this._cache[key];
 
         const prevStatus = (cachedItem.visible > 0);
         const nextStatus = (cachedItem.visible !== cachedItem.values.length - 1);
 
         return {
-            value: cachedItem.values[cachedItem.visible] ?? null,
+            value: value !== undefined ? value : (cachedItem.values[cachedItem.visible] ?? null),
             nextStatus,
             prevStatus,
             current: cachedItem.visible + 1,
@@ -15,13 +15,16 @@ modAI.history = {
             context: cachedItem.context,
         }
     },
-    insert(key, value) {
+    insert(key, value, noStore = false) {
         const cachedItem = this._cache[key];
-        cachedItem.visible = cachedItem.values.push(value) - 1;
 
-        const output = this._formatOutput(key);
+        if (!noStore) {
+            cachedItem.visible = cachedItem.values.push(value) - 1;
+        }
+
+        const output = this._formatOutput(key, value);
         if (typeof cachedItem.syncUI === 'function') {
-            cachedItem.syncUI(output);
+            cachedItem.syncUI(output, noStore);
         }
 
         return output;
@@ -83,11 +86,11 @@ modAI.history = {
             },
             syncUI: () => {
                 if (typeof syncUI === 'function') {
-                    this._cache[key].syncUI(this._formatOutput(key));
+                    this._cache[key].syncUI(this._formatOutput(key), false);
                 }
             },
-            insert: (value) => {
-                return this.insert(key, value);
+            insert: (value, noStore = false) => {
+                return this.insert(key, value, noStore);
             },
             next: () => {
                 return this.next(key);
