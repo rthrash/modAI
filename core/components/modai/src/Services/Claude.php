@@ -28,8 +28,6 @@ class Claude implements AIService
 
         $messages = [];
 
-        $system = implode(';', $config->getSystemInstructions());
-
         foreach ($data as $msg) {
             $messages[] = [
                 'role' => 'user',
@@ -43,6 +41,7 @@ class Claude implements AIService
         $input["temperature"] = $config->getTemperature();
         $input["messages"] = $messages;
 
+        $system = $config->getSystemInstructions();
         if (!empty($system)) {
             $input['system'] = $system;
         }

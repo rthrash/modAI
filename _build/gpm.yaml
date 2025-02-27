@@ -38,14 +38,19 @@ systemSettings:
   - key: global.text.base_output
     area: text
     type: textarea
-    value: '- This content will be used inside a web content management system.\n- The output should be usable without editing or modification.\n- This is not a conversation; do not include justification or explanation.\n- When returning results, do not wrap them in anything like quotes.'
+    value: |- 
+      - This content will be used inside a web content management system.
+      - The output should be usable without editing or modification.
+      - This is not a conversation; do not include justification or explanation.
+      - When returning results, do not wrap them in anything like quotes.
   - key: global.text.base_prompt
     area: text
     type: textarea
   - key: global.text.context_prompt
     area: text
     type: textarea
-    value: "Here's context for user's message, act only on this: {context}"
+    value: |-
+      Here's context for user's message, act only on this: {context}
   - key: global.text.max_tokens
     area: text
     value: 2048
@@ -65,7 +70,8 @@ systemSettings:
     value: gpt-4o-mini
   - key: global.vision.prompt
     area: vision
-    value: "Create an optimal alt tag for accessibility for this image that is no longer than 120 characters and not using any punctuation, quotes, or special characters"
+    value: |-
+      Create an optimal alt tag for accessibility for this image that is no longer than 120 characters and not using any punctuation, quotes, or special characters
   - key: global.vision.custom_options
     area: vision
     type: textarea
@@ -104,19 +110,35 @@ systemSettings:
   - key: res.pagetitle.text.prompt
     area: resources
     type: textarea
-    value: "- You are an SEO expert\n- Your task is to generate a Page Title from from the page content for use as the main H1 tag on the page.\n- The Title shouldn't exceed 60 characters, though shorter is also OK\n- Don't use any HTML or markdown tags"
+    value: |-
+      - You are an SEO expert
+      - Your task is to generate a Page Title from from the page content for use as the main H1 tag on the page.
+      - The Title shouldn't exceed 60 characters, though shorter is also OK
+      - Don't use any HTML or markdown tags
   - key: res.longtitle.text.prompt
     area: resources
     type: textarea
-    value: "- You are an SEO expert\n- Your task is to generate an optimal Meta Title from the page content.\n- The Meta Title can't exceed 70 characters\n- Don't use any HTML or markdown tags\n- Don't wrap the Meta Title in quotes"
+    value: |-
+      - You are an SEO expert
+      - Your task is to generate an optimal Meta Title from the page content.
+      - The Meta Title can't exceed 70 characters
+      - Don't use any HTML or markdown tags
+      - Don't wrap the Meta Title in quotes
   - key: res.introtext.text.prompt
     area: resources
     type: textarea
-    value: "- You are an assistant that summarizes content.\n- Your task is to generate concise summary of the page content.\n- Don't use any HTML or markdown tags"
+    value: |-
+      - You are an assistant that summarizes content.
+      - Your task is to generate concise summary of the page content.
+      - Don't use any HTML or markdown tags
   - key: res.description.text.prompt
     area: resources
     type: textarea
-    value: "- You are an SEO expert\n- Your task is to generate SEO Meta Description\n- Description can't exceed 155 characters\n- Don't use any HTML or markdown tags"
+    value: |-
+      - You are an SEO expert
+      - Your task is to generate SEO Meta Description
+      - Description can't exceed 155 characters
+      - Don't use any HTML or markdown tags
 
   - key: tvs
     area: tvs

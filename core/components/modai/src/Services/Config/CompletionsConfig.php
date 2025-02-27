@@ -6,7 +6,7 @@ class CompletionsConfig {
 
     private float $temperature;
     private int $maxTokens;
-    private array $systemInstructions = [];
+    private string $systemInstructions = '';
 
     public function temperature(float $temperature): self {
         $this->temperature = $temperature;
@@ -21,7 +21,7 @@ class CompletionsConfig {
     }
 
     public function systemInstructions(array $systemInstructions): self {
-        $this->systemInstructions = $systemInstructions;
+        $this->systemInstructions = implode("\n", $systemInstructions);
 
         return $this;
     }
@@ -36,7 +36,7 @@ class CompletionsConfig {
         return $this->maxTokens;
     }
 
-    public function getSystemInstructions(): array
+    public function getSystemInstructions(): string
     {
         return $this->systemInstructions;
     }

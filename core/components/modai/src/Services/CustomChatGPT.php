@@ -34,7 +34,8 @@ class CustomChatGPT implements AIService
 
         $messages = [];
 
-        foreach ($config->getSystemInstructions() as $system) {
+        $system = $config->getSystemInstructions();
+        if (!empty($system)) {
             $messages[] = [
                 'role' => 'system',
                 'content' => $system

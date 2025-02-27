@@ -32,7 +32,8 @@ class Gemini implements AIService {
 
         $systemInstruction = [];
 
-        foreach ($config->getSystemInstructions() as $system) {
+        $system = $config->getSystemInstructions();
+        if (!empty($system)) {
             $systemInstruction[] = [
                 'text' => $system
             ];
