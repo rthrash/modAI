@@ -34,6 +34,10 @@ To change a prompt to use Google Gemini, set its corresponding model setting, e.
 
 ## Claude (Anthropic)
 
+<warning id="claude-server-only">
+    At this moment Claude can only work serverside. Setting either "modai.api.execute_on_server" or "modai.api.claude.execute_on_server" to "true".
+</warning>
+
 Claude currently only supports text generation. Add a valide API key to the `modai.api.claude.key` to use Claude.
 
 - **text generation** - https://docs.anthropic.com/en/docs/about-claude/models
