@@ -9,6 +9,7 @@ if ($modx->event->name !== 'OnManagerPageBeforeRender') {
 
 if (!$modx->services->has('modai')) return;
 
+/** @var \modAI\modAI $modAI */
 $modAI = $modx->services->get('modai');
 
 $action = '';
@@ -33,11 +34,13 @@ if (in_array($action, ['resource/create', 'resource/update'])) {
             </script>
         ');
 
-    $modx->regClientCSS($assetsUrl . 'css/mgr.css');
-    $modx->regClientStartupScript($assetsUrl . 'js/mgr/modai.js');
-    $modx->regClientStartupScript($assetsUrl . 'js/mgr/history.js');
-    $modx->regClientStartupScript($assetsUrl . 'js/mgr/executor.js');
-    $modx->regClientStartupScript($assetsUrl . 'js/mgr/autosummary.js');
-    $modx->regClientStartupScript($assetsUrl . 'js/mgr/widgets/image_prompt.window.js');
-    $modx->regClientStartupScript($assetsUrl . 'js/mgr/widgets/text_prompt.window.js');
+    $lit = $modAI->getLit();
+
+    $modx->regClientCSS("{$assetsUrl}css/mgr.css?lit=$lit");
+    $modx->regClientStartupScript("{$assetsUrl}js/mgr/modai.js?lit=$lit");
+    $modx->regClientStartupScript("{$assetsUrl}js/mgr/history.js?lit=$lit");
+    $modx->regClientStartupScript("{$assetsUrl}js/mgr/executor.js?lit=$lit");
+    $modx->regClientStartupScript("{$assetsUrl}js/mgr/autosummary.js?lit=$lit");
+    $modx->regClientStartupScript("{$assetsUrl}js/mgr/widgets/image_prompt.window.js?lit=$lit");
+    $modx->regClientStartupScript("{$assetsUrl}js/mgr/widgets/text_prompt.window.js?lit=$lit");
 }

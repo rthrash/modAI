@@ -14,6 +14,8 @@ class modAI
     /** @var array $config */
     public $config = [];
 
+    private $lit = null;
+
     function __construct(modX &$modx, array $config = [])
     {
         $this->modx =& $modx;
@@ -110,4 +112,13 @@ class modAI
 
     }
 
+    public function getLit()
+    {
+        if ($this->lit !== null) {
+            return $this->lit;
+        }
+
+        $this->lit = (int)$this->modx->getOption('modai.cache.lit', null, '0');
+        return $this->lit;
+    }
 }

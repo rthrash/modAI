@@ -84,6 +84,9 @@ $_lang['setting_modai.tvs_desc'] = 'The Template Variable fields to attached mod
 $_lang['setting_modai.api.execute_on_server'] = 'Execute AI\'s request on server';
 $_lang['setting_modai.api.execute_on_server_desc'] = 'If enabled, allAI requests will be executed on server side. Be aware of increased load for your server.';
 
+$_lang['setting_modai.cache.lit'] = 'Last Install Time';
+$_lang['setting_modai.cache.lit_desc'] = '';
+
 $_lang['modai.error.compatability_mode'] = "Unsupported API compatibility mode (modai.api.custom.compatibility).";
 $_lang['modai.error.invalid_api_key'] = "Missing modai.api.[[+service]].key";
 $_lang['modai.error.invalid_url'] = "Missing modai.api.custom.url";

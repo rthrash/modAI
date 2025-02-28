@@ -10,6 +10,10 @@ plugins:
       - OnManagerPageBeforeRender
 
 systemSettings:
+  - key: cache.lit
+    area: cache
+    value: 0
+
   - key: api.execute_on_server
     area: api
     type: combo-boolean
@@ -151,3 +155,7 @@ systemSettings:
   - key: tvs
     area: tvs
     value: ''
+
+build:
+  scriptsAfter:
+    - lit.gpm.php
