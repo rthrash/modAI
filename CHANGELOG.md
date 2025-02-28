@@ -2,6 +2,46 @@
 
 All notable changes to this project will be documented in this file.
 
+## 0.10.0-beta - 2025-02-28
+
+### 🚀 Features
+
+- Enable calling AI services on serverside, instead of from the client ([64edf9f](64edf9f760e2c0b7a94d6c8e6c439f8b3d4baee1))
+- Refactor multiple cache handlers to a single history handler ([a150940](a1509403724e170b565e10fee02d3d2c219e298e))
+- Refactor system settings, add namespace support, add context support to the free text prompt ([e6c3039](e6c30396ec32fee902d9292a9cf23d0a129c0414))
+- Add fullUrl to the return array in the image download processor ([5869b40](5869b40ceb987d55b96635bdd399bedf7d3cc008))
+- Create JS API for modAI processors ([b2b4b78](b2b4b7892e880242f133f9e0741c946a1647f607))
+- Simplify the JS API ([dee659e](dee659edef8e0b58a4d06dee7cafe2ce97228fa0))
+- Add style option for image models ([61371c3](61371c342f6c3ef93e5362556b378f14a6e9c2d1)), resolves #11
+- Add support for passing custom options to each model ([ff25a6f](ff25a6f5d70d32fd094bf202151b223e97ae44a6))
+- Merge all system prompts to a single message ([314c9ca](314c9cac2c4b1ab94bf7f7cc9ac84fd618cf1a0b))
+- Add support for client side streaming (chatgpt & gemini) ([0dc2c68](0dc2c68c4110dbb27285c7d8c0aefdcde5734713))
+- Adjust default vision prompt ([afb4cbd](afb4cbd64ebf3e9173d4d7d3d8394619c89bf0e1))
+- Add cache buster for JS files ([a7d4949](a7d49497dbe5885704ee5fe2c42eae003bcfa897))
+
+### 🐛 Bug Fixes
+
+- Fix return types from Settings helper class ([825c33e](825c33e397937c9fb6ce4f99a5979ee19b4da7b7))
+- Load lexicons from processors ([6587afd](6587afd39187e5c0251ca43c57ac8a14aece9104))
+- Fix checking for empty value when getting system settings ([ac4dc2b](ac4dc2bc274df41a725498c8577d4449cbdc2e3e))
+
+### 🚜 Refactor
+
+- Unify fieldName as field property for processors ([f90eaa7](f90eaa74dfd46e5dd26db830d57b03df6ff51ca3))
+
+### 📚 Documentation
+
+- Add markup and references to docs ([2420b20](2420b209303d75d2f5a47b466bc5540cf6ec77e9))
+- Note about how/when AI requests execute ([38ef3b3](38ef3b39298accb86b85a410899e5583514f45eb))
+- Describe new settings structure and streaming ([b0767a0](b0767a03d6881b54056dcc6995f3e12b3af1feff))
+
+### ⚙️ Miscellaneous Tasks
+
+- Automate build process ([0c64fe2](0c64fe2de8dd166eb7fba4fc6437e000385a1ffc))
+- Remove html comments from group name ([b1e05dd](b1e05ddabee1f498906b6465dbdd95d32b88e60b))
+- Add translation for modai.global.text.context_prompt system setting ([998b2e4](998b2e4bfdee75d448dcc366ac22a0d86e94c85a))
+- Add link to original announcement to the readme ([c51af55](c51af5548cb52d3439ea6c997f4dad418258835c))
+
 ## 0.9.0-beta - 2025-02-20
 
 ### 🚀 Features
@@ -79,5 +119,6 @@ All notable changes to this project will be documented in this file.
 - Clean up IDs in action ([0c35a59](0c35a59b0790a0e44204005f35550aa26b8a8a0a))
 - Convert all text to lexicons ([bd45280](bd452805a79aadeb35e17370bb38f1f4f52ad354))
 - Ignore config.core.php file ([222aeab](222aeabbb209da9ef8f8e3efdfaff78f1ff8e3a5))
+- Changelog, version bump ([e3eb3a2](e3eb3a27ae5c014d2ac1a4278da8126ae6bdf1e2))
 
 
