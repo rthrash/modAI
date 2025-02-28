@@ -75,7 +75,7 @@ systemSettings:
   - key: global.vision.prompt
     area: vision
     value: |-
-      Create an optimal alt tag for accessibility for this image that is no longer than 120 characters and not using any punctuation, quotes, or special characters
+      Create an optimal alt tag for accessibility for this image that is no longer than 120 characters and not using any punctuation, quotes, or special characters. DO NOT include any explanation, suggestions, justification, or additional details; just return the output text.
   - key: global.vision.custom_options
     area: vision
     type: textarea
