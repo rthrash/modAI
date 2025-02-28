@@ -15,13 +15,13 @@ class Settings {
     {
         if (!empty($field)) {
             $value = $modx->getOption("$namespace.$field.$area.$setting");
-            if (!empty($value)) {
+            if ($value !== null && $value !== '') {
                 return $value;
             }
         }
 
         $value = $modx->getOption("$namespace.global.$area.$setting");
-        if (!empty($value)) {
+        if ($value !== null && $value !== '') {
             return $value;
         }
 
@@ -31,13 +31,13 @@ class Settings {
 
         if (!empty($field)) {
             $value = $modx->getOption("modai.$field.$area.$setting");
-            if (!empty($value)) {
+            if ($value !== null && $value !== '') {
                 return $value;
             }
         }
 
         $value = $modx->getOption("modai.global.$area.$setting");
-        if (!empty($value)) {
+        if ($value !== null && $value !== '') {
             return $value;
         }
 
@@ -51,7 +51,7 @@ class Settings {
     {
         $value = self::getOption($modx, $namespace, $field, 'text', $setting);
 
-        if ($required && empty($value)) {
+        if ($required && ($value === null || $value === '')) {
             throw new RequiredSettingException("modai.global.text.$setting");
         }
 
@@ -65,7 +65,7 @@ class Settings {
     {
         $value = self::getOption($modx, $namespace, $field, 'image', $setting);
 
-        if ($required && empty($value)) {
+        if ($required && ($value === null || $value === '')) {
             throw new RequiredSettingException("modai.global.image.$setting");
         }
 
@@ -79,7 +79,7 @@ class Settings {
     {
         $value = self::getOption($modx, $namespace, $field, 'vision', $setting);
 
-        if ($required && empty($value)) {
+        if ($required && ($value === null || $value === '')) {
             throw new RequiredSettingException("modai.global.vision.$setting");
         }
 
