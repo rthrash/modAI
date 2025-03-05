@@ -121,4 +121,9 @@ class modAI
         $this->lit = (int)$this->modx->getOption('modai.cache.lit', null, '0');
         return $this->lit;
     }
+
+    public function getAPIUrl()
+    {
+        return $this->config['assetsUrl'] . 'api.php';
+    }
 }

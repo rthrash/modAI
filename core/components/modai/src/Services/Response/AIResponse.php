@@ -1,13 +1,7 @@
 <?php
 namespace modAI\Services\Response;
 
-use modAI\Exceptions\LexiconException;
-use modAI\Services\Executor\ServiceExecutor;
-use modAI\Settings;
-use MODX\Revolution\modX;
-
 class AIResponse {
-    private modX $modx;
     private string $service;
     private string $url;
     private string $parser;
@@ -15,14 +9,13 @@ class AIResponse {
     private array $body = [];
     private bool $stream = false;
 
-    private function __construct(modX &$modx, string $service)
+    private function __construct(string $service)
     {
-        $this->modx =& $modx;
         $this->service = $service;
     }
 
-    public static function new(modX &$modx, string $service): self {
-        return new self($modx, $service);
+    public static function new(string $service): self {
+        return new self($service);
     }
 
     public function withUrl(string $url): self {
@@ -83,29 +76,4 @@ class AIResponse {
     {
         return $this->stream;
     }
-
-    /**
-     * @throws LexiconException
-     * @throws \Exception
-     */
-    public function generate(): array
-    {
-        $onServer = intval(Settings::getApiSetting($this->modx, $this->service, 'execute_on_server')) === 1;
-
-        if ($onServer) {
-            return ServiceExecutor::execute($this);
-        }
-
-        return [
-            'forExecutor' => [
-                'service' => $this->getService(),
-                'stream' => $this->getStream(),
-                'parser' => $this->getParser(),
-                'url' => $this->getUrl(),
-                'headers' => $this->getHeaders(),
-                'body' => $this->getBody()
-            ]
-        ];
-    }
-
 }

@@ -41,12 +41,17 @@ class Claude implements AIService
         $input["temperature"] = $config->getTemperature();
         $input["messages"] = $messages;
 
+        if ($config->isStream()) {
+            $input['stream'] = true;
+        }
+
         $system = $config->getSystemInstructions();
         if (!empty($system)) {
             $input['system'] = $system;
         }
 
-        return AIResponse::new($this->modx,'claude')
+        return AIResponse::new('claude')
+            ->withStream($config->isStream())
             ->withParser('content')
             ->withUrl(self::COMPLETIONS_API)
             ->withHeaders([

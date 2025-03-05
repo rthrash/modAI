@@ -6,7 +6,6 @@ use modAI\Services\Config\CompletionsConfig;
 use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
 use modAI\Services\Response\AIResponse;
-use modAI\Settings;
 use MODX\Revolution\modX;
 
 class ChatGPT implements AIService
@@ -51,14 +50,12 @@ class ChatGPT implements AIService
         $input['temperature'] = $config->getTemperature();
         $input['messages'] = $messages;
 
-        $onServer = intval(Settings::getApiSetting($this->modx, 'chatgpt', 'execute_on_server')) === 1;
-        $stream = !$onServer && $config->isStream();
-        if ($stream) {
+        if ($config->isStream()) {
             $input['stream'] = true;
         }
 
-        return AIResponse::new($this->modx, 'chatgpt')
-            ->withStream($stream)
+        return AIResponse::new('chatgpt')
+            ->withStream($config->isStream())
             ->withParser('content')
             ->withUrl(self::COMPLETIONS_API)
             ->withHeaders([
@@ -93,15 +90,12 @@ class ChatGPT implements AIService
             ]
         ];
 
-        $onServer = intval(Settings::getApiSetting($this->modx, 'chatgpt', 'execute_on_server')) === 1;
-        $stream = !$onServer && $config->isStream();
-
-        if ($stream) {
+        if ($config->isStream()) {
             $input['stream'] = true;
         }
 
-        return AIResponse::new($this->modx,'chatgpt')
-            ->withStream($stream)
+        return AIResponse::new('chatgpt')
+            ->withStream($config->isStream())
             ->withParser('content')
             ->withUrl(self::COMPLETIONS_API)
             ->withHeaders([
@@ -126,7 +120,7 @@ class ChatGPT implements AIService
         $input['quality'] = $config->getQuality();
         $input['style'] = $config->getStyle();
 
-        return AIResponse::new($this->modx,'chatgpt')
+        return AIResponse::new('chatgpt')
             ->withParser('image')
             ->withUrl(self::IMAGES_API)
             ->withHeaders([

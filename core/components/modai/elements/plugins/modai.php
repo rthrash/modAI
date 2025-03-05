@@ -28,6 +28,7 @@ if (in_array($action, ['resource/create', 'resource/update'])) {
             <script type="text/javascript">
                 Ext.onReady(function() {
                     modAI.config = ' . $modx->toJSON($modAI->config) . ';
+                    modAI.apiURL = "' . $modAI->getAPIUrl() . '";
                     modAI.tvs =  ' . $modx->toJSON($modAI->getListOfTVsWithIDs()) . ';
                     modAI.resourceFields =  ' . $modx->toJSON($modAI->getResourceFields()) . ';
                 });

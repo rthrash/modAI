@@ -6,7 +6,6 @@ use modAI\Services\Config\CompletionsConfig;
 use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
 use modAI\Services\Response\AIResponse;
-use modAI\Settings;
 use MODX\Revolution\modX;
 
 class Gemini implements AIService {
@@ -30,10 +29,7 @@ class Gemini implements AIService {
 
         $url = self::COMPLETIONS_API;
 
-        $onServer = intval(Settings::getApiSetting($this->modx, 'gemini', 'execute_on_server')) === 1;
-        $stream = !$onServer && $config->isStream();
-
-        if ($stream) {
+        if ($config->isStream()) {
             $url = self::COMPLETIONS_STREAM_API;
         }
 
@@ -71,8 +67,8 @@ class Gemini implements AIService {
             ];
         }
 
-        return AIResponse::new($this->modx,'gemini')
-            ->withStream($stream)
+        return AIResponse::new('gemini')
+            ->withStream($config->isStream())
             ->withParser('content')
             ->withUrl($url)
             ->withHeaders([
@@ -107,18 +103,15 @@ class Gemini implements AIService {
 
         $url = self::COMPLETIONS_API;
 
-        $onServer = intval(Settings::getApiSetting($this->modx, 'gemini', 'execute_on_server')) === 1;
-        $stream = !$onServer && $config->isStream();
-
-        if ($stream) {
+        if ($config->isStream()) {
             $url = self::COMPLETIONS_STREAM_API;
         }
 
         $url = str_replace("{model}", $config->getModel(), $url);
         $url = str_replace("{apiKey}", $apiKey, $url);
 
-        return AIResponse::new($this->modx,'gemini')
-            ->withStream($stream)
+        return AIResponse::new('gemini')
+            ->withStream($config->isStream())
             ->withParser('content')
             ->withUrl($url)
             ->withHeaders([
@@ -146,7 +139,7 @@ class Gemini implements AIService {
             "sampleCount" => $config->getN()
         ];
 
-        return AIResponse::new($this->modx,'gemini')
+        return AIResponse::new('gemini')
             ->withParser('image')
             ->withUrl($url)
             ->withHeaders([

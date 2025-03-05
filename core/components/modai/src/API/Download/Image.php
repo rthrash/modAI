@@ -1,38 +1,38 @@
 <?php
 
-namespace modAI\Processors\Download;
+namespace modAI\API\Download;
 
-use modAI\RequiredSettingException;
+use modAI\API\API;
+use modAI\Exceptions\LexiconException;
 use modAI\Settings;
 use modAI\Utils;
-use MODX\Revolution\Processors\Processor;
 use MODX\Revolution\Sources\modMediaSource;
+use Psr\Http\Message\ServerRequestInterface;
 
-class Image extends Processor {
+class Image extends API {
     private $allowedDomains = ['https://oaidalleapiprodscus.blob.core.windows.net'];
 
-    public function process() {
-        $url = $this->getProperty('url');
-        $image = $this->getProperty('image');
-        $field = $this->getProperty('field', '');
-        $namespace = $this->getProperty('namespace', 'modai');
-        $resource = (int)$this->getProperty('resource', 0);
-        $mediaSource = (int)$this->getProperty('mediaSource', 0);
+    public function post(ServerRequestInterface $request): void
+    {
+        $data = $request->getParsedBody();
+
+        $url = $this->modx->getOption('url', $data);
+        $image = $this->modx->getOption('image', $data);
+        $field = $this->modx->getOption('field', $data, '');
+        $namespace = $this->modx->getOption('namespace', $data, 'modai');
+        $resource = (int)$this->modx->getOption('resource', $data, 0);
+        $mediaSource = (int)$this->modx->getOption('mediaSource', $data, 0);
 
         if (empty($mediaSource)) {
-            try {
-                $mediaSource = Settings::getImageSetting($this->modx, $field, 'media_source', $namespace);
-            } catch (RequiredSettingException $e) {
-                return $this->failure($e->getMessage());
-            }
+            $mediaSource = Settings::getImageSetting($this->modx, $field, 'media_source', $namespace);
         }
 
         if (empty($mediaSource)) {
-            return $this->failure($this->modx->lexicon('modai.error.ms_required'));
+            throw new LexiconException('modai.error.ms_required');
         }
 
         if (empty($url) && empty($image)) {
-            return $this->failure($this->modx->lexicon('modai.error.image_required'));
+            throw new LexiconException('modai.error.image_required');
         }
 
         $additionalDomains = Settings::getSetting($this->modx, 'image.download_domains', '');
@@ -53,28 +53,23 @@ class Image extends Processor {
         }
 
         if (!$domainAllowed) {
-            return $this->failure($this->modx->lexicon('modai.error.image_download_domain'));
+            throw new LexiconException('modai.error.image_download_domain');
         }
 
         $source = modMediaSource::getDefaultSource($this->modx, $mediaSource);
 
         if (!$source->initialize()) {
-            return $this->failure('fail');
+            throw new LexiconException('error');
         }
 
-        try {
-            $path = Settings::getImageSetting($this->modx, $field, 'path');
-        } catch (\Exception $e) {
-            return $this->failure($e->getMessage());
-        }
-
+        $path = Settings::getImageSetting($this->modx, $field, 'path');
         $filePath = $this->createFilePath($path, $resource);
 
         $image = file_get_contents(empty($url) ? $image : $url);
 
         $source->createObject($filePath[0], $filePath[1], $image);
 
-        return $this->success('', [
+        $this->success([
             'url' => $filePath[0].$filePath[1],
             'fullUrl' => $source->getObjectUrl($filePath[0].$filePath[1])
         ]);
@@ -97,9 +92,5 @@ class Image extends Processor {
         $fileName = array_pop($path);
 
         return [implode(DIRECTORY_SEPARATOR, $path) . DIRECTORY_SEPARATOR, $fileName];
-    }
-
-    public function getLanguageTopics() {
-        return ['modai:default'];
     }
 }
