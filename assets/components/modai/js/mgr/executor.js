@@ -235,7 +235,11 @@
     }
 
     const aiFetch = async (action, params, onChunkStream) => {
+        const controller = new AbortController();
+        const signal = controller.signal;
+
         const res = await fetch(`${modAI.apiURL}?action=${action}`, {
+            signal,
             method: 'POST',
             body: JSON.stringify(params),
             headers: {
@@ -262,15 +266,17 @@
             return serviceExecutor(data, onChunkStream);
         }
 
+        if (!service || !parser) {
+            controller.abort();
+            throw new Error(_('modai.cmp.service_required'));
+        }
+
+        if (!services[stream ? 'stream' : 'buffered']?.[service]?.[parser]) {
+            controller.abort();
+            throw new Error(_('modai.cmp.service_unsupported'));
+        }
+
         if (!stream) {
-            if (!service || !parser) {
-                throw new Error(_('modai.cmp.service_required'));
-            }
-
-            if (!services.buffered[service]?.[parser]) {
-                throw new Error(_('modai.cmp.service_unsupported'));
-            }
-
             const data = await res.json();
             return services['buffered'][service][parser](data);
         }
