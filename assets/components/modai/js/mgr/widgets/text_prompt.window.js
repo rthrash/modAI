@@ -37,9 +37,9 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
             info.update({currentPage: data.current, total: data.total})
             info.show();
 
-            this.prompt.setValue(data.value.prompt)
+            this.prompt.setValue(data.value.user);
             this.preview.show();
-            this.preview.setValue(data.value.content);
+            this.preview.setValue(data.value.assistant);
 
             if (noStore) {
                 this.preview.el.dom.scrollTop = this.preview.el.dom.scrollHeight;
@@ -58,7 +58,7 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
             }
         }
 
-        const addItem = (item, noStore = false) => {
+        this.addItem = (item, noStore = false) => {
             this._history.insert(item, noStore);
 
             this.preview.show();
@@ -133,10 +133,6 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
             disabled: true
         });
 
-        this.pagination = {
-            addItem,
-        };
-
         this._history = modAI.history.init(config.cacheKey, syncUI);
 
         if (this._history.cachedItem.values.length > 0) {
@@ -176,11 +172,12 @@ Ext.extend(modAI.window.TextPrompt,MODx.Window, {
                     try {
                         const result = await modAI.executor.mgr.prompt.freeText({
                             prompt: this.prompt.getValue(),
-                            field: config.fieldName || ''
+                            field: config.fieldName || '',
+                            messages: this._history.getAll(),
                         }, (data) => {
-                            this.pagination.addItem({prompt: this.prompt.getValue(), content: data.content}, true);
+                            this.addItem({user: this.prompt.getValue(), assistant: data.content}, true);
                         });
-                        this.pagination.addItem({prompt: this.prompt.getValue(), content: result.content});
+                        this.addItem({user: this.prompt.getValue(), assistant: result.content});
                         Ext.Msg.hide();
                     } catch (err) {
                         Ext.Msg.hide();

@@ -20,6 +20,7 @@ class FreeText extends API
         $field = $this->modx->getOption('field', $data, '');
         $context = $this->modx->getOption('context', $data, '');
         $namespace = $this->modx->getOption('namespace', $data, 'modai');
+        $messages = $this->modx->getOption('messages', $data);
 
         if (empty($prompt)) {
             throw new LexiconException('modai.error.prompt_required');
@@ -52,6 +53,7 @@ class FreeText extends API
         $result = $aiService->getCompletions(
             [$prompt],
             CompletionsConfig::new($model)
+                ->messages($messages)
                 ->customOptions($customOptions)
                 ->maxTokens($maxTokens)
                 ->temperature($temperature)

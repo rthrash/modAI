@@ -46,16 +46,35 @@ class Gemini implements AIService {
         }
 
         $messages = [];
+
+        foreach ($config->getMessages() as $msg) {
+            $messages[] = [
+                'role' => 'user',
+                'parts' => [
+                    ['text' => $msg['user']]
+                ]
+            ];
+
+            $messages[] = [
+                'role' => 'model',
+                'parts' => [
+                    ['text' => $msg['assistant']]
+                ]
+            ];
+        }
+
         foreach ($data as $msg) {
             $messages[] = [
-                'text' => $msg
+                'role' => 'user',
+                'parts' => [
+                    ['text' => $msg]
+                ]
             ];
         }
 
         $input = $config->getCustomOptions();
-        $input["contents"] = [
-            "parts" => $messages,
-        ];
+        $input["contents"] = $messages;
+
         $input["generationConfig"] = [
             "temperature" => $config->getTemperature(),
             "maxOutputTokens" => $config->getMaxTokens(),

@@ -84,6 +84,9 @@ modAI.history = {
             getData: () => {
                 return this._formatOutput(key);
             },
+            getAll: () => {
+                return this._cache[key].values;
+            },
             syncUI: () => {
                 if (typeof syncUI === 'function') {
                     this._cache[key].syncUI(this._formatOutput(key), false);
