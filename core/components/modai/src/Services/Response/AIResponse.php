@@ -72,7 +72,7 @@ class AIResponse {
         return json_encode($this->body);
     }
 
-    public function getStream(): bool
+    public function isStream(): bool
     {
         return $this->stream;
     }

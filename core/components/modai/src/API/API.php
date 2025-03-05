@@ -126,7 +126,7 @@ abstract class API {
 
     protected function proxyAIResponse(AIResponse $aiResponse)
     {
-        $headerStream = (int)$aiResponse->getStream();
+        $headerStream = (int)$aiResponse->isStream();
         header("x-modai-service: {$aiResponse->getService()}");
         header("x-modai-parser: {$aiResponse->getParser()}");
         header("x-modai-stream: $headerStream");
@@ -137,7 +137,7 @@ abstract class API {
             $this->success([
                 'forExecutor' => [
                     'service' => $aiResponse->getService(),
-                    'stream' => $aiResponse->getStream(),
+                    'stream' => $aiResponse->isStream(),
                     'parser' => $aiResponse->getParser(),
                     'url' => $aiResponse->getUrl(),
                     'headers' => $aiResponse->getHeaders(),
@@ -155,24 +155,53 @@ abstract class API {
         }
 
         $ch = curl_init($aiResponse->getUrl());
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, !$aiResponse->getStream());
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, !$aiResponse->isStream());
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $aiResponse->getBody());
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_HEADER, false);
 
-        if ($aiResponse->getStream()) {
+        $statusCode = 200;
+        $headersSent = false;
+        $bodyBuffer = '';
+
+
+        if ($aiResponse->isStream()) {
+            curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($curl, $header_line) use (&$statusCode) {
+                if (strpos($header_line, 'HTTP/') === 0) {
+                    preg_match('#HTTP/\S+ (\d+)#', $header_line, $matches);
+                    if (isset($matches[1])) {
+                        $statusCode = (int)$matches[1];
+                    }
+                }
+                return strlen($header_line);
+            });
+
             header('Content-Type: text/event-stream');
             header('Connection: keep-alive');
             header('Cache-Control: no-cache');
             flush();
             ob_flush();
 
-            curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($curl, $chunk) {
-                echo $chunk;
-                flush();
-                ob_flush();
+            curl_setopt($ch, CURLOPT_WRITEFUNCTION, function ($curl, $chunk) use (&$statusCode, &$headersSent, &$bodyBuffer) {
+                if ($statusCode >= 400) {
+                    $bodyBuffer .= $chunk;
+                    return strlen($chunk);
+                } else {
+                    if (!$headersSent) {
+                        header('Content-Type: text/event-stream');
+                        header('Connection: keep-alive');
+                        header('Cache-Control: no-cache');
+                        flush();
+                        ob_flush();
+                        $headersSent = true;
+                    }
 
-                return strlen($chunk);
+                    echo $chunk;
+                    flush();
+                    ob_flush();
+                    return strlen($chunk);
+                }
             });
         }
 
@@ -183,10 +212,20 @@ abstract class API {
             throw new \Exception($error_msg);
         }
 
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        http_response_code($httpCode);
+        if (!$aiResponse->isStream()) {
+            $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $bodyBuffer = $response;
+        }
 
-        if (!$aiResponse->getStream()) {
+        http_response_code($statusCode);
+
+        if ($statusCode >= 400) {
+            header('Content-Type: application/json');
+            echo $bodyBuffer;
+            return;
+        }
+
+        if (!$aiResponse->isStream()) {
             header("Content-Type: application/json");
             echo $response;
             return;

@@ -224,6 +224,10 @@
 
         if (!res.ok) {
             const data = await res.json();
+            if (data.error) {
+                throw new Error(data.error.message);
+            }
+
             throw new Error(data.detail);
         }
 
@@ -241,6 +245,10 @@
 
         if (!res.ok) {
             const data = await res.json();
+            if (data.error) {
+                throw new Error(data.error.message);
+            }
+
             throw new Error(data.detail);
         }
 
@@ -251,7 +259,7 @@
 
         if (!proxy) {
             const data = await res.json();
-            return serviceExecutor(data.object, onChunkStream);
+            return serviceExecutor(data, onChunkStream);
         }
 
         if (!stream) {
