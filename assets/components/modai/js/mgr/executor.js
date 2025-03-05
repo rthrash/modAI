@@ -75,6 +75,17 @@
                     };
                 }
             },
+            claude: {
+                content: (newData, currentData = undefined) => {
+                    const currentContent = currentData?.content ?? '';
+
+                    const content = newData.delta?.text || '';
+
+                    return {
+                        content: `${currentContent}${content}`
+                    };
+                }
+            },
             gemini: {
                 content: (newData, currentData = undefined) => {
                     const currentContent = currentData?.content ?? '';
@@ -144,7 +155,36 @@
 
                         try {
                             const parsedData = JSON.parse(data);
-                            console.log(parsedData);
+                            currentData = services.stream[service][parser](parsedData, currentData);
+                            if(onChunkStream) {
+                                onChunkStream(currentData);
+                            }
+                        } catch {}
+                    }
+                }
+
+                buffer = buffer.slice(lastNewlineIndex);
+            }
+
+            if (service === 'claude') {
+                buffer += chunk;
+
+                let lastNewlineIndex = 0;
+                let newlineIndex;
+
+                while ((newlineIndex = buffer.indexOf('\n', lastNewlineIndex)) !== -1) {
+                    const line = buffer.slice(lastNewlineIndex, newlineIndex).trim();
+                    lastNewlineIndex = newlineIndex + 1;
+
+                    if (line.startsWith('data: ')) {
+                        const data = line.slice(6);
+
+                        try {
+                            const parsedData = JSON.parse(data);
+                            if (parsedData.type !== 'content_block_delta') {
+                                continue;
+                            }
+
                             currentData = services.stream[service][parser](parsedData, currentData);
                             if(onChunkStream) {
                                 onChunkStream(currentData);
