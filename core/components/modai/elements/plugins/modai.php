@@ -39,11 +39,6 @@ if (in_array($action, ['resource/create', 'resource/update'])) {
 
     $modx->regClientCSS("{$assetsUrl}css/mgr.css?lit=$lit");
     $modx->regClientStartupScript("{$assetsUrl}js/mgr/modai.js?lit=$lit");
-    $modx->regClientStartupScript("{$assetsUrl}js/mgr/history.js?lit=$lit");
-    $modx->regClientStartupScript("{$assetsUrl}js/mgr/chat_history.js?lit=$lit");
-    $modx->regClientStartupScript("{$assetsUrl}js/mgr/ui.js?lit=$lit");
-    $modx->regClientStartupScript("{$assetsUrl}js/mgr/executor.js?lit=$lit");
     $modx->regClientStartupScript("{$assetsUrl}js/mgr/autosummary.js?lit=$lit");
     $modx->regClientStartupScript("{$assetsUrl}js/mgr/widgets/image_prompt.window.js?lit=$lit");
-    $modx->regClientStartupScript("{$assetsUrl}js/mgr/widgets/text_prompt.window.js?lit=$lit");
 }

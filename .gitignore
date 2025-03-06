@@ -3,3 +3,4 @@ _packages
 .idea
 .vscode
 config.core.php
+node_modules
