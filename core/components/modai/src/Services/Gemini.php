@@ -49,16 +49,9 @@ class Gemini implements AIService {
 
         foreach ($config->getMessages() as $msg) {
             $messages[] = [
-                'role' => 'user',
+                'role' => $msg['role'] === 'user' ? 'user' : 'model',
                 'parts' => [
-                    ['text' => $msg['user']]
-                ]
-            ];
-
-            $messages[] = [
-                'role' => 'model',
-                'parts' => [
-                    ['text' => $msg['assistant']]
+                    ['text' => $msg['content']]
                 ]
             ];
         }

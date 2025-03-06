@@ -104,14 +104,10 @@ Ext.onReady(function() {
     const createFreeTextPrompt = (fieldName) => {
         const wandEl = createWandEl();
         wandEl.addEventListener('click', () => {
-            const win = MODx.load({
-                xtype: 'modai-window-text_prompt',
-                title: 'Text',
+            modAI.ui.freePrompt({
+                key: fieldName,
                 field: fieldName,
-                cacheKey: fieldName
             });
-
-            win.show();
         });
 
         return wandEl;

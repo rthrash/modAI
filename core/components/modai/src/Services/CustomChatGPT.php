@@ -44,13 +44,8 @@ class CustomChatGPT implements AIService
 
         foreach ($config->getMessages() as $msg) {
             $messages[] = [
-                'role' => 'user',
-                'content' => $msg['user']
-            ];
-
-            $messages[] = [
-                'role' => 'assistant',
-                'content' => $msg['assistant']
+                'role' => $msg['role'] === 'user' ? 'user' : 'assistant',
+                'content' => $msg['content']
             ];
         }
 

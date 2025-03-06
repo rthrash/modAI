@@ -9,8 +9,11 @@
                         throw new Error(_('modai.cmp.failed_request'));
                     }
 
+                    const id = data.id;
+
                     return {
-                        content
+                        id,
+                        content,
                     }
                 },
                 image: (data) => {
@@ -33,8 +36,11 @@
                         throw new Error(_('modai.cmp.failed_request'));
                     }
 
+                    const id = data.id;
+
                     return {
-                        content
+                        id,
+                        content,
                     }
                 }
             },
@@ -47,7 +53,8 @@
                     }
 
                     return {
-                        content
+                        id: `gemini-${Date.now()}-${Math.round(Math.random()*1000)}`,
+                        content,
                     }
                 },
                 image: (data) => {
@@ -65,12 +72,13 @@
         },
         stream: {
             chatgpt: {
-                content: (newData, currentData = undefined) => {
+                content: (newData, currentData = {}) => {
                     const currentContent = currentData?.content ?? '';
-
                     const content = newData.choices[0]?.delta?.content || '';
 
                     return {
+                        ...currentData,
+                        id: newData.id,
                         content: `${currentContent}${content}`
                     };
                 }
@@ -82,17 +90,19 @@
                     const content = newData.delta?.text || '';
 
                     return {
+                        ...currentData,
                         content: `${currentContent}${content}`
                     };
                 }
             },
             gemini: {
-                content: (newData, currentData = undefined) => {
+                content: (newData, currentData = {}) => {
                     const currentContent = currentData?.content ?? '';
 
                     const content = newData.candidates[0]?.content?.parts[0]?.text || '';
 
                     return {
+                        ...currentData,
                         content: `${currentContent}${content}`
                     };
                 }
@@ -111,17 +121,24 @@
         }
     }
 
-    const handleStream = async (res, service, parser, onChunkStream) => {
+    const handleStream = async (res, service, parser, onChunkStream, signal) => {
         const reader = res.body.getReader();
         const decoder = new TextDecoder('utf-8');
         let buffer = '';
-        let currentData = undefined;
+        let currentData = {
+            id: `${service}-${Date.now()}-${Math.round(Math.random()*1000)}`
+        };
+
 
         while (true) {
-            const { done, value } = await reader.read();
+            if (signal && signal.aborted) {
+                break;
+            }
+
+            const {done, value} = await reader.read();
             if (done) break;
 
-            const chunk = decoder.decode(value, { stream: true });
+            const chunk = decoder.decode(value, {stream: true});
 
             if (service === 'gemini') {
                 const jsonLines = chunk.trim().split(",\r\n").map((line) => line.replace(/^\[|\]$/g, '')).filter(line => line.trim() !== '');
@@ -129,10 +146,11 @@
                     try {
                         const parsedData = JSON.parse(line);
                         currentData = services.stream[service][parser](parsedData, currentData);
-                        if(onChunkStream) {
+                        if (onChunkStream) {
                             onChunkStream(currentData);
                         }
-                    } catch {}
+                    } catch {
+                    }
                 }
             }
 
@@ -156,10 +174,11 @@
                         try {
                             const parsedData = JSON.parse(data);
                             currentData = services.stream[service][parser](parsedData, currentData);
-                            if(onChunkStream) {
+                            if (onChunkStream) {
                                 onChunkStream(currentData);
                             }
-                        } catch {}
+                        } catch {
+                        }
                     }
                 }
 
@@ -181,12 +200,17 @@
 
                         try {
                             const parsedData = JSON.parse(data);
+                            if (parsedData.type === 'message_start') {
+                                currentData.id = parsedData.message.id;
+                                continue;
+                            }
+
                             if (parsedData.type !== 'content_block_delta') {
                                 continue;
                             }
 
                             currentData = services.stream[service][parser](parsedData, currentData);
-                            if(onChunkStream) {
+                            if (onChunkStream) {
                                 onChunkStream(currentData);
                             }
                         } catch {}
@@ -198,17 +222,22 @@
         }
 
         return currentData;
+
     }
 
-    const serviceExecutor = async (details, onChunkStream = undefined) => {
+    const serviceExecutor = async (details, onChunkStream = undefined, controller = undefined) => {
         if (!details.forExecutor) {
             return details;
         }
 
         const executorDetails = details.forExecutor;
 
+        controller = !controller ? new AbortController() : controller;
+        const signal = controller.signal;
+
         const callService = async (details) => {
             const res = await fetch(details.url, {
+                signal,
                 method: 'POST',
                 body: details.body,
                 headers: details.headers
@@ -227,6 +256,7 @@
 
         const callStreamService = async (details) => {
             const res = await fetch(details.url, {
+                signal,
                 method: 'POST',
                 body: details.body,
                 headers: details.headers
@@ -274,8 +304,8 @@
         return res.json();
     }
 
-    const aiFetch = async (action, params, onChunkStream) => {
-        const controller = new AbortController();
+    const aiFetch = async (action, params, onChunkStream = undefined, controller = undefined) => {
+        controller = !controller ? new AbortController() : controller;
         const signal = controller.signal;
 
         const res = await fetch(`${modAI.apiURL}?action=${action}`, {
@@ -303,7 +333,7 @@
 
         if (!proxy) {
             const data = await res.json();
-            return serviceExecutor(data, onChunkStream);
+            return serviceExecutor(data, onChunkStream, controller);
         }
 
         if (!service || !parser) {
@@ -321,7 +351,7 @@
             return services['buffered'][service][parser](data);
         }
 
-        return handleStream(res, service, parser, onChunkStream);
+        return handleStream(res, service, parser, onChunkStream, signal);
     }
 
     modAI.executor = {
@@ -332,17 +362,17 @@
                 }
             },
             prompt: {
-                freeText: async (params, onChunkStream) => {
-                    return aiFetch('Prompt\\FreeText', params, onChunkStream);
+                freeText: async (params, onChunkStream, controller = undefined) => {
+                    return aiFetch('Prompt\\FreeText', params, onChunkStream, controller);
                 },
-                text: async (params, onChunkStream) => {
-                    return aiFetch('Prompt\\Text', params, onChunkStream);
+                text: async (params, onChunkStream, controller = undefined) => {
+                    return aiFetch('Prompt\\Text', params, onChunkStream, controller);
                 },
-                vision: async (params, onChunkStream) => {
-                    return aiFetch('Prompt\\Vision', params, onChunkStream);
+                vision: async (params, onChunkStream, controller = undefined) => {
+                    return aiFetch('Prompt\\Vision', params, onChunkStream, controller);
                 },
-                image: async (params) => {
-                    return aiFetch('Prompt\\Image', params);
+                image: async (params, controller = undefined) => {
+                    return aiFetch('Prompt\\Image', params, undefined, controller);
                 }
             }
         }

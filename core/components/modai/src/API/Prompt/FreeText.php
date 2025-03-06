@@ -45,13 +45,17 @@ class FreeText extends API
             $systemInstructions[] = $base;
         }
 
+        $userMessages = [];
+
         if (!empty($context) && !empty($contextPrompt)) {
-            $systemInstructions[] = str_replace('{context}', $context, $contextPrompt);
+            $userMessages[] = str_replace('{context}', $context, $contextPrompt);
         }
+
+        $userMessages[] = $prompt;
 
         $aiService = AIServiceFactory::new($model, $this->modx);
         $result = $aiService->getCompletions(
-            [$prompt],
+            $userMessages,
             CompletionsConfig::new($model)
                 ->messages($messages)
                 ->customOptions($customOptions)
