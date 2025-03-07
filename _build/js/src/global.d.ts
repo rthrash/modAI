@@ -1,2 +1,6 @@
 declare function _(key: string, params?: Record<string, string>): string;
-declare const modAI: {apiURL: string};
+declare const modAI: {
+    apiURL: string;
+    resourceFields?: string[];
+    tvs?: string[];
+};

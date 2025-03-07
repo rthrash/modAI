@@ -1,14 +1,23 @@
-type Cache = {
+type Cache<C = unknown> = {
     visible: number;
     values: string[];
-    context: unknown;
-    syncUI?: (data: unknown, noStore?: boolean) => void;
+    context: C;
+    syncUI?: (data: DataOutput<C>, noStore?: boolean) => void;
+}
+
+export type DataOutput<C = unknown> = {
+    value: string,
+    nextStatus: boolean,
+    prevStatus: boolean,
+    current: number,
+    total: number,
+    context: C,
 }
 
 const _cache: Record<string, Cache> = {};
 
 export const history = {
-    _formatOutput(key: string, value?: string) {
+    _formatOutput(key: string, value?: string): DataOutput {
         const cachedItem = _cache[key];
 
         const prevStatus = (cachedItem.visible > 0);
@@ -71,7 +80,7 @@ export const history = {
 
         return output;
     },
-    init(key: string, syncUI?: () => void, initValue?: string, context: unknown = {}) {
+    init<C>(key: string, syncUI?: (data: DataOutput<C>, noStore?: boolean) => void, initValue?: string, context?: C) {
         if (!_cache[key]) {
             _cache[key] = {
                 visible: -1,
@@ -80,6 +89,7 @@ export const history = {
             }
         }
 
+        // @ts-ignore
         _cache[key].syncUI = syncUI;
 
         if (initValue) {
@@ -88,7 +98,7 @@ export const history = {
         }
 
         return {
-            cachedItem: _cache[key],
+            cachedItem: _cache[key] as Cache<C>,
             getData: () => {
                 return this._formatOutput(key);
             },

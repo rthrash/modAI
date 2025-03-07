@@ -1,3 +1,5 @@
+import './resource';
+
 export const window = {};
 
 export { chatHistory } from './chatHistory'

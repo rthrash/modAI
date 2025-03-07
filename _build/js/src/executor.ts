@@ -1,7 +1,7 @@
 type ServiceType = 'chatgpt' | 'claude' | 'gemini';
 type BufferMode = 'buffered' | 'stream';
 
-type ServiceResponse = TextData | ImageData;
+export type ServiceResponse = TextData | ImageData;
 
 type ServiceHandlers = {
     buffered: {
@@ -78,12 +78,12 @@ type DownloadImageParams = ({
     mediaSource?: string | number;
 }
 
-type TextData = {
+export type TextData = {
     id: string;
     content: string;
 }
 
-type ImageData = {
+export type ImageData = {
     url: string;
 } | {
     base64: string;
@@ -467,13 +467,13 @@ export const executor = {
             }
         },
         prompt: {
-            freeText: async (params: FreeTextParams, onChunkStream: ChunkStream<TextData>, controller?: AbortController) => {
+            freeText: async (params: FreeTextParams, onChunkStream?: ChunkStream<TextData>, controller?: AbortController) => {
                 return aiFetch('Prompt\\FreeText', params, onChunkStream, controller);
             },
-            text: async (params: TextParams, onChunkStream: ChunkStream<TextData>, controller?: AbortController) => {
+            text: async (params: TextParams, onChunkStream?: ChunkStream<TextData>, controller?: AbortController) => {
                 return aiFetch('Prompt\\Text', params, onChunkStream, controller);
             },
-            vision: async (params: VisionParams, onChunkStream: ChunkStream<TextData>, controller?: AbortController) => {
+            vision: async (params: VisionParams, onChunkStream?: ChunkStream<TextData>, controller?: AbortController) => {
                 return aiFetch('Prompt\\Vision', params, onChunkStream, controller);
             },
             image: async (params: ImageParams, controller?: AbortController) => {

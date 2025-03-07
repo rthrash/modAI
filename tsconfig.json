@@ -2,12 +2,17 @@
   "compilerOptions": {
     "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "node",
     "strict": true,
     "esModuleInterop": true,
     "outDir": "./dist",
     "sourceMap": true,
-    "lib": ["dom", "es2015"]
+    "allowJs": true,
+    "checkJs": false,
+    "skipLibCheck": true,
+    "lib": ["dom", "es2015"],
+    "types": ["node"]
   },
-  "include": ["_build/js/src/**/*"]
+  "include": [
+    "_build/js/src/**/*"
+  ]
 }

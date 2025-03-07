@@ -2,7 +2,8 @@
   "name": "mod-ai",
   "source": "_build/js/src/index.ts",
   "scripts": {
-    "build": "webpack"
+    "build": "webpack",
+    "dev": "webpack --watch"
   },
   "devDependencies": {
     "ts-loader": "^9.5.2",
