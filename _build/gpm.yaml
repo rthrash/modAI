@@ -54,7 +54,7 @@ systemSettings:
     area: text
     type: textarea
     value: |-
-      Here's context for user's message, act only on this: {context}
+      Here's context for next message, act only on this: {context}
   - key: global.text.max_tokens
     area: text
     value: 2048
