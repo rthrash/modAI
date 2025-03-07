@@ -1,6 +1,7 @@
 import {executor, ImageData} from "./executor";
 import {DataOutput, history} from './history';
 import {ui} from "./ui";
+import {createLoadingOverlay} from "./ui/overlay";
 
 type DataContext = {els: { field: any, wrapper: HistoryElement }[]};
 type HistoryButton = HTMLButtonElement & {
@@ -137,8 +138,7 @@ const createForcedTextPrompt = (field: any, fieldName: string) => {
 
     const wandEl = createWandEl();
     wandEl.addEventListener('click', async () => {
-        //@ts-expect-error Ext
-        Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
+        const done = createLoadingOverlay(field.el.dom);
 
         try {
             const result = await executor.mgr.prompt.text({
@@ -147,11 +147,9 @@ const createForcedTextPrompt = (field: any, fieldName: string) => {
                 field: fieldName
             });
             cache.insert(result.content);
-            //@ts-expect-error Ext
-            Ext.Msg.hide();
+            done();
         } catch (err) {
-            //@ts-expect-error Ext
-            Ext.Msg.hide();
+            done();
             //@ts-expect-error Ext
             Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
         }
@@ -162,7 +160,8 @@ const createForcedTextPrompt = (field: any, fieldName: string) => {
     const cache = history.init(
         fieldName,
         historyNavSync,
-        field.getValue()
+        field.getValue(),
+        {} as DataContext
     );
 
     if (!cache.cachedItem.context.els) {
@@ -216,8 +215,7 @@ const attachField = (cmp: string, fieldName: string) => {
 
     const wandEl = createWandEl();
     wandEl.addEventListener('click', async () => {
-        // @ts-expect-error Ext
-        Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
+        const done = createLoadingOverlay(field.el.dom);
 
         try {
             const result = await executor.mgr.prompt.text({
@@ -228,11 +226,9 @@ const attachField = (cmp: string, fieldName: string) => {
                 cache.insert(data.content, true);
             });
             cache.insert(result.content);
-            // @ts-expect-error Ext
-            Ext.Msg.hide();
+            done();
         } catch (err) {
-            // @ts-expect-error Ext
-            Ext.Msg.hide();
+            done();
             // @ts-expect-error Ext
             Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
         }
@@ -292,8 +288,7 @@ const attachImagePlus = (imgPlusPanel: Element, fieldName: string) => {
 
         const base64Data = canvas.toDataURL('image/png');
 
-        // @ts-expect-error Ext
-        Ext.Msg.wait(_('modai.cmp.generate_ing'), _('modai.cmp.please_wait'));
+        const done = createLoadingOverlay(imagePlus.altTextField.items.items[0].el.dom);
 
         try {
             const result = await executor.mgr.prompt.vision({
@@ -308,11 +303,9 @@ const attachImagePlus = (imgPlusPanel: Element, fieldName: string) => {
             imagePlus.altTextField.items.items[0].setValue(result.content);
             imagePlus.image.altTag = result.content;
             imagePlus.updateValue();
-            // @ts-expect-error Ext
-            Ext.Msg.hide();
+            done();
         } catch (err) {
-            // @ts-expect-error Ext
-            Ext.Msg.hide();
+            done();
             // @ts-expect-error Ext
             Ext.Msg.alert("Failed", _('modai.cmp.failed_try_again', {"msg": err.message}));
         }
@@ -357,7 +350,7 @@ const attachTVs = () => {
 
         if (field.xtype === 'textfield' || field.xtype === 'textarea') {
             // @ts-expect-error MODx
-            const prompt = MODx.config[`modai.tv.${tvName}.prompt`];
+            const prompt = MODx.config[`modai.tv.${tvName}.text.prompt`];
 
             const label = wrapper.dom.querySelector('label');
             if (!label) return;
