@@ -1,4 +1,5 @@
 <?php
+
 namespace modAI\Services;
 
 use modAI\Exceptions\LexiconException;
@@ -61,6 +62,29 @@ class ChatGPT implements AIService
             $input['stream'] = true;
         }
 
+//        $input['tools'] = [
+//            [
+//                'type' => 'function',
+//                'function' => [
+//                    'name' => 'generate-image',
+//                    'description' => 'Generate an image from a text prompt',
+//                    'parameters' => [
+//                        "type" => "object",
+//                        "properties" => [
+//                            "prompt" => [
+//                                "type" => "string",
+//                                "description" => "Text prompt used for the image generation"
+//                            ]
+//                        ],
+//                        "required" => [
+//                            "prompt"
+//                        ],
+//                        "additionalProperties" => false
+//                    ]
+//                ]
+//            ]
+//        ];
+
         return AIResponse::new('chatgpt')
             ->withStream($config->isStream())
             ->withParser('content')
@@ -86,8 +110,8 @@ class ChatGPT implements AIService
                 'role' => 'user',
                 'content' => [
                     [
-                        "type"=> "text",
-                        "text"=> $prompt,
+                        "type" => "text",
+                        "text" => $prompt,
                     ],
                     [
                         "type" => "image_url",
@@ -113,7 +137,8 @@ class ChatGPT implements AIService
     }
 
 
-    public function generateImage(string $prompt, ImageConfig $config): AIResponse {
+    public function generateImage(string $prompt, ImageConfig $config): AIResponse
+    {
         $apiKey = $this->modx->getOption('modai.api.chatgpt.key');
         if (empty($apiKey)) {
             throw new LexiconException('modai.error.invalid_api_key', ['service' => 'chatgpt']);

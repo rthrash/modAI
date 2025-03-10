@@ -1,7 +1,8 @@
-import {executor, ImageData} from "./executor";
+import {executor} from "./executor";
 import {DataOutput, history} from './history';
 import {ui} from "./ui";
 import {createLoadingOverlay} from "./ui/overlay";
+import {Message} from "./chatHistory";
 
 type DataContext = {els: { field: any, wrapper: HistoryElement }[]};
 type HistoryButton = HTMLButtonElement & {
@@ -127,6 +128,9 @@ const createFreeTextPrompt = (fieldName: string) => {
         ui.freePrompt({
             key: fieldName,
             field: fieldName,
+            type: 'text',
+            // @ts-ignore
+            resource: MODx.request.id,
         });
     });
 
@@ -177,30 +181,26 @@ const createForcedTextPrompt = (field: any, fieldName: string) => {
     return aiWrapper;
 }
 
-const createImagePrompt = (defaultPrompt: string, mediaSource: string, fieldName: string, onSuccess: (res: ImageData) => void) => {
+const createImagePrompt = (mediaSource: string, fieldName: string, onSuccess: (msg: Message) => void) => {
     const imageWand = createWandEl();
     imageWand.addEventListener('click', () => {
-        //@ts-expect-error Ext
-        const createColumn = MODx.load({
-            xtype: 'modai-window-image_prompt',
-            title: 'Image',
-            cacheKey: fieldName,
-            record: {
-                //@ts-expect-error Ext
-                resource: MODx.request.id,
-                prompt: defaultPrompt,
-                mediaSource,
-                field: fieldName,
+        ui.freePrompt({
+            key: fieldName,
+            field: fieldName,
+            type: 'image',
+            // @ts-ignore
+            resource: MODx.request.id,
+            image: {
+                mediaSource: parseInt(mediaSource) || undefined,
             },
-            listeners: {
-                success: {
-                    fn: onSuccess,
-                    scope:this
+            imageActions: {
+                copy: false,
+                insert: (msg, modal) => {
+                    onSuccess(msg);
+                    modal.api.closeModal();
                 }
             }
         });
-
-        createColumn.show();
     });
 
     return imageWand;
@@ -261,14 +261,11 @@ const attachImagePlus = (imgPlusPanel: Element, fieldName: string) => {
     const imagePlus = Ext.getCmp(imgPlusPanel.firstElementChild?.id);
 
     const imageWand = createImagePrompt(
-        '',
         imagePlus.imageBrowser.source,
         fieldName,
-        function(res) {
-            if ('url' in res) {
-                imagePlus.imageBrowser.setValue(res.url);
-                imagePlus.onImageChange(res.url)
-            }
+        function(msg) {
+            imagePlus.imageBrowser.setValue(msg.ctx.url);
+            imagePlus.onImageChange(msg.ctx.url)
         }
     );
 
@@ -364,19 +361,16 @@ const attachTVs = () => {
 
         if (field.xtype === 'modx-panel-tv-image') {
             const imageWand = createImagePrompt(
-                '',
                 field.source,
                 fieldName,
-                function(res) {
-                    if ('url' in res) {
+                function(msg) {
                         const eventData = {
-                            relativeUrl: res.url,
-                            url: res.url
+                            relativeUrl: msg.ctx.url,
+                            url: msg.ctx.url
                         };
 
                         field.items.items[1].fireEvent('select', eventData)
                         field.fireEvent('select', eventData);
-                    }
                 }
             );
 

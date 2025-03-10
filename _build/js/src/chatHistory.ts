@@ -1,16 +1,23 @@
+export type MessageType = 'text' | 'image';
+
+export type UpdatableHTMLElement = HTMLElement & {
+    update?: (msg: Message) => void
+};
+
 export type Message = {
     content: string;
-    id?: string;
+    id: string;
     hidden: boolean;
     role: string;
-    el?: HTMLDivElement;
+    type: MessageType;
+    el?: UpdatableHTMLElement;
+    ctx: Record<string, unknown>;
 };
 
 type Namespace = {
     history: Message[];
     idRef: Record<string, Message>;
-    onAddMessage: (msg: Message) => HTMLDivElement | undefined;
-    onUpdateMessage: (message: Message) => void;
+    onAddMessage: (msg: Message) => UpdatableHTMLElement | undefined;
 };
 
 const _namespace: Record<string, Namespace> = {};
@@ -20,35 +27,39 @@ const ROLES = {
     'assistant': 'assistant',
 };
 
-const addMessage = (key: string, content: string, role: string, id?: string, hidden: boolean = false) => {
+const addMessage = (key: string, content: string, role: string, id: string, hidden: boolean = false, type: MessageType = 'text') => {
     const namespace = _namespace[key];
     if (!namespace) {
         return;
     }
 
-    const msgObject: Message = {content, role, id, hidden};
-
-    msgObject.el = namespace.onAddMessage(msgObject);
+    const msgObject: Message = {content, role, id, hidden, type, ctx: {}};
 
     const index = namespace.history.push(msgObject) - 1;
     if (id) {
         namespace.idRef[id] = namespace.history[index];
     }
+
+    msgObject.el = namespace.onAddMessage(msgObject);
 }
 
-const updateMessage = (key: string, id: string, content: string) => {
+const updateMessage = (key: string, id: string, content: string, type: MessageType = 'text') => {
     const namespace = _namespace[key];
     if (!namespace) {
         return;
     }
 
     if (!namespace.idRef[id]) {
-        addMessage(key, content, ROLES.assistant, id);
+        addMessage(key, content, ROLES.assistant, id, false, type);
         return;
     }
 
-    namespace.idRef[id].content = content;
-    namespace.onUpdateMessage(namespace.idRef[id]);
+    const msg = namespace.idRef[id];
+    msg.content = content;
+
+    if (msg.el && msg.el.update) {
+        msg.el.update(msg);
+    }
 }
 
 const getMessage = (key: string, id: string) => {
@@ -61,28 +72,26 @@ const getMessage = (key: string, id: string) => {
 }
 
 export const chatHistory = {
-    init: (key: string, onAddMessage: (msg: Message) => HTMLDivElement | undefined, onUpdateMessage: (msg: Message) => void) => {
+    init: (key: string, onAddMessage: Namespace['onAddMessage']) => {
         if (!_namespace[key]) {
             _namespace[key] = {
                 history: [],
                 idRef: {},
                 onAddMessage,
-                onUpdateMessage,
             };
         }
 
         _namespace[key].onAddMessage = onAddMessage;
-        _namespace[key].onUpdateMessage = onUpdateMessage;
 
         return {
-            addUserMessage: (content: string, hidden?: boolean) => {
-                addMessage(key, content, ROLES.user, undefined, hidden);
+            addUserMessage: (content: string, id: string, hidden?: boolean, type: MessageType = 'text') => {
+                addMessage(key, content, ROLES.user, id, hidden, type);
             },
-            addAssistantMessage: (content: string, id: string) => {
-                addMessage(key, content, ROLES.assistant, id);
+            addAssistantMessage: (content: string, id: string, type: MessageType = 'text') => {
+                addMessage(key, content, ROLES.assistant, id, false, type);
             },
-            updateAssistantMessage: (id: string, content: string) => {
-                updateMessage(key, id, content);
+            updateAssistantMessage: (id: string, content: string, type: MessageType = 'text') => {
+                updateMessage(key, id, content, type);
             },
             getAssistantMessage: (id: string) => {
                 return getMessage(key, id);

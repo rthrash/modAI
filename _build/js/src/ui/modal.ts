@@ -1,7 +1,8 @@
 import {applyStyles, createElement, nlToBr} from "./utils";
-import {createContentIframe, type Iframe} from "./iframe";
+import {createContentIframe} from "./iframe";
 import {executor} from "../executor";
-import {chatHistory, Message} from "../chatHistory";
+import {chatHistory, Message, UpdatableHTMLElement} from "../chatHistory";
+import {createActionButton} from "./actionButton";
 
 export type ModalConfig = {
     key: string;
@@ -9,8 +10,18 @@ export type ModalConfig = {
     context?: string;
     field?: string;
     customCSS?: string[];
-    actions?: {
-        insert?: (msg: Message | undefined, closeModal: () => void) => void;
+    type?: 'text' | 'image',
+    resource?: number;
+    image?: {
+        mediaSource?: number;
+    };
+    textActions?: {
+        copy?: boolean | ((msg: Message, modal: Modal) => void);
+        insert?: (msg: Message, modal: Modal) => void;
+    },
+    imageActions?: {
+        copy?: boolean | ((msg: Message, modal: Modal) => void);
+        insert?: (msg: Message, modal: Modal) => void;
     }
 };
 
@@ -326,6 +337,10 @@ export const createModal = (config: ModalConfig) => {
         return;
     }
 
+    if (!config.type) {
+        config.type = 'text';
+    }
+
     const buildModal = () => {
         // Create overlay
         const modalOverlay = createElement('div', styles.modalOverlay);
@@ -492,11 +507,7 @@ export const createModal = (config: ModalConfig) => {
         if (messages.length > 0) {
             modal.chatMessages.style.display = 'block';
             messages.forEach((msg) => {
-                if (msg.role === 'user') {
-                    addUserMessage(msg.content);
-                } else {
-                    addAssistantMessage(msg.content, msg.id);
-                }
+                renderMessage(msg);
             });
         }
 
@@ -565,7 +576,19 @@ export const createModal = (config: ModalConfig) => {
             return;
         }
 
-        void sendMessage('Try again');
+        if (config.type === 'text') {
+            void sendMessage('Try again');
+            return;
+        }
+
+        if (config.type === 'image') {
+            const latestUserMsg = history.getMessages().reverse().find((msg) => msg.role === 'user');
+            if (latestUserMsg) {
+                void sendMessage(latestUserMsg.content);
+            }
+
+            return;
+        }
     }
 
     const addUserMessage = (content: string) => {
@@ -573,12 +596,16 @@ export const createModal = (config: ModalConfig) => {
             modal.chatMessages.style.display = 'block';
         }
 
-        const messageDiv = createElement('div', {
+        const messageDiv: UpdatableHTMLElement = createElement('div', {
             ...styles.message,
             ...styles.userMessage
         });
 
         messageDiv.innerHTML = nlToBr(content);
+
+        messageDiv.update = (msg) => {
+            messageDiv.innerHTML = nlToBr(msg.content);
+        }
 
         modal.chatMessages.appendChild(messageDiv);
         modal.chatMessages.scrollTop = modal.chatMessages.scrollHeight;
@@ -614,13 +641,12 @@ export const createModal = (config: ModalConfig) => {
             modal.chatMessages.style.display = 'block';
         }
 
-        const messageDiv = createElement('div', {
+        const messageDiv: UpdatableHTMLElement = createElement('div', {
             ...styles.message,
             ...styles.aiMessage
         });
 
         const messageId = providedId || 'msg-' + Date.now();
-        messageDiv.dataset.messageId = messageId;
 
         const contentDiv = createElement('div', styles.messageContent);
 
@@ -630,27 +656,99 @@ export const createModal = (config: ModalConfig) => {
 
         const actionsDiv = createElement('div', styles.messageActions);
 
-        const copyBtn = createElement('button', styles.actionButton);
-        const copyIcon = createElement('span', {
-            ...styles.icon,
-            backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'%234a5568\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z\'/%3E%3Cpath d=\'M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z\'/%3E%3C/svg%3E")'
-        });
-        copyBtn.append(copyIcon, document.createTextNode('Copy'));
-        copyBtn.addEventListener('click', () => copyToClipboard(messageId, copyBtn));
+        const message = history.getAssistantMessage(messageId);
+        if (message) {
+            if (config.type === 'text') {
+                if (config.textActions?.copy !== false) {
+                    actionsDiv.append(createActionButton({
+                        message: message,
+                        modal,
+                        icon: 'copy',
+                        label: 'Copy',
+                        completedText: 'Copied!',
+                        onClick: typeof config.textActions?.copy === 'function' ? config.textActions.copy : copyToClipboard
+                    }));
+                }
 
-        actionsDiv.append(copyBtn);
+                if (typeof config.textActions?.insert === 'function') {
+                    actionsDiv.append(createActionButton({
+                        message: message,
+                        modal,
+                        icon: 'insert',
+                        label: 'Insert',
+                        completedText: 'Inserted!',
+                        onClick: config.textActions.insert
+                    }));
+                }
+            }
 
-        const insertCb = config.actions?.insert;
-        if (insertCb && typeof insertCb === 'function') {
-            const insertBtn = createElement('button', styles.actionButton);
-            const insertIcon = createElement('span', {
-                ...styles.icon,
-                backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'%234a5568\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z\'/%3E%3Cpath d=\'M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z\'/%3E%3C/svg%3E")'
-            });
-            insertBtn.append(insertIcon, document.createTextNode('Insert'));
-            insertBtn.addEventListener('click', () => insertCb(history.getAssistantMessage(messageId), closeModal));
+            if (config.type === 'image') {
+                if (config.imageActions?.copy !== false) {
+                    actionsDiv.append(createActionButton({
+                        message: message,
+                        modal,
+                        icon: 'copy',
+                        label: 'Copy',
+                        loadingText: 'Downloading...',
+                        completedText: 'Copied!',
+                        onClick: async (msg, modal) => {
+                            const handler = typeof config.textActions?.copy === 'function' ? config.textActions.copy : copyToClipboard;
 
-            actionsDiv.append(insertBtn);
+                            if (msg.ctx.downloaded === true) {
+                                handler(msg, modal);
+                                return;
+                            }
+                            const data = await executor.mgr.download.image({
+                                url: msg.content,
+                                field: config.field,
+                                namespace: config.namespace,
+                                resource: config.resource,
+                                mediaSource: config.image?.mediaSource,
+                            });
+
+                            msg.content = data.fullUrl;
+                            msg.ctx.downloaded = true;
+                            msg.ctx.url = data.url;
+                            msg.ctx.fullUrl = data.fullUrl;
+
+                            handler(msg, modal);
+                        }
+                    }));
+                }
+
+                const insertCb = config.imageActions?.insert;
+                if (typeof insertCb === 'function') {
+                    actionsDiv.append(createActionButton({
+                        message: message,
+                        modal,
+                        icon: 'insert',
+                        label: 'Insert',
+                        completedText: 'Inserted!',
+                        loadingText: 'Downloading...',
+                        onClick: async (msg, modal) => {
+
+                            if (msg.ctx.downloaded === true) {
+                                insertCb(msg, modal);
+                                return;
+                            }
+                            const data = await executor.mgr.download.image({
+                                url: msg.content,
+                                field: config.field,
+                                namespace: config.namespace,
+                                resource: config.resource,
+                                mediaSource: config.image?.mediaSource,
+                            });
+
+                            msg.content = data.fullUrl;
+                            msg.ctx.downloaded = true;
+                            msg.ctx.url = data.url;
+                            msg.ctx.fullUrl = data.fullUrl;
+
+                            insertCb(msg, modal);
+                        }
+                    }));
+                }
+            }
         }
 
         messageDiv.append(contentDiv, actionsDiv);
@@ -658,20 +756,46 @@ export const createModal = (config: ModalConfig) => {
         modal.chatMessages.appendChild(messageDiv);
         modal.chatMessages.scrollTop = modal.chatMessages.scrollHeight;
 
+        messageDiv.update = (msg) => {
+            const iframeDocument = iframe.contentDocument;
+            if (!iframeDocument) {
+                return;
+            }
+            if (msg.type === 'image') {
+                iframeDocument.body.innerHTML = `<img src="${msg.content}" />`;
+            } else {
+                iframeDocument.body.innerHTML = nlToBr(msg.content);
+            }
+
+            iframe.syncHeight();
+        }
+
         return messageDiv;
     }
 
-    const copyToClipboard = (messageId: string, copyBtn: HTMLButtonElement) => {
-        const message = history.getAssistantMessage(messageId);
-        if (!message) return;
+    const renderMessage = (msg: Message) => {
+        if (msg.hidden) {
+            return;
+        }
 
+        if (msg.role === 'user') {
+            return addUserMessage(msg.content);
+        }
+
+        if (msg.type === 'image') {
+            return addAssistantMessage(`<img src="${msg.content}" />`, msg.id);
+        }
+
+        return addAssistantMessage(msg.content, msg.id);
+    }
+
+    const copyToClipboard = async (message: Message) => {
         if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(message.content)
-                .then(() => {
-                })
-                .catch(() => {
-                    addErrorMessage(_('modai.cmp.failed_copy'));
-                });
+            try {
+                await navigator.clipboard.writeText(message.content);
+            } catch {
+                addErrorMessage(_('modai.cmp.failed_copy'));
+            }
         } else {
             try {
                 const textarea = createElement('textarea');
@@ -685,17 +809,6 @@ export const createModal = (config: ModalConfig) => {
                 addErrorMessage(_('modai.cmp.failed_copy'));
             }
         }
-
-        const originalContent = copyBtn.innerHTML;
-        const copyIcon = createElement('span', {
-            ...styles.icon,
-            backgroundImage: 'url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'16\' height=\'16\' fill=\'%234a5568\' viewBox=\'0 0 16 16\'%3E%3Cpath d=\'M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z\'/%3E%3Cpath d=\'M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z\'/%3E%3C/svg%3E")'
-        });
-        copyBtn.innerHTML = '';
-        copyBtn.append(copyIcon, document.createTextNode('Copied!'));
-        setTimeout(() => {
-            copyBtn.innerHTML = originalContent;
-        }, 2000);
     }
 
     const setLoadingState = (loading: boolean) => {
@@ -749,24 +862,35 @@ export const createModal = (config: ModalConfig) => {
         modal.abortController = new AbortController();
 
         const messages = history.getMessagesHistory();
-        history.addUserMessage(message, hidePrompt);
+        const messageId = 'user-msg-' + Date.now() + (Math.round(Math.random() * 1000));
+        history.addUserMessage(message, messageId, hidePrompt);
 
         try {
-            const data = await executor.mgr.prompt.freeText(
-                {
-                    namespace: config.namespace,
-                    context: config.context,
-                    prompt: message,
-                    field: config.field || '',
-                    messages,
-                },
-                (data) => {
-                    history.updateAssistantMessage(data.id, data.content);
-                },
-                modal.abortController
-            );
+            if (config.type === 'text') {
+                const data = await executor.mgr.prompt.freeText(
+                    {
+                        namespace: config.namespace,
+                        context: config.context,
+                        prompt: message,
+                        field: config.field || '',
+                        messages,
+                    },
+                    (data) => {
+                        history.updateAssistantMessage(data.id, data.content);
+                    },
+                    modal.abortController
+                );
 
-            history.updateAssistantMessage(data.id, data.content);
+                history.updateAssistantMessage(data.id, data.content);
+            }
+
+            if (config.type === 'image') {
+                const data = await executor.mgr.prompt.image({
+                    prompt: message
+                }, modal.abortController);
+
+                history.addAssistantMessage(data.url, data.id, 'image');
+            }
 
             modal.abortController = undefined;
         } catch (err) {
@@ -786,40 +910,9 @@ export const createModal = (config: ModalConfig) => {
     }
 
     const history = chatHistory.init(
-        config.key,
+        `${config.key}/${config.type}`,
         (msg) => {
-            if (msg.hidden) {
-                return;
-            }
-
-            if (msg.role === 'user') {
-                return addUserMessage(msg.content);
-            }
-
-            return addAssistantMessage(msg.content, msg.id);
-        },
-        (msg) => {
-            if (!msg.el) {
-                return;
-            }
-
-            if (msg.role === 'user') {
-                msg.el.textContent = msg.content;
-                return;
-            }
-
-            const iframe = msg.el?.firstChild?.firstChild as Iframe;
-            if (!iframe) {
-                return;
-            }
-
-            const iframeDocument = iframe.contentDocument;
-            if (!iframeDocument) {
-                return;
-            }
-
-            iframeDocument.body.innerHTML = nlToBr(msg.content);
-            iframe.syncHeight();
+            return renderMessage(msg);
         }
     );
 

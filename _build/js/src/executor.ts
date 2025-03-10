@@ -69,14 +69,13 @@ type ImageParams = {
     namespace?: string;
 }
 
-type DownloadImageParams = ({
+type DownloadImageParams = {
     url: string
-} | { image: string }) & {
     field?: string;
     namespace?: string;
     resource?: string | number;
     mediaSource?: string | number;
-}
+};
 
 export type TextData = {
     id: string;
@@ -84,9 +83,8 @@ export type TextData = {
 }
 
 export type ImageData = {
+    id: string;
     url: string;
-} | {
-    base64: string;
 }
 
 type ChunkStream<D = unknown> = (data: D) => void;
@@ -116,6 +114,7 @@ const services: ServiceHandlers = {
                 }
 
                 return {
+                    id: `chatgpt-${Date.now()}-${Math.round(Math.random()*1000)}`,
                     url
                 }
             }
@@ -157,7 +156,8 @@ const services: ServiceHandlers = {
                 }
 
                 return {
-                    base64: `data:image/png;base64,${base64}`
+                    id: `gemini-${Date.now()}-${Math.round(Math.random()*1000)}`,
+                    url: `data:image/png;base64,${base64}`
                 }
             }
         }
@@ -384,7 +384,7 @@ const serviceExecutor = async <D extends ServiceResponse>(details: ExecutorData,
     return services['buffered'][executorDetails.service as ServiceType][executorDetails.parser as keyof ServiceHandlers['buffered'][ServiceType]](data) as D;
 }
 
-const modxFetch = async (action: string, params: Record<string, unknown>) => {
+const modxFetch = async <R>(action: string, params: Record<string, unknown>) => {
     const res = await fetch(`${modAI.apiURL}?action=${action}`, {
         method: 'POST',
         body: JSON.stringify(params),
@@ -402,7 +402,7 @@ const modxFetch = async (action: string, params: Record<string, unknown>) => {
         throw new Error(data.detail);
     }
 
-    return res.json();
+    return await res.json() as R;
 }
 
 const aiFetch = async <D extends ServiceResponse>(action: string, params: Record<string, unknown>, onChunkStream?: ChunkStream<D>, controller?: AbortController): Promise<D> => {
@@ -463,7 +463,7 @@ export const executor = {
     mgr: {
         download: {
             image: async (params: DownloadImageParams) => {
-                return await modxFetch('Download\\Image', params);
+                return await modxFetch<{url: string; fullUrl: string}>('Download\\Image', params);
             }
         },
         prompt: {
@@ -477,7 +477,7 @@ export const executor = {
                 return aiFetch('Prompt\\Vision', params, onChunkStream, controller);
             },
             image: async (params: ImageParams, controller?: AbortController) => {
-                return aiFetch('Prompt\\Image', params, undefined, controller);
+                return aiFetch<ImageData>('Prompt\\Image', params, undefined, controller);
             }
         }
     }

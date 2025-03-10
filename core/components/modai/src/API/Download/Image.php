@@ -17,7 +17,6 @@ class Image extends API {
         $data = $request->getParsedBody();
 
         $url = $this->modx->getOption('url', $data);
-        $image = $this->modx->getOption('image', $data);
         $field = $this->modx->getOption('field', $data, '');
         $namespace = $this->modx->getOption('namespace', $data, 'modai');
         $resource = (int)$this->modx->getOption('resource', $data, 0);
@@ -40,7 +39,7 @@ class Image extends API {
 
         $allowedDomains = array_merge($additionalDomains, $this->allowedDomains);
 
-        if (!empty($url)) {
+        if (!empty($url) && (strncmp($url, 'data:', strlen('data:')) !== 0)) {
             $domainAllowed = false;
             foreach ($allowedDomains as $domain) {
                 if (strncmp($url, $domain, strlen($domain)) === 0) {
@@ -65,7 +64,7 @@ class Image extends API {
         $path = Settings::getImageSetting($this->modx, $field, 'path');
         $filePath = $this->createFilePath($path, $resource);
 
-        $image = file_get_contents(empty($url) ? $image : $url);
+        $image = file_get_contents($url);
 
         $source->createObject($filePath[0], $filePath[1], $image);
 
