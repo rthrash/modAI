@@ -343,13 +343,4 @@ export const styles = {
         opacity: '0',
         transition: 'opacity 0.2s ease',
     },
-    imagePreviewHover: {
-        '&:hover': {
-            transform: 'scale(1.05)',
-        },
-        '&:hover .image-preview-remove': {
-            opacity: '1',
-        }
-    },
-};
-
+} satisfies Record<string, Partial<CSSStyleDeclaration>>;
