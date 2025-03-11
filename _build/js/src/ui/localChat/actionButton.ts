@@ -1,6 +1,6 @@
-import {applyStyles, createElement} from "./utils";
-import {Message} from "../chatHistory";
-import {Modal} from "./modal";
+import {applyStyles, createElement} from "../utils";
+import type {Message} from "../../chatHistory";
+import type {Modal} from "./types";
 
 type ActionButtonConfig = {
     label: string;

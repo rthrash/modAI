@@ -43,12 +43,17 @@ type ExecutorData = {
     forExecutor: ForExecutor;
 } | string;
 
+export type TextPrompt = {type: 'text', value: string}
+export type ImagePrompt = {type: 'image', value: string}
+
+export type Prompt = string | [TextPrompt, ...ImagePrompt[]];
+
 type FreeTextParams = {
-    prompt: string;
+    prompt: Prompt;
     field?: string;
     context?: string;
     namespace?: string;
-    messages: {role: string, content: string}[];
+    messages: {role: string, content: Prompt}[];
 }
 
 type TextParams = {
@@ -107,10 +112,16 @@ const services: ServiceHandlers = {
                 }
             },
             image: (data) => {
-                const url = data?.data?.[0]?.url;
+                let url = data?.data?.[0]?.url;
 
                 if (!url) {
-                    throw new Error(_('modai.cmp.failed_request'));
+                   url = data?.data?.[0]?.b64_json;
+
+                   if (!url) {
+                       throw new Error(_('modai.cmp.failed_request'));
+                   }
+
+                    url = `data:image/png;base64,${url}`
                 }
 
                 return {
@@ -244,6 +255,7 @@ const handleStream = async (res: Response, service: string, parser: 'content', o
                     const parsedData = JSON.parse(line);
                     currentData = services.stream[service][parser](parsedData, currentData);
                     if (onChunkStream) {
+                    console.log('currentData', currentData);
                         onChunkStream(currentData);
                     }
                 } catch {
@@ -352,6 +364,7 @@ const serviceExecutor = async <D extends ServiceResponse>(details: ExecutorData,
     }
 
     const callStreamService = async (details: ForExecutor) => {
+        console.log('calling service as stream');
         if (executorDetails.parser !== 'content') {
             throw new Error(_('modai.cmp.service_unsupported'));
         }

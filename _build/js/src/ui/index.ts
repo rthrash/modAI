@@ -1,5 +1,6 @@
-import {createModal, type ModalConfig} from "./modal";
+import {createModal} from "./localChat";
 import { createLoadingOverlay } from './overlay'
+import type {ModalConfig} from "./localChat/types";
 
 
 export const ui = {

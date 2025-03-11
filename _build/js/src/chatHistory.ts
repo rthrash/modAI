@@ -1,3 +1,5 @@
+import {Prompt} from "./executor";
+
 export type MessageType = 'text' | 'image';
 
 export type UpdatableHTMLElement = HTMLElement & {
@@ -5,7 +7,7 @@ export type UpdatableHTMLElement = HTMLElement & {
 };
 
 export type Message = {
-    content: string;
+    content: Prompt;
     id: string;
     hidden: boolean;
     role: string;
@@ -27,7 +29,7 @@ const ROLES = {
     'assistant': 'assistant',
 };
 
-const addMessage = (key: string, content: string, role: string, id: string, hidden: boolean = false, type: MessageType = 'text') => {
+const addMessage = (key: string, content: Prompt, role: string, id: string, hidden: boolean = false, type: MessageType = 'text') => {
     const namespace = _namespace[key];
     if (!namespace) {
         return;
@@ -84,7 +86,7 @@ export const chatHistory = {
         _namespace[key].onAddMessage = onAddMessage;
 
         return {
-            addUserMessage: (content: string, id: string, hidden?: boolean, type: MessageType = 'text') => {
+            addUserMessage: (content: Prompt, id: string, hidden?: boolean, type: MessageType = 'text') => {
                 addMessage(key, content, ROLES.user, id, hidden, type);
             },
             addAssistantMessage: (content: string, id: string, type: MessageType = 'text') => {

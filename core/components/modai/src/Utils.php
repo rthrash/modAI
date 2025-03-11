@@ -1,6 +1,8 @@
 <?php
 namespace modAI;
 
+use modAI\Exceptions\LexiconException;
+
 class Utils {
     public static function explodeAndClean(string $stringArray, string $delimiter = ',', bool $keepDuplicates = false): array
     {
@@ -12,5 +14,20 @@ class Utils {
         }
 
         return array_filter($array);
+    }
+
+    public static function parseDataURL($dataURL) {
+        if (strpos($dataURL, 'data:') !== 0) {
+            return $dataURL;
+        }
+
+        if (preg_match('/^data:([^;]+);base64,(.+)$/', $dataURL, $matches)) {
+            return [
+                'mimeType' => $matches[1],
+                'base64' => $matches[2]
+            ];
+        }
+
+        throw new LexiconException('modai.error.invalid_data_url');
     }
 }

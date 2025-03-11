@@ -6,9 +6,10 @@ use modAI\Services\Config\CompletionsConfig;
 use modAI\Services\Config\ImageConfig;
 use modAI\Services\Config\VisionConfig;
 use modAI\Services\Response\AIResponse;
+use modAI\Utils;
 use MODX\Revolution\modX;
 
-class Gemini implements AIService {
+class Gemini extends BaseService {
     private modX $modx;
 
     const COMPLETIONS_API = 'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={apiKey}';
@@ -18,6 +19,43 @@ class Gemini implements AIService {
     public function __construct(modX &$modx)
     {
         $this->modx =& $modx;
+    }
+
+    protected function formatMessageContentItem($item): array
+    {
+        if ($item['type'] === 'text') {
+            return [
+                'text' => $item['value']
+            ];
+        }
+
+        if ($item['type'] === 'image') {
+            $data = Utils::parseDataURL($item['value']);
+            if (is_string($data)) {
+                return [
+                    'file_data' => [
+                        "mime_type" => "image/jpeg",
+                        "file_uri" => $data,
+                    ]
+                ];
+            }
+
+            return [
+                'inline_data' => [
+                    "mime_type" => $data['mimeType'],
+                    "data" => $data['base64'],
+                ]
+            ];
+        }
+
+        throw new LexiconException("modai.error.unsupported_content_type", ['type' => $item['type']] );
+    }
+
+    protected function formatStringMessageContent(string $item)
+    {
+        return [[
+            'text' => $item
+        ]];
     }
 
     public function getCompletions(array $data, CompletionsConfig $config): AIResponse
@@ -50,18 +88,14 @@ class Gemini implements AIService {
         foreach ($config->getMessages() as $msg) {
             $messages[] = [
                 'role' => $msg['role'] === 'user' ? 'user' : 'model',
-                'parts' => [
-                    ['text' => $msg['content']]
-                ]
+                'parts' => $this->formatUserMessageContent($msg['content'])
             ];
         }
 
         foreach ($data as $msg) {
             $messages[] = [
                 'role' => 'user',
-                'parts' => [
-                    ['text' => $msg]
-                ]
+                'parts' => $this->formatUserMessageContent($msg)
             ];
         }
 
@@ -111,6 +145,10 @@ class Gemini implements AIService {
                     ]
                 ],
             ]
+        ];
+
+        $input["generationConfig"] = [
+            "maxOutputTokens" => $config->getMaxTokens(),
         ];
 
         $url = self::COMPLETIONS_API;

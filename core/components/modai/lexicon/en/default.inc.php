@@ -102,3 +102,6 @@ $_lang['modai.error.image_required'] = "Image or URL is required";
 $_lang['modai.error.ms_required'] = "Media Source is required";
 $_lang['modai.error.prompt_required'] = "Prompt is required";
 $_lang['modai.error.resource_required'] = "Resource is required";
+$_lang['modai.error.unsupported_content_type'] = 'Content type [[+type]] is not supported';
+$_lang['modai.error.invalid_data_url'] = 'Invalid data URL';
+$_lang['modai.error.failed_to_fetch_image'] = 'Failed to fetch image';

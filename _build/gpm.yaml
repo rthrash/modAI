@@ -88,6 +88,9 @@ systemSettings:
     area: vision
     type: combo-boolean
     value: 0
+  - key: global.vision.max_tokens
+    area: vision
+    value: 1024
 
   - key: global.image.model
     area: image

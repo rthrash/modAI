@@ -8,7 +8,7 @@ use modAI\Services\Config\VisionConfig;
 use modAI\Services\Response\AIResponse;
 use MODX\Revolution\modX;
 
-class CustomChatGPT implements AIService
+class CustomChatGPT extends BaseService
 {
     private modX $modx;
 
@@ -18,6 +18,27 @@ class CustomChatGPT implements AIService
     public function __construct(modX &$modx)
     {
         $this->modx =& $modx;
+    }
+
+    protected function formatMessageContentItem($item): array
+    {
+        if ($item['type'] === 'text') {
+            return [
+                'type' => 'text',
+                'text' => $item['value'],
+            ];
+        }
+
+        if ($item['type'] === 'image') {
+            return [
+                'type' => 'image_url',
+                'image_url' => [
+                    'url' => $item['value']
+                ],
+            ];
+        }
+
+        throw new LexiconException("modai.error.unsupported_content_type", ['type' => $item['type']] );
     }
 
     public function getCompletions(array $data, CompletionsConfig $config): AIResponse
@@ -45,14 +66,14 @@ class CustomChatGPT implements AIService
         foreach ($config->getMessages() as $msg) {
             $messages[] = [
                 'role' => $msg['role'] === 'user' ? 'user' : 'assistant',
-                'content' => $msg['content']
+                'content' => $this->formatUserMessageContent($msg['content'])
             ];
         }
 
         foreach ($data as $msg) {
             $messages[] = [
                 'role' => 'user',
-                'content' => $msg
+                'content' => $this->formatUserMessageContent($msg)
             ];
         }
 

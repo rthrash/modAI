@@ -28,6 +28,7 @@ class Vision extends API
         $model = Settings::getVisionSetting($this->modx, $field, 'model', $namespace);
         $prompt = Settings::getVisionSetting($this->modx, $field, 'prompt', $namespace);
         $customOptions = Settings::getVisionSetting($this->modx, $field, 'custom_options', $namespace, false);
+        $maxTokens = (int)Settings::getVisionSetting($this->modx, $field, 'max_tokens', $namespace);
 
         $aiService = AIServiceFactory::new($model, $this->modx);
         $result = $aiService->getVision(
@@ -36,6 +37,7 @@ class Vision extends API
             VisionConfig::new($model)
                 ->customOptions($customOptions)
                 ->stream($stream)
+                ->maxTokens($maxTokens)
         );
 
         $this->proxyAIResponse($result);

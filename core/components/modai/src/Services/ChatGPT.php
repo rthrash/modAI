@@ -9,7 +9,7 @@ use modAI\Services\Config\VisionConfig;
 use modAI\Services\Response\AIResponse;
 use MODX\Revolution\modX;
 
-class ChatGPT implements AIService
+class ChatGPT extends BaseService
 {
     private modX $modx;
 
@@ -19,6 +19,27 @@ class ChatGPT implements AIService
     public function __construct(modX &$modx)
     {
         $this->modx =& $modx;
+    }
+
+    protected function formatMessageContentItem($item): array
+    {
+        if ($item['type'] === 'text') {
+            return [
+                'type' => 'text',
+                'text' => $item['value'],
+            ];
+        }
+
+        if ($item['type'] === 'image') {
+            return [
+                'type' => 'image_url',
+                'image_url' => [
+                    'url' => $item['value']
+                ],
+            ];
+        }
+
+        throw new LexiconException("modai.error.unsupported_content_type", ['type' => $item['type']] );
     }
 
     public function getCompletions(array $data, CompletionsConfig $config): AIResponse
@@ -41,14 +62,14 @@ class ChatGPT implements AIService
         foreach ($config->getMessages() as $msg) {
             $messages[] = [
                 'role' => $msg['role'] === 'user' ? 'user' : 'assistant',
-                'content' => $msg['content']
+                'content' => $this->formatUserMessageContent($msg['content'])
             ];
         }
 
         foreach ($data as $msg) {
             $messages[] = [
                 'role' => 'user',
-                'content' => $msg
+                'content' => $this->formatUserMessageContent($msg)
             ];
         }
 
@@ -61,29 +82,6 @@ class ChatGPT implements AIService
         if ($config->isStream()) {
             $input['stream'] = true;
         }
-
-//        $input['tools'] = [
-//            [
-//                'type' => 'function',
-//                'function' => [
-//                    'name' => 'generate-image',
-//                    'description' => 'Generate an image from a text prompt',
-//                    'parameters' => [
-//                        "type" => "object",
-//                        "properties" => [
-//                            "prompt" => [
-//                                "type" => "string",
-//                                "description" => "Text prompt used for the image generation"
-//                            ]
-//                        ],
-//                        "required" => [
-//                            "prompt"
-//                        ],
-//                        "additionalProperties" => false
-//                    ]
-//                ]
-//            ]
-//        ];
 
         return AIResponse::new('chatgpt')
             ->withStream($config->isStream())
@@ -105,6 +103,7 @@ class ChatGPT implements AIService
 
         $input = $config->getCustomOptions();
         $input['model'] = $config->getModel();
+        $input['max_tokens'] = $config->getMaxTokens();
         $input['messages'] = [
             [
                 'role' => 'user',
@@ -151,6 +150,7 @@ class ChatGPT implements AIService
         $input['size'] = $config->getSize();
         $input['quality'] = $config->getQuality();
         $input['style'] = $config->getStyle();
+        $input['response_format'] = 'url';
 
         return AIResponse::new('chatgpt')
             ->withParser('image')

@@ -1,8 +1,9 @@
 import {executor} from "./executor";
-import {DataOutput, history} from './history';
+import { history} from './history';
 import {ui} from "./ui";
 import {createLoadingOverlay} from "./ui/overlay";
-import {Message} from "./chatHistory";
+import type {DataOutput} from './history';
+import type {Message} from "./chatHistory";
 
 type DataContext = {els: { field: any, wrapper: HistoryElement }[]};
 type HistoryButton = HTMLButtonElement & {
@@ -128,6 +129,7 @@ const createFreeTextPrompt = (fieldName: string) => {
         ui.localChat({
             key: fieldName,
             field: fieldName,
+            overlay: false,
             type: 'text',
             availableTypes: ['text', 'image'],
             // @ts-ignore
