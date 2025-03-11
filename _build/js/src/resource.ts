@@ -125,10 +125,11 @@ const createHistoryNav = (cache: ReturnType<typeof history.init<DataContext>>) =
 const createFreeTextPrompt = (fieldName: string) => {
     const wandEl = createWandEl();
     wandEl.addEventListener('click', () => {
-        ui.freePrompt({
+        ui.localChat({
             key: fieldName,
             field: fieldName,
             type: 'text',
+            availableTypes: ['text', 'image'],
             // @ts-ignore
             resource: MODx.request.id,
         });
@@ -184,7 +185,7 @@ const createForcedTextPrompt = (field: any, fieldName: string) => {
 const createImagePrompt = (mediaSource: string, fieldName: string, onSuccess: (msg: Message) => void) => {
     const imageWand = createWandEl();
     imageWand.addEventListener('click', () => {
-        ui.freePrompt({
+        ui.localChat({
             key: fieldName,
             field: fieldName,
             type: 'image',

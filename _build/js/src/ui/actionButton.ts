@@ -1,4 +1,4 @@
-import {createElement} from "./utils";
+import {applyStyles, createElement} from "./utils";
 import {Message} from "../chatHistory";
 import {Modal} from "./modal";
 
@@ -11,12 +11,19 @@ type ActionButtonConfig = {
     modal: Modal;
     completedTextDuration?: number;
     onClick: (msg: Message, modal: Modal) => void | Promise<void>;
+    disabled?: boolean;
 }
+
+export type ActionButton = HTMLButtonElement & {
+    disable?: () => void;
+    enable?: () => void;
+};
 
 const defaultConfig: Partial<ActionButtonConfig> = {
     loadingText: 'Loading...',
     completedText: 'Completed!',
     completedTextDuration: 2000,
+    disabled: false,
 };
 
 const styles = {
@@ -29,7 +36,8 @@ const styles = {
         cursor: 'pointer',
         display: 'flex',
         alignItems: 'center',
-        color: '#4a5568'
+        color: '#4a5568',
+        opacity: '1',
     },
     icon: {
         display: 'inline-block',
@@ -39,6 +47,10 @@ const styles = {
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center'
+    },
+    disabledButton: {
+        opacity: '0.5',
+        cursor: 'not-allowed'
     },
 };
 
@@ -53,21 +65,34 @@ export const createActionButton = (config: ActionButtonConfig) => {
         ...config,
     };
 
-    const copyBtn = createElement('button', styles.actionButton);
+    const button = createElement('button', styles.actionButton) as ActionButton;
+    button.className = 'action-button';
+    button.enable = () => {
+        button.disabled = false;
+        applyStyles(button, styles.actionButton);
+    }
+    button.disable = () => {
+        button.disabled = true;
+        applyStyles(button, {...styles.actionButton, ...styles.disabledButton});
+    }
+
+    if (config.disabled) {
+        button.disable();
+    }
 
     const copyIcon = createElement('span', {
         ...styles.icon,
         backgroundImage: `url("${icons[config.icon]}")`
     });
-    copyBtn.append(copyIcon);
+    button.append(copyIcon);
 
-    copyBtn.append(document.createTextNode(config.label));
-    copyBtn.addEventListener('click', async () => {
-        const originalHTML = copyBtn.innerHTML;
+    button.append(document.createTextNode(config.label));
+    button.addEventListener('click', async () => {
+        const originalHTML = button.innerHTML;
         const result = config.onClick(config.message, config.modal);
 
         if (result instanceof Promise) {
-            copyBtn.innerHTML = `
+            button.innerHTML = `
                 <span style="
                     display: inline-block;
                     margin-right: 5px;
@@ -134,13 +159,13 @@ export const createActionButton = (config: ActionButtonConfig) => {
             document.head.removeChild(style);
         }
 
-        copyBtn.innerHTML = `
+        button.innerHTML = `
                 <span style="margin-right: 5px;">✓</span>
                 ${config.completedText}
             `;
         await new Promise(resolve => setTimeout(resolve, 2000));
-        copyBtn.innerHTML = originalHTML;
+        button.innerHTML = originalHTML;
     });
 
-    return copyBtn;
+    return button;
 }

@@ -4,7 +4,7 @@ import { createLoadingOverlay } from './overlay'
 
 export const ui = {
     createLoadingOverlay,
-    freePrompt: (config: ModalConfig) => {
+    localChat: (config: ModalConfig) => {
         return createModal(config);
     }
 };
