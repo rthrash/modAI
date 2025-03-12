@@ -1,12 +1,96 @@
+import { create } from '@stylexjs/stylex';
+
 import { createActionButton } from './actionButton';
 import { createContentIframe } from './iframe';
-import { styles } from './styles';
 import { executor } from '../../executor';
 import { createElement, nlToBr } from '../utils';
 
 import type { Modal, ModalConfig } from './types';
 import type { Message, UpdatableHTMLElement } from '../../chatHistory';
 import type { Prompt } from '../../executor';
+
+const styles = create({
+  wrapper: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px',
+  },
+  imageRow: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: '8px',
+    flexWrap: 'wrap',
+  },
+  imageWrapper: {
+    width: '100px',
+    height: '100px',
+    borderRadius: '5px',
+    overflow: 'hidden',
+    marginTop: '4px',
+  },
+  img: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  message: {
+    fontSize: '14px',
+    marginBottom: '20px',
+    borderRadius: '5px',
+    position: 'relative',
+    wordWrap: 'break-word',
+    width: '100%',
+    boxSizing: 'border-box',
+  },
+  aiMessage: {
+    width: '100%',
+    backgroundColor: '#efefee',
+    boxShadow: '0 2px 5px rgba(0, 0, 0, 0.05)',
+    borderTopLeftRadius: '3px',
+  },
+  userMessage: {
+    width: 'fit-content',
+    padding: '10px 15px',
+    backgroundColor: '#4299e1',
+    color: 'white',
+    marginLeft: 'auto',
+    borderTopRightRadius: '3px',
+  },
+  errorMessage: {
+    width: 'fit-content',
+    padding: '10px 15px',
+    backgroundColor: '#DC2626',
+    color: 'white',
+    marginLeft: 'auto',
+    borderBottomRightRadius: '5px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  errorIcon: {
+    width: '16px',
+    height: '16px',
+    backgroundImage:
+      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'/%3E%3C/svg%3E\")",
+    backgroundSize: 'contain',
+    backgroundRepeat: 'no-repeat',
+    backgroundPosition: 'center',
+  },
+  messageContent: {
+    padding: '12px',
+    width: '100%',
+    maxWidth: '100%',
+    overflow: 'hidden',
+    boxSizing: 'border-box',
+  },
+  messageActions: {
+    display: 'flex',
+    padding: '8px 12px',
+    gap: '8px',
+    backgroundColor: '#efefee',
+    borderRadius: '0 0 5px 5px',
+  },
+});
 
 export const addUserMessage = (modal: Modal, content: Prompt) => {
   if (modal.chatMessages.style.display === 'none') {
@@ -29,38 +113,19 @@ export const addUserMessage = (modal: Modal, content: Prompt) => {
     textContent = content;
   }
 
-  const contentWrapper = createElement('div', {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-  });
+  const contentWrapper = createElement('div', styles.wrapper);
 
   const textDiv = createElement('div');
   textDiv.innerHTML = nlToBr(textContent);
   contentWrapper.appendChild(textDiv);
 
   if (imagesContent) {
-    const imageRow = createElement('div', {
-      display: 'flex',
-      flexDirection: 'row',
-      gap: '8px',
-      flexWrap: 'wrap',
-    });
+    const imageRow = createElement('div', styles.imageRow);
 
     for (const imgContent of imagesContent) {
-      const imageWrapper = createElement('div', {
-        width: '100px',
-        height: '100px',
-        borderRadius: '4px',
-        overflow: 'hidden',
-        marginTop: '4px',
-      });
+      const imageWrapper = createElement('div', styles.imageWrapper);
 
-      const img = createElement('img', {
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-      });
+      const img = createElement('img', styles.img);
       img.src = imgContent.value;
 
       imageWrapper.appendChild(img);

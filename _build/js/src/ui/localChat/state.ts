@@ -1,15 +1,59 @@
-import { applyStyles, createElement } from '../utils';
+import { create } from '@stylexjs/stylex';
+
+import { createElement } from '../utils';
 import { addErrorMessage } from './messageHandlers';
-import { styles } from './styles';
 import { Button } from '../dom/button';
 
-import type { Modal, ModalConfig } from './types';
+import type { Modal } from './types';
 
 export const globalState = {
   modalOpen: false,
 };
 
-export const setLoadingState = (modal: Modal, loading: boolean, config: ModalConfig) => {
+const styles = create({
+  imagePreview: {
+    position: 'absolute',
+    top: '5px',
+    left: '5px',
+    width: '65px',
+    height: '65px',
+    borderRadius: '5px',
+    overflow: 'hidden',
+    border: '1px solid #e2e8f0',
+    backgroundColor: '#f8fafc',
+    cursor: 'pointer',
+    transition: 'transform 0.2s ease',
+    ':hover': {
+      transform: 'scale(1.05)',
+    },
+  },
+  imagePreviewImg: {
+    width: '100%',
+    height: '100%',
+    objectFit: 'cover',
+  },
+  imagePreviewRemove: {
+    position: 'absolute',
+    top: '0',
+    left: '0',
+    width: '100%',
+    height: '100%',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    color: 'white',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '24px',
+    cursor: 'pointer',
+    opacity: '0',
+    transition: 'opacity 0.2s ease',
+    ':hover': {
+      opacity: 1,
+    },
+  },
+});
+
+export const setLoadingState = (modal: Modal, loading: boolean) => {
   modal.isLoading = loading;
 
   if (loading) {
@@ -19,11 +63,6 @@ export const setLoadingState = (modal: Modal, loading: boolean, config: ModalCon
   }
 
   modal.messageInput.disabled = loading;
-  if (loading) {
-    applyStyles(modal.messageInput, { ...styles.input, ...styles.loadingInput });
-  } else {
-    applyStyles(modal.messageInput, styles.input);
-  }
 
   if (loading) {
     modal.clearChatBtn.disable();
@@ -46,20 +85,6 @@ export const setLoadingState = (modal: Modal, loading: boolean, config: ModalCon
 
   Object.values(modal.typeButtons).forEach((button) => {
     button.disabled = loading;
-    const isActive = button.textContent?.toLowerCase() === config.type;
-
-    if (loading) {
-      applyStyles(button, {
-        ...styles.typeToggleButton,
-        ...(isActive ? styles.typeToggleButtonActive : {}),
-        ...styles.disabledButton,
-      });
-    } else {
-      applyStyles(button, {
-        ...styles.typeToggleButton,
-        ...(isActive ? styles.typeToggleButtonActive : {}),
-      });
-    }
   });
 
   const actionButtons = modal.chatMessages.querySelectorAll('.action-button') as NodeListOf<Button>;
@@ -96,8 +121,8 @@ export const handleImageUpload = async (
   }
 
   const imagePreview = createElement('div', styles.imagePreview);
-  const img = createElement('img', styles.imagePreviewImg) as HTMLImageElement;
-  const removeBtn = createElement('div', styles.imagePreviewRemove, '×');
+  const img = createElement('img', styles.imagePreviewImg);
+  const removeBtn = createElement('button', styles.imagePreviewRemove, '×');
 
   if (isRemoteUrl) {
     img.src = fileOrUrl as string;
@@ -124,16 +149,6 @@ export const handleImageUpload = async (
   removeBtn.addEventListener('click', (e: MouseEvent) => {
     e.stopPropagation();
     removeUploadedImage(modal);
-  });
-
-  imagePreview.addEventListener('mouseenter', () => {
-    imagePreview.style.transform = 'scale(1.05)';
-    removeBtn.style.opacity = '1';
-  });
-
-  imagePreview.addEventListener('mouseleave', () => {
-    imagePreview.style.transform = '';
-    removeBtn.style.opacity = '0';
   });
 
   imagePreview.append(img, removeBtn);

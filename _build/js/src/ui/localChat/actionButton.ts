@@ -1,3 +1,5 @@
+import { create, keyframes } from '@stylexjs/stylex';
+
 import { button } from '../dom/button';
 import { createElement } from '../utils';
 
@@ -23,18 +25,22 @@ const defaultConfig: Partial<ActionButtonConfig> = {
   disabled: false,
 };
 
-const styles = {
+const styles = create({
   actionButton: {
-    backgroundColor: '#edf2f7',
+    backgroundColor: '#fff',
     border: '1px solid #cbd5e0',
-    borderRadius: '4px',
-    padding: '3px 8px',
+    borderRadius: '5px',
+    padding: '5px 8px 3px',
     fontSize: '12px',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
-    color: '#4a5568',
+    color: '#4B5563',
     opacity: '1',
+    ':disabled': {
+      opacity: '0.5',
+      cursor: 'not-allowed',
+    },
   },
   icon: {
     display: 'inline-block',
@@ -45,17 +51,64 @@ const styles = {
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
   },
-  disabledButton: {
-    opacity: '0.5',
-    cursor: 'not-allowed',
-  },
-} satisfies Record<string, Partial<CSSStyleDeclaration>>;
+});
 
-const icons = {
-  copy: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234a5568' viewBox='0 0 16 16'%3E%3Cpath d='M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z'/%3E%3Cpath d='M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z'/%3E%3C/svg%3E",
-  insert:
-    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234a5568' viewBox='0 0 16 16'%3E%3Cpath d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/%3E%3Cpath d='M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z'/%3E%3C/svg%3E",
-};
+const icons = create({
+  copy: {
+    backgroundImage:
+      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234a5568' viewBox='0 0 16 16'%3E%3Cpath d='M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z'/%3E%3Cpath d='M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z'/%3E%3C/svg%3E\")",
+  },
+  insert: {
+    backgroundImage:
+      "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%234a5568' viewBox='0 0 16 16'%3E%3Cpath d='M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z'/%3E%3Cpath d='M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z'/%3E%3C/svg%3E\")",
+  },
+});
+
+const spin = keyframes({
+  from: { transform: 'rotate(0deg)' },
+  to: { transform: 'rotate(360deg)' },
+});
+
+const spinnerStyles = create({
+  spinner: {
+    display: 'inline-block',
+    marginRight: '5px',
+    width: '12px',
+    height: '12px',
+    position: 'relative',
+    animationName: spin,
+    animationDuration: '1s',
+    animationTimingFunction: 'linear',
+    animationIterationCount: 'infinite',
+  },
+  dot: {
+    position: 'absolute',
+    width: '3px',
+    height: '3px',
+    backgroundColor: 'currentColor',
+    borderRadius: '50%',
+  },
+  top: {
+    top: '0',
+    left: '50%',
+    transform: 'translate(-50%, 0)',
+  },
+  right: {
+    top: '50%',
+    right: '0',
+    transform: 'translate(0, -50%)',
+  },
+  bottom: {
+    bottom: '0',
+    left: '50%',
+    transform: 'translate(-50%, 0)',
+  },
+  left: {
+    top: '50%',
+    left: '0',
+    transform: 'translate(0, -50%)',
+  },
+});
 
 export const createActionButton = (config: ActionButtonConfig) => {
   config = {
@@ -68,71 +121,19 @@ export const createActionButton = (config: ActionButtonConfig) => {
     const result = config.onClick(config.message, config.modal);
 
     if (result instanceof Promise) {
-      btn.innerHTML = `
-        <span style="
-            display: inline-block;
-            margin-right: 5px;
-            width: 12px;
-            height: 12px;
-            position: relative;
-            animation: spin 1s linear infinite;
-        ">
-            <span style="
-                position: absolute;
-                width: 3px;
-                height: 3px;
-                background-color: currentColor;
-                border-radius: 50%;
-                top: 0;
-                left: 50%;
-                transform: translate(-50%, 0);
-            "></span>
-            <span style="
-                position: absolute;
-                width: 3px;
-                height: 3px;
-                background-color: currentColor;
-                border-radius: 50%;
-                top: 50%;
-                right: 0;
-                transform: translate(0, -50%);
-            "></span>
-            <span style="
-                position: absolute;
-                width: 3px;
-                height: 3px;
-                background-color: currentColor;
-                border-radius: 50%;
-                bottom: 0;
-                left: 50%;
-                transform: translate(-50%, 0);
-            "></span>
-            <span style="
-                position: absolute;
-                width: 3px;
-                height: 3px;
-                background-color: currentColor;
-                border-radius: 50%;
-                top: 50%;
-                left: 0;
-                transform: translate(0, -50%);
-            "></span>
-        </span>
-        ${config.loadingText}
-    `;
+      const spinner = createElement('span', spinnerStyles.spinner, [
+        createElement('span', [spinnerStyles.dot, spinnerStyles.top]),
+        createElement('span', [spinnerStyles.dot, spinnerStyles.right]),
+        createElement('span', [spinnerStyles.dot, spinnerStyles.bottom]),
+        createElement('span', [spinnerStyles.dot, spinnerStyles.left]),
+      ]);
 
-      const style = document.createElement('style');
-      style.textContent = `
-          @keyframes spin {
-              from { transform: rotate(0deg); }
-              to { transform: rotate(360deg); }
-          }
-      `;
-      document.head.appendChild(style);
+      btn.innerHTML = createElement('span', undefined, [
+        spinner,
+        config.loadingText || '',
+      ]).outerHTML;
 
       await result;
-
-      document.head.removeChild(style);
     }
 
     btn.innerHTML = `
@@ -144,18 +145,11 @@ export const createActionButton = (config: ActionButtonConfig) => {
   };
 
   const btn = button(
-    [
-      createElement('span', {
-        ...styles.icon,
-        backgroundImage: `url("${icons[config.icon]}")`,
-      }),
-      config.label,
-    ],
+    [createElement('span', [styles.icon, icons[config.icon]]), config.label],
     onClick,
     styles.actionButton,
-    styles.disabledButton,
   );
-  btn.className = 'action-button';
+  btn.classList.add('action-button');
 
   if (config.disabled) {
     btn.disable();

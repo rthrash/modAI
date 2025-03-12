@@ -1,4 +1,6 @@
-import { applyStyles, createElement } from '../utils';
+import { StyleXStyles } from '@stylexjs/stylex';
+
+import { createElement } from '../utils';
 
 export type Button = HTMLButtonElement & {
   enable: () => void;
@@ -8,8 +10,7 @@ export type Button = HTMLButtonElement & {
 export const button = (
   content: string | HTMLElement | (HTMLElement | string)[],
   onClick: () => Promise<void> | void,
-  styleObj: Partial<CSSStyleDeclaration> = {},
-  disabledStyleObj: Partial<CSSStyleDeclaration> = {},
+  styleObj: StyleXStyles,
   btnProps?: Partial<HTMLButtonElement>,
 ) => {
   const textContent = typeof content === 'string' ? content : '';
@@ -35,12 +36,10 @@ export const button = (
 
   el.enable = () => {
     el.disabled = false;
-    applyStyles(el, styleObj);
   };
 
   el.disable = () => {
     el.disabled = true;
-    applyStyles(el, { ...styleObj, ...disabledStyleObj });
   };
 
   if (btnProps) {

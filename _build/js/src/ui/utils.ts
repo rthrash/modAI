@@ -1,22 +1,42 @@
+import { props } from '@stylexjs/stylex';
+
 import { globalStyles } from './globalStyles';
 
-export const applyStyles = (element: HTMLElement, styleObj: Partial<CSSStyleDeclaration>) => {
-  Object.assign(element.style, { ...globalStyles.resetStyles, ...styleObj });
+import type { StyleXStyles } from '@stylexjs/stylex';
+
+export const applyStyles = (element: HTMLElement, styleObj: StyleXStyles) => {
+  Object.assign(element, props(globalStyles.resetStyles, styleObj));
 };
 
 export const createElement = <K extends keyof HTMLElementTagNameMap>(
   type: K,
-  styleObj?: Partial<CSSStyleDeclaration>,
-  textContent: string = '',
+  styleObj?: StyleXStyles,
+  content?: string | HTMLElement | (HTMLElement | string)[],
 ): HTMLElementTagNameMap[K] => {
+  const textContent = typeof content === 'string' ? content : '';
+
+  if (content && typeof content !== 'string' && !Array.isArray(content)) {
+    content = [content];
+  }
+
   const element = document.createElement(type);
 
   if (styleObj) {
-    applyStyles(element, styleObj);
+    Object.assign(element, props(styleObj));
   }
 
   if (textContent) {
     element.textContent = textContent;
+  } else if (content) {
+    if (Array.isArray(content)) {
+      content.forEach((i) => {
+        if (typeof i === 'string') {
+          element.append(document.createTextNode(i));
+        } else {
+          element.append(i);
+        }
+      });
+    }
   }
 
   return element;

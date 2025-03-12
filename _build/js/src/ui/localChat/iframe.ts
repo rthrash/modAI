@@ -1,3 +1,5 @@
+import { create } from '@stylexjs/stylex';
+
 import { createElement, nlToBr } from '../utils';
 
 import type { Modal } from './types';
@@ -6,6 +8,16 @@ export type Iframe = HTMLIFrameElement & {
   syncHeight: () => void;
   syncContent: (content: string) => void;
 };
+
+const styles = create({
+  iframe: {
+    width: '100%',
+    border: 'none',
+    backgroundColor: '#efefee',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+  },
+});
 
 export const createContentIframe = (
   providedContent: string,
@@ -16,13 +28,7 @@ export const createContentIframe = (
   let isLoaded = false;
   let pendingContent: string | null = null;
 
-  const iframe = createElement('iframe', {
-    width: '100%',
-    border: 'none',
-    backgroundColor: 'white',
-    maxWidth: '100%',
-    boxSizing: 'border-box',
-  }) as Iframe;
+  const iframe = createElement('iframe', styles.iframe) as Iframe;
 
   const getIframeDocument = () => {
     return iframe.contentDocument || iframe.contentWindow?.document;
@@ -37,6 +43,7 @@ export const createContentIframe = (
                 margin: 0;
             }
             body {
+                background-color: #efefee;
                 margin: 0;
                 padding: 0;
                 font-family: Arial, sans-serif;

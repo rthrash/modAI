@@ -59,7 +59,7 @@ export const sendMessage = async (
     return;
   }
 
-  setLoadingState(modal, true, config);
+  setLoadingState(modal, true);
 
   modal.messageInput.value = '';
   modal.abortController = new AbortController();
@@ -128,17 +128,17 @@ export const sendMessage = async (
     addErrorMessage(modal, 'Unknown error');
   }
 
-  setLoadingState(modal, false, config);
+  setLoadingState(modal, false);
 };
 
-export const stopGeneration = (modal: Modal, config: ModalConfig) => {
+export const stopGeneration = (modal: Modal) => {
   if (!modal.isLoading || !modal.abortController) {
     return;
   }
 
   modal.abortController.abort();
   modal.abortController = undefined;
-  setLoadingState(modal, false, config);
+  setLoadingState(modal, false);
 };
 
 export const tryAgain = (modal: Modal, config: ModalConfig) => {
