@@ -25,7 +25,7 @@ export const createModal = (config: ModalConfig) => {
   }
 
   if (!config.availableTypes) {
-    config.availableTypes = [];
+    config.availableTypes = [config.type];
   }
 
   config.availableTypes = config.availableTypes.filter((type) => modalTypes.includes(type));

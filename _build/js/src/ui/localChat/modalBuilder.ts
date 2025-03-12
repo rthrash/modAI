@@ -1,10 +1,18 @@
 import { applyStyles, createElement } from '../utils';
 import { drag, endDrag, initDrag } from './dragHandlers';
 import { addErrorMessage, renderMessage } from './messageHandlers';
-import { closeModal, sendMessage, stopGeneration, switchType, tryAgain } from './modalActions';
+import {
+  clearChat,
+  closeModal,
+  sendMessage,
+  stopGeneration,
+  switchType,
+  tryAgain,
+} from './modalActions';
 import { handleImageUpload } from './state';
 import { styles } from './styles';
 import { chatHistory } from '../../chatHistory';
+import { button } from '../dom/button';
 
 import type { Modal, ModalConfig } from './types';
 
@@ -20,7 +28,7 @@ export const buildModal = (config: ModalConfig) => {
   const chatTitle = createElement('div', styles.chatTitle, 'modAI Assistant');
   const chatControls = createElement('div', styles.chatControls);
 
-  const closeBtn = createElement('button', styles.controlButton, '✕');
+  const closeBtn = button('✕', () => closeModal(chatModal), styles.controlButton);
   chatControls.append(closeBtn);
   chatHeader.append(chatTitle, chatControls);
 
@@ -126,27 +134,35 @@ export const buildModal = (config: ModalConfig) => {
 
   const buttonsColumn = createElement('div', styles.buttonsColumn);
 
-  const sendBtn = createElement('button', styles.sendButton);
-  const sendIcon = createElement('span', styles.sendIcon);
-  const sendText = document.createTextNode('Send');
-  sendBtn.append(sendIcon, sendText);
+  const sendBtn = button(
+    [createElement('span', styles.sendIcon), 'Send'],
+    () => sendMessage(chatModal, config),
+    styles.sendButton,
+    styles.disabledButton,
+  );
 
   const actionButtonsRow = createElement('div', styles.actionButtonsRow);
 
-  const stopBtn = createElement('button', { ...styles.iconButton, ...styles.disabledButton });
-  const stopIcon = createElement('span', styles.stopIcon);
-  stopBtn.appendChild(stopIcon);
-  stopBtn.title = 'Stop Generation';
+  const stopBtn = button(
+    createElement('span', styles.stopIcon),
+    () => stopGeneration(chatModal, config),
+    styles.iconButton,
+    styles.disabledButton,
+    {
+      title: 'Stop Generation',
+    },
+  );
+  stopBtn.disable();
 
-  const tryAgainBtn = createElement('button', styles.iconButton);
-  const refreshIcon = createElement('span', styles.refreshIcon);
-  tryAgainBtn.appendChild(refreshIcon);
-  tryAgainBtn.title = 'Try Again';
-
-  if (chatModal.history.getMessages().length === 0) {
-    tryAgainBtn.disabled = true;
-    applyStyles(tryAgainBtn, { ...styles.iconButton, ...styles.disabledButton });
-  }
+  const tryAgainBtn = button(
+    createElement('span', styles.refreshIcon),
+    () => tryAgain(chatModal, config),
+    styles.iconButton,
+    styles.disabledButton,
+    {
+      title: 'Try Again',
+    },
+  );
 
   actionButtonsRow.append(stopBtn, tryAgainBtn);
   buttonsColumn.append(sendBtn, actionButtonsRow);
@@ -188,6 +204,7 @@ export const buildModal = (config: ModalConfig) => {
 
   inputWrapper.append(loadingIndicator);
 
+  const modalFooter = createElement('div', styles.modalFooter);
   const typeSelector = createElement('div', styles.typeSelector);
   const typeLabel = createElement('div', styles.typeLabel, 'Generate:');
   const typeToggleGroup = createElement('div', styles.typeToggleGroup);
@@ -203,13 +220,21 @@ export const buildModal = (config: ModalConfig) => {
     ) as HTMLButtonElement;
     if (type === config.type) {
       applyStyles(button, { ...styles.typeToggleButton, ...styles.typeToggleButtonActive });
+      button.disabled = true;
     }
 
     button.addEventListener('click', () => {
+      if (type === config.type) {
+        return;
+      }
+
       Object.values(typeButtons).forEach((btn) => {
         applyStyles(btn, styles.typeToggleButton);
+        btn.disabled = false;
       });
+
       applyStyles(button, { ...styles.typeToggleButton, ...styles.typeToggleButtonActive });
+      button.disabled = true;
 
       switchType(type, chatModal, config);
     });
@@ -221,9 +246,18 @@ export const buildModal = (config: ModalConfig) => {
   chatInputArea.append(inputRow);
   chatModal.append(chatHeader, chatMessages, chatInputArea);
 
-  if (availableTypes.length > 0) {
-    chatModal.append(typeSelector);
-  }
+  modalFooter.append(typeSelector);
+
+  const clearChatBtn = button(
+    'Clear Chat',
+    () => clearChat(chatModal),
+    styles.button,
+    styles.disabledButton,
+  );
+
+  modalFooter.append(clearChatBtn);
+
+  chatModal.append(modalFooter);
 
   if (config.overlay) {
     document.body.append(modalOverlay);
@@ -231,10 +265,11 @@ export const buildModal = (config: ModalConfig) => {
 
   document.body.append(chatModal);
 
-  closeBtn.addEventListener('click', () => closeModal(chatModal));
-  sendBtn.addEventListener('click', () => sendMessage(chatModal, config));
-  stopBtn.addEventListener('click', () => stopGeneration(chatModal, config));
-  tryAgainBtn.addEventListener('click', () => tryAgain(chatModal, config));
+  if (chatModal.history.getMessages().length === 0) {
+    clearChatBtn.disable();
+    tryAgainBtn.disable();
+  }
+
   messageInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       if (e.shiftKey) {
@@ -258,6 +293,7 @@ export const buildModal = (config: ModalConfig) => {
   chatModal.sendBtn = sendBtn;
   chatModal.tryAgainBtn = tryAgainBtn;
   chatModal.stopBtn = stopBtn;
+  chatModal.clearChatBtn = clearChatBtn;
   chatModal.loadingIndicator = loadingIndicator;
   chatModal.typeSelector = typeSelector;
   chatModal.typeButtons = typeButtons;

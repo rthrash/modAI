@@ -1,10 +1,4 @@
 export const styles = {
-  resetStyles: {
-    margin: '0',
-    padding: '0',
-    boxSizing: 'border-box',
-    fontFamily: 'Arial, sans-serif',
-  },
   modalOverlay: {
     position: 'fixed',
     top: '0',
@@ -55,6 +49,7 @@ export const styles = {
     color: 'white',
     fontSize: '16px',
     cursor: 'pointer',
+    transition: 'opacity 0.2s ease',
   },
   chatMessages: {
     flex: '1',
@@ -168,6 +163,7 @@ export const styles = {
     justifyContent: 'center',
     gap: '6px',
     opacity: '1',
+    transition: 'background-color 0.2s ease',
   },
   actionButtonsRow: {
     display: 'flex',
@@ -185,8 +181,21 @@ export const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    transition: 'background-color 0.2s',
+    transition: 'all 0.2s ease',
     opacity: '1',
+  },
+  button: {
+    backgroundColor: 'white',
+    border: '1px solid #e2e8f0',
+    borderRadius: '8px',
+    padding: '6px 10px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    transition: 'all 0.2s ease',
+    opacity: '1',
+    justifyItems: 'center',
   },
   sendIcon: {
     width: '16px',
@@ -260,13 +269,19 @@ export const styles = {
     animation: 'loadingDotPulse 1.4s infinite',
     display: 'inline-block',
   },
-  typeSelector: {
+  modalFooter: {
     padding: '5px 15px',
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
     borderTop: '1px solid #e2e8f0',
     backgroundColor: 'white',
+    justifyContent: 'space-between',
+  },
+  typeSelector: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
   },
   typeLabel: {
     fontSize: '14px',
@@ -285,13 +300,14 @@ export const styles = {
     backgroundColor: '#fff',
     color: '#4B5563',
     cursor: 'pointer',
-    transition: 'all 0.2s',
+    transition: 'all 0.2s ease',
     opacity: '1',
   },
   typeToggleButtonActive: {
     backgroundColor: '#00B6DE',
     color: '#fff',
     borderColor: '#00B6DE',
+    cursor: 'default',
   },
   errorMessage: {
     width: 'fit-content',

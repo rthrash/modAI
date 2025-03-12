@@ -1,8 +1,8 @@
 import { applyStyles, createElement } from '../utils';
 import { addErrorMessage } from './messageHandlers';
 import { styles } from './styles';
+import { Button } from '../dom/button';
 
-import type { ActionButton } from './actionButton';
 import type { Modal, ModalConfig } from './types';
 
 export const globalState = {
@@ -25,26 +25,23 @@ export const setLoadingState = (modal: Modal, loading: boolean, config: ModalCon
     applyStyles(modal.messageInput, styles.input);
   }
 
-  modal.sendBtn.disabled = loading;
   if (loading) {
-    applyStyles(modal.sendBtn, { ...styles.sendButton, ...styles.disabledButton });
-  } else {
-    applyStyles(modal.sendBtn, styles.sendButton);
-  }
+    modal.clearChatBtn.disable();
+    modal.sendBtn.disable();
 
-  modal.stopBtn.disabled = !loading;
-  if (loading) {
-    applyStyles(modal.stopBtn, styles.iconButton);
+    modal.stopBtn.enable();
   } else {
-    applyStyles(modal.stopBtn, { ...styles.iconButton, ...styles.disabledButton });
+    modal.clearChatBtn.enable();
+    modal.sendBtn.enable();
+
+    modal.stopBtn.disable();
   }
 
   const hasMessages = modal.history.getMessages().length > 0;
-  modal.tryAgainBtn.disabled = loading || !hasMessages;
   if (loading || !hasMessages) {
-    applyStyles(modal.tryAgainBtn, { ...styles.iconButton, ...styles.disabledButton });
+    modal.tryAgainBtn.disable();
   } else {
-    applyStyles(modal.tryAgainBtn, styles.iconButton);
+    modal.tryAgainBtn.enable();
   }
 
   Object.values(modal.typeButtons).forEach((button) => {
@@ -65,9 +62,7 @@ export const setLoadingState = (modal: Modal, loading: boolean, config: ModalCon
     }
   });
 
-  const actionButtons = modal.chatMessages.querySelectorAll(
-    '.action-button',
-  ) as NodeListOf<ActionButton>;
+  const actionButtons = modal.chatMessages.querySelectorAll('.action-button') as NodeListOf<Button>;
   actionButtons.forEach((button) => {
     if (loading) {
       button.disable?.();

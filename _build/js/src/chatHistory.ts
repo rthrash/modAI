@@ -87,6 +87,7 @@ export type ChatHistory = {
   getAssistantMessage: (id: string) => Message | undefined;
   getMessages: () => Message[];
   getMessagesHistory: () => Pick<Message, 'role' | 'content'>[];
+  clearHistory: () => void;
 };
 
 export const chatHistory = {
@@ -127,6 +128,9 @@ export const chatHistory = {
           role: m.role,
           content: m.content,
         }));
+      },
+      clearHistory: () => {
+        _namespace[key].history = [];
       },
     };
   },

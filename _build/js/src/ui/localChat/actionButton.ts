@@ -1,4 +1,5 @@
-import { applyStyles, createElement } from '../utils';
+import { button } from '../dom/button';
+import { createElement } from '../utils';
 
 import type { Modal } from './types';
 import type { Message } from '../../chatHistory';
@@ -13,11 +14,6 @@ type ActionButtonConfig = {
   completedTextDuration?: number;
   onClick: (msg: Message, modal: Modal) => void | Promise<void>;
   disabled?: boolean;
-};
-
-export type ActionButton = HTMLButtonElement & {
-  disable?: () => void;
-  enable?: () => void;
 };
 
 const defaultConfig: Partial<ActionButtonConfig> = {
@@ -67,93 +63,71 @@ export const createActionButton = (config: ActionButtonConfig) => {
     ...config,
   };
 
-  const button = createElement('button', styles.actionButton) as ActionButton;
-  button.className = 'action-button';
-  button.enable = () => {
-    button.disabled = false;
-    applyStyles(button, styles.actionButton);
-  };
-  button.disable = () => {
-    button.disabled = true;
-    applyStyles(button, { ...styles.actionButton, ...styles.disabledButton });
-  };
-
-  if (config.disabled) {
-    button.disable();
-  }
-
-  const copyIcon = createElement('span', {
-    ...styles.icon,
-    backgroundImage: `url("${icons[config.icon]}")`,
-  });
-  button.append(copyIcon);
-
-  button.append(document.createTextNode(config.label));
-  button.addEventListener('click', async () => {
-    const originalHTML = button.innerHTML;
+  const onClick = async () => {
+    const originalHTML = btn.innerHTML;
     const result = config.onClick(config.message, config.modal);
 
     if (result instanceof Promise) {
-      button.innerHTML = `
-                <span style="
-                    display: inline-block;
-                    margin-right: 5px;
-                    width: 12px;
-                    height: 12px;
-                    position: relative;
-                    animation: spin 1s linear infinite;
-                ">
-                    <span style="
-                        position: absolute;
-                        width: 3px;
-                        height: 3px;
-                        background-color: currentColor;
-                        border-radius: 50%;
-                        top: 0;
-                        left: 50%;
-                        transform: translate(-50%, 0);
-                    "></span>
-                    <span style="
-                        position: absolute;
-                        width: 3px;
-                        height: 3px;
-                        background-color: currentColor;
-                        border-radius: 50%;
-                        top: 50%;
-                        right: 0;
-                        transform: translate(0, -50%);
-                    "></span>
-                    <span style="
-                        position: absolute;
-                        width: 3px;
-                        height: 3px;
-                        background-color: currentColor;
-                        border-radius: 50%;
-                        bottom: 0;
-                        left: 50%;
-                        transform: translate(-50%, 0);
-                    "></span>
-                    <span style="
-                        position: absolute;
-                        width: 3px;
-                        height: 3px;
-                        background-color: currentColor;
-                        border-radius: 50%;
-                        top: 50%;
-                        left: 0;
-                        transform: translate(0, -50%);
-                    "></span>
-                </span>
-                ${config.loadingText}
-            `;
+      btn.innerHTML = `
+        <span style="
+            display: inline-block;
+            margin-right: 5px;
+            width: 12px;
+            height: 12px;
+            position: relative;
+            animation: spin 1s linear infinite;
+        ">
+            <span style="
+                position: absolute;
+                width: 3px;
+                height: 3px;
+                background-color: currentColor;
+                border-radius: 50%;
+                top: 0;
+                left: 50%;
+                transform: translate(-50%, 0);
+            "></span>
+            <span style="
+                position: absolute;
+                width: 3px;
+                height: 3px;
+                background-color: currentColor;
+                border-radius: 50%;
+                top: 50%;
+                right: 0;
+                transform: translate(0, -50%);
+            "></span>
+            <span style="
+                position: absolute;
+                width: 3px;
+                height: 3px;
+                background-color: currentColor;
+                border-radius: 50%;
+                bottom: 0;
+                left: 50%;
+                transform: translate(-50%, 0);
+            "></span>
+            <span style="
+                position: absolute;
+                width: 3px;
+                height: 3px;
+                background-color: currentColor;
+                border-radius: 50%;
+                top: 50%;
+                left: 0;
+                transform: translate(0, -50%);
+            "></span>
+        </span>
+        ${config.loadingText}
+    `;
 
       const style = document.createElement('style');
       style.textContent = `
-                @keyframes spin {
-                    from { transform: rotate(0deg); }
-                    to { transform: rotate(360deg); }
-                }
-            `;
+          @keyframes spin {
+              from { transform: rotate(0deg); }
+              to { transform: rotate(360deg); }
+          }
+      `;
       document.head.appendChild(style);
 
       await result;
@@ -161,13 +135,31 @@ export const createActionButton = (config: ActionButtonConfig) => {
       document.head.removeChild(style);
     }
 
-    button.innerHTML = `
+    btn.innerHTML = `
                 <span style="margin-right: 5px;">✓</span>
                 ${config.completedText}
             `;
     await new Promise((resolve) => setTimeout(resolve, 2000));
-    button.innerHTML = originalHTML;
-  });
+    btn.innerHTML = originalHTML;
+  };
 
-  return button;
+  const btn = button(
+    [
+      createElement('span', {
+        ...styles.icon,
+        backgroundImage: `url("${icons[config.icon]}")`,
+      }),
+      config.label,
+    ],
+    onClick,
+    styles.actionButton,
+    styles.disabledButton,
+  );
+  btn.className = 'action-button';
+
+  if (config.disabled) {
+    btn.disable();
+  }
+
+  return btn;
 };

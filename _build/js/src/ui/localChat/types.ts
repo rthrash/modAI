@@ -1,16 +1,18 @@
 import { ChatHistory, Message } from '../../chatHistory';
+import { Button } from '../dom/button';
 
 export type ModalType = 'text' | 'image';
 
 export interface Modal extends HTMLDivElement {
   modalOverlay: HTMLDivElement;
   chatHeader: HTMLDivElement;
-  closeBtn: HTMLButtonElement;
+  closeBtn: Button;
   chatMessages: HTMLDivElement;
   messageInput: HTMLTextAreaElement;
-  sendBtn: HTMLButtonElement;
-  tryAgainBtn: HTMLButtonElement;
-  stopBtn: HTMLButtonElement;
+  sendBtn: Button;
+  tryAgainBtn: Button;
+  stopBtn: Button;
+  clearChatBtn: Button;
   loadingIndicator: HTMLDivElement;
   typeSelector: HTMLDivElement;
   typeButtons: { [key: string]: HTMLButtonElement };

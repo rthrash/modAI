@@ -1,5 +1,7 @@
+import { globalStyles } from './globalStyles';
+
 export const applyStyles = (element: HTMLElement, styleObj: Partial<CSSStyleDeclaration>) => {
-  Object.assign(element.style, styleObj);
+  Object.assign(element.style, { ...globalStyles.resetStyles, ...styleObj });
 };
 
 export const createElement = <K extends keyof HTMLElementTagNameMap>(

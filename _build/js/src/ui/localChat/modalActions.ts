@@ -180,5 +180,21 @@ export const switchType = (type: ModalType, modal: Modal, config: ModalConfig) =
     messages.forEach((msg) => {
       renderMessage(msg, modal, config);
     });
+    modal.tryAgainBtn.enable();
+    modal.clearChatBtn.enable();
+  } else {
+    modal.tryAgainBtn.disable();
+    modal.clearChatBtn.disable();
   }
+};
+
+export const clearChat = (modal: Modal) => {
+  while (modal.chatMessages.firstChild) {
+    modal.chatMessages.removeChild(modal.chatMessages.firstChild);
+  }
+  modal.chatMessages.style.display = 'none';
+
+  modal.history.clearHistory();
+  modal.tryAgainBtn.disable();
+  modal.clearChatBtn.disable();
 };
