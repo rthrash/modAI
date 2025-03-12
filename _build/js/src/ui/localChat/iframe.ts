@@ -1,30 +1,35 @@
-import {createElement, nlToBr} from "../utils";
-import type {Modal} from "./types";
+import { createElement, nlToBr } from '../utils';
+
+import type { Modal } from './types';
 
 export type Iframe = HTMLIFrameElement & {
-    syncHeight: () => void;
-    syncContent: (content: string) => void;
-}
+  syncHeight: () => void;
+  syncContent: (content: string) => void;
+};
 
-export const createContentIframe = (providedContent: string, modal: Modal, customCSS: string[] = []) => {
-    const content = nlToBr(providedContent);
-    let isLoaded = false;
-    let pendingContent: string | null = null;
+export const createContentIframe = (
+  providedContent: string,
+  modal: Modal,
+  customCSS: string[] = [],
+) => {
+  const content = nlToBr(providedContent);
+  let isLoaded = false;
+  let pendingContent: string | null = null;
 
-    const iframe = createElement('iframe', {
-        width: '100%',
-        border: 'none',
-        backgroundColor: 'white',
-        maxWidth: '100%',
-        boxSizing: 'border-box'
-    }) as Iframe;
+  const iframe = createElement('iframe', {
+    width: '100%',
+    border: 'none',
+    backgroundColor: 'white',
+    maxWidth: '100%',
+    boxSizing: 'border-box',
+  }) as Iframe;
 
-    const getIframeDocument = () => {
-        return iframe.contentDocument || iframe.contentWindow?.document;
-    }
+  const getIframeDocument = () => {
+    return iframe.contentDocument || iframe.contentWindow?.document;
+  };
 
-    const createStyleSheet = () => {
-        return `
+  const createStyleSheet = () => {
+    return `
             html {
                 width: 100%;
                 max-width: 100%;
@@ -90,105 +95,107 @@ export const createContentIframe = (providedContent: string, modal: Modal, custo
                 max-width: 100%;
             }
         `;
-    }
+  };
 
-    const createIframeContent = (content: string) => {
-        return `
+  const createIframeContent = (content: string) => {
+    return `
         <html>
         <head>
             <style>${createStyleSheet()}</style>
-            ${customCSS.map(css => {
+            ${customCSS
+              .map((css) => {
                 return `<link rel="stylesheet" type="text/css" href="${css}" />`;
-            }).join('')}
+              })
+              .join('')}
         </head>
         <body style="padding: 0; max-width: 100%; width: 100%; box-sizing: border-box;">${content}</body>
         </html>
     `;
+  };
+
+  const setupIframeContent = (doc: Document, content: string) => {
+    const style = doc.createElement('style');
+    style.textContent = createStyleSheet();
+    doc.head.appendChild(style);
+
+    customCSS.forEach((css) => {
+      const link = doc.createElement('link');
+      link.rel = 'stylesheet';
+      link.type = 'text/css';
+      link.href = css;
+      doc.head.appendChild(link);
+    });
+
+    doc.body.innerHTML = content;
+    doc.body.style.padding = '0';
+    doc.body.style.maxWidth = '100%';
+    doc.body.style.width = '100%';
+    doc.body.style.boxSizing = 'border-box';
+  };
+
+  const updateContent = (newContent: string) => {
+    if (!isLoaded) {
+      pendingContent = newContent;
+      iframe.srcdoc = createIframeContent(newContent);
+      return;
     }
 
-    const setupIframeContent = (doc: Document, content: string) => {
-        const style = doc.createElement('style');
-        style.textContent = createStyleSheet();
-        doc.head.appendChild(style);
-
-        customCSS.forEach(css => {
-            const link = doc.createElement('link');
-            link.rel = 'stylesheet';
-            link.type = 'text/css';
-            link.href = css;
-            doc.head.appendChild(link);
-        });
-
-        doc.body.innerHTML = content;
-        doc.body.style.padding = '0';
-        doc.body.style.maxWidth = '100%';
-        doc.body.style.width = '100%';
-        doc.body.style.boxSizing = 'border-box';
-    };
-
-    const updateContent = (newContent: string) => {
-        if (!isLoaded) {
-            pendingContent = newContent;
-            iframe.srcdoc = createIframeContent(newContent);
-            return;
-        }
-
-        const doc = getIframeDocument();
-        if (!doc) {
-            pendingContent = newContent;
-            iframe.srcdoc = createIframeContent(newContent);
-            return;
-        }
-
-        if (doc.head.querySelector('style')) {
-            doc.body.innerHTML = newContent;
-        } else {
-            setupIframeContent(doc, newContent);
-        }
-
-        iframe.syncHeight();
-    };
-
-    iframe.syncContent = (newContent: string) => {
-        updateContent(newContent);
-    };
-
-    iframe.syncHeight = () => {
-        const body = iframe.contentWindow?.document.body;
-        if (!body) {
-            return;
-        }
-
-        const elements = body.getElementsByTagName('*');
-        let maxHeight = body.offsetHeight;
-
-        for (let i = 0; i < elements.length; i++) {
-            const element = elements[i] as HTMLElement;
-            const bottom = element.offsetTop + element.offsetHeight;
-            maxHeight = Math.max(maxHeight, bottom);
-        }
-
-        iframe.style.height = (maxHeight + 5) + 'px';
-        body.style.overflow = 'hidden';
-
-        modal.chatMessages.scrollTop = modal.chatMessages.scrollHeight;
+    const doc = getIframeDocument();
+    if (!doc) {
+      pendingContent = newContent;
+      iframe.srcdoc = createIframeContent(newContent);
+      return;
     }
 
-    iframe.onload = () => {
-        isLoaded = true;
-        if (pendingContent !== null) {
-            const content = pendingContent;
-            pendingContent = null;
-            const doc = getIframeDocument();
-            if (doc) {
-                setupIframeContent(doc, content);
-                iframe.syncHeight();
-            }
-        }
+    if (doc.head.querySelector('style')) {
+      doc.body.innerHTML = newContent;
+    } else {
+      setupIframeContent(doc, newContent);
+    }
+
+    iframe.syncHeight();
+  };
+
+  iframe.syncContent = (newContent: string) => {
+    updateContent(newContent);
+  };
+
+  iframe.syncHeight = () => {
+    const body = iframe.contentWindow?.document.body;
+    if (!body) {
+      return;
+    }
+
+    const elements = body.getElementsByTagName('*');
+    let maxHeight = body.offsetHeight;
+
+    for (let i = 0; i < elements.length; i++) {
+      const element = elements[i] as HTMLElement;
+      const bottom = element.offsetTop + element.offsetHeight;
+      maxHeight = Math.max(maxHeight, bottom);
+    }
+
+    iframe.style.height = maxHeight + 5 + 'px';
+    body.style.overflow = 'hidden';
+
+    modal.chatMessages.scrollTop = modal.chatMessages.scrollHeight;
+  };
+
+  iframe.onload = () => {
+    isLoaded = true;
+    if (pendingContent !== null) {
+      const content = pendingContent;
+      pendingContent = null;
+      const doc = getIframeDocument();
+      if (doc) {
+        setupIframeContent(doc, content);
         iframe.syncHeight();
-    };
+      }
+    }
+    iframe.syncHeight();
+  };
 
-    iframe.srcdoc = createIframeContent(content);
+  iframe.srcdoc = createIframeContent(content);
 
-    return iframe;
-}
+  return iframe;
+};
