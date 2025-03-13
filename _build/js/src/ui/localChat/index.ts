@@ -1,4 +1,4 @@
-import { closeModal, openModal, sendMessage } from './modalActions';
+import { closeModal, sendMessage } from './modalActions';
 import { buildModal } from './modalBuilder';
 import { globalState } from './state';
 
@@ -16,10 +16,6 @@ export const createModal = (config: ModalConfig) => {
     return;
   }
 
-  if (config.overlay === undefined) {
-    config.overlay = true;
-  }
-
   if (!config.type) {
     config.type = 'text';
   }
@@ -35,17 +31,17 @@ export const createModal = (config: ModalConfig) => {
   }
 
   const modal = buildModal(config);
-
+  // @ts-expect-error asd
+  window.x = modal;
   modal.api = {
     sendMessage: async (providedMessage?: string, hidePrompt?: boolean) => {
-      await sendMessage(modal, config, providedMessage, hidePrompt);
+      await sendMessage(config, providedMessage, hidePrompt);
     },
     closeModal: () => {
-      closeModal(modal);
+      closeModal();
     },
   };
 
-  openModal(modal, config);
   globalState.modalOpen = true;
 
   return modal;

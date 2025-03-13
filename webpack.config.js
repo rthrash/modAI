@@ -1,4 +1,3 @@
-const StylexPlugin = require('@stylexjs/webpack-plugin');
 const path = require('path');
 
 const config = (env, argv) => ({
@@ -13,26 +12,15 @@ const config = (env, argv) => ({
       },
     ],
   },
-  plugins: [
-    new StylexPlugin({
-      filename: 'modai.css',
-      dev: false,
-      runtimeInjection: false,
-      classNamePrefix: 'x',
-      unstable_moduleResolution: {
-        type: 'commonJS',
-        rootDir: __dirname,
-      },
-    }),
-  ],
+  plugins: [],
   resolve: {
     extensions: ['.ts'],
   },
   output: {
     filename: 'modai.js',
-    path: path.resolve(__dirname, 'assets/components/modai/js/mgr/'),
-    library: 'modAI',
-    libraryTarget: 'umd',
+    path: path.resolve(__dirname, 'assets/components/modai/js/'),
+    library: 'ModAI',
+    libraryExport: 'default',
   },
 });
 

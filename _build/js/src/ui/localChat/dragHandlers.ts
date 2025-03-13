@@ -1,29 +1,30 @@
-import type { Modal } from './types';
+import { globalState } from './state';
 
-export const initDrag = (e: MouseEvent, modal: Modal) => {
-  modal.isDragging = true;
+export const initDrag = (e: MouseEvent) => {
+  globalState.modal.isDragging = true;
 
+  const modal = globalState.modal.modal;
   const rect = modal.getBoundingClientRect();
 
-  modal.offsetX = e.clientX - rect.left;
-  modal.offsetY = e.clientY - rect.top;
+  globalState.modal.offsetX = e.clientX - rect.left;
+  globalState.modal.offsetY = e.clientY - rect.top;
 
   document.body.style.userSelect = 'none';
 };
 
-export const drag = (e: MouseEvent, modal: Modal) => {
-  if (!modal.isDragging) return;
+export const drag = (e: MouseEvent) => {
+  if (!globalState.modal.isDragging) return;
 
-  const newX = e.clientX - modal.offsetX;
-  const newY = e.clientY - modal.offsetY;
+  const modal = globalState.modal.modal;
+  const newX = e.clientX - globalState.modal.offsetX;
+  const newY = e.clientY - globalState.modal.offsetY;
 
   modal.style.left = newX + 'px';
   modal.style.top = newY + 'px';
-
   modal.style.transform = 'none';
 };
 
-export const endDrag = (modal: Modal) => {
-  modal.isDragging = false;
+export const endDrag = () => {
+  globalState.modal.isDragging = false;
   document.body.style.userSelect = '';
 };

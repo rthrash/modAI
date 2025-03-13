@@ -130,7 +130,6 @@ const createFreeTextPrompt = (fieldName: string) => {
     ui.localChat({
       key: fieldName,
       field: fieldName,
-      overlay: false,
       type: 'text',
       availableTypes: ['text', 'image'],
       resource: MODx.request.id,
@@ -330,9 +329,9 @@ const attachContent = () => {
   label?.appendChild(createFreeTextPrompt('res.content'));
 };
 
-const attachTVs = () => {
+const attachTVs = (config: Config) => {
   const form = Ext.getCmp('modx-panel-resource').getForm();
-  for (const [tvId, tvName] of modAI?.tvs || []) {
+  for (const [tvId, tvName] of config.tvs || []) {
     const wrapper = Ext.get(`tv${tvId}-tr`);
     if (!wrapper) {
       continue;
@@ -381,7 +380,7 @@ const attachTVs = () => {
   }
 };
 
-const attachResourceFields = () => {
+const attachResourceFields = (config: Config) => {
   const fieldsMap: Record<string, string[]> = {
     pagetitle: ['modx-resource-pagetitle'],
     longtitle: ['modx-resource-longtitle', 'seosuite-longtitle'],
@@ -390,7 +389,7 @@ const attachResourceFields = () => {
     content: ['modx-resource-content'],
   };
 
-  for (const field of modAI?.resourceFields || []) {
+  for (const field of config.resourceFields || []) {
     if (!fieldsMap[field]) {
       continue;
     }
@@ -406,11 +405,9 @@ const attachResourceFields = () => {
   }
 };
 
-(() => {
-  Ext.onReady(function () {
-    Ext.defer(function () {
-      attachResourceFields();
-      attachTVs();
-    }, 500);
-  });
-})();
+type Config = { tvs: [number, string][]; resourceFields: string[] };
+
+export const initOnResource = (config: Config) => {
+  attachResourceFields(config);
+  attachTVs(config);
+};

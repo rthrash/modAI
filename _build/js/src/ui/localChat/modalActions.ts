@@ -1,88 +1,60 @@
 import { drag, endDrag } from './dragHandlers';
 import { addErrorMessage, renderMessage } from './messageHandlers';
-import { removeUploadedImage, setLoadingState, globalState } from './state';
-import { chatHistory, Message } from '../../chatHistory';
+import { setLoadingState, globalState } from './state';
+import { chatHistory } from '../../chatHistory';
 import { executor } from '../../executor';
 
-import type { Modal, ModalConfig, ModalType } from './types';
+import type { ModalConfig, ModalType } from './types';
 import type { Prompt } from '../../executor';
 
-export const openModal = (modal: Modal, config: ModalConfig) => {
-  modal.chatMessages.innerHTML = '';
-  modal.chatMessages.style.display = 'none';
+export const closeModal = () => {
+  document.removeEventListener('mousemove', (e) => drag(e));
+  document.removeEventListener('mouseup', () => endDrag());
 
-  modal.style.visibility = 'hidden';
-  modal.style.display = 'flex';
-  modal.modalOverlay.style.display = 'block';
-
-  const messages = modal.history.getMessages().filter((m: Message) => !m.hidden);
-  if (messages.length > 0) {
-    modal.chatMessages.style.display = 'block';
-    messages.forEach((msg: Message) => {
-      renderMessage(msg, modal, config);
-    });
-  }
-
-  setTimeout(() => {
-    modal.chatMessages.scrollTop = modal.chatMessages.scrollHeight;
-    modal.style.visibility = 'visible';
-  }, 100);
-
-  return modal;
-};
-
-export const closeModal = (modal: Modal) => {
-  document.removeEventListener('mousemove', (e) => drag(e, modal));
-  document.removeEventListener('mouseup', () => endDrag(modal));
-
-  if (modal.modalOverlay) {
-    modal.modalOverlay.remove();
-  }
-
-  if (modal) {
-    modal.remove();
+  if (globalState.modal) {
+    globalState.modal.remove();
   }
 
   globalState.modalOpen = false;
 };
 
 export const sendMessage = async (
-  modal: Modal,
   config: ModalConfig,
   providedMessage?: string,
   hidePrompt?: boolean,
 ) => {
   const message: Prompt = providedMessage
     ? providedMessage.trim()
-    : modal.messageInput.value.trim();
-  if (!message || modal.isLoading) {
+    : globalState.modal.messageInput.value.trim();
+  if (!message || globalState.modal.isLoading) {
     return;
   }
 
-  setLoadingState(modal, true);
+  setLoadingState(true);
 
-  modal.messageInput.value = '';
-  modal.abortController = new AbortController();
+  globalState.modal.messageInput.value = '';
+  globalState.modal.messageInput.style.height = 'auto';
+  globalState.modal.abortController = new AbortController();
+
+  globalState.modal.welcomeMessage.style.display = 'none';
 
   let messageToSend: Prompt = message;
-  if (modal.uploadedImage && config.type === 'text') {
+  if (globalState.modal.attachments.attachments.length > 0 && config.type === 'text') {
     messageToSend = [
       {
         type: 'text',
         value: message as string,
       },
-      {
-        type: 'image',
-        value: modal.uploadedImage,
-      },
+      ...globalState.modal.attachments.attachments.map((at) => ({
+        type: at.type,
+        value: at.value,
+      })),
     ];
   }
 
-  removeUploadedImage(modal);
-
-  const messages = modal.history.getMessagesHistory();
-  const messageId = 'user-msg-' + Date.now() + Math.round(Math.random() * 1000);
-  modal.history.addUserMessage(messageToSend, messageId, hidePrompt);
+  globalState.modal.attachments.removeAttachments();
+  const messages = globalState.modal.history.getMessagesHistory();
+  globalState.modal.history.addUserMessage(messageToSend, hidePrompt);
 
   try {
     if (config.type === 'text') {
@@ -95,12 +67,12 @@ export const sendMessage = async (
           messages,
         },
         (data) => {
-          modal.history.updateAssistantMessage(data.id, data.content);
+          globalState.modal.history.updateAssistantMessage(data.id, data.content);
         },
-        modal.abortController,
+        globalState.modal.abortController,
       );
 
-      modal.history.updateAssistantMessage(data.id, data.content);
+      globalState.modal.history.updateAssistantMessage(data.id, data.content);
     }
 
     if (config.type === 'image') {
@@ -108,93 +80,133 @@ export const sendMessage = async (
         {
           prompt: messageToSend as string,
         },
-        modal.abortController,
+        globalState.modal.abortController,
       );
 
-      modal.history.addAssistantMessage(data.url, data.id, 'image');
+      globalState.modal.history.addAssistantMessage(data.url, data.id, 'image');
     }
 
-    modal.abortController = undefined;
+    globalState.modal.abortController = undefined;
   } catch (err) {
     if (err instanceof Error) {
       if (err.name === 'AbortError') {
         return;
       }
 
-      addErrorMessage(modal, err.message);
+      setLoadingState(false);
+      addErrorMessage(err.message);
       return;
     }
 
-    addErrorMessage(modal, 'Unknown error');
+    addErrorMessage('Unknown error');
   }
 
-  setLoadingState(modal, false);
+  setLoadingState(false);
+  globalState.modal.messageInput.focus();
 };
 
-export const stopGeneration = (modal: Modal) => {
-  if (!modal.isLoading || !modal.abortController) {
+export const stopGeneration = () => {
+  if (!globalState.modal.isLoading || !globalState.modal.abortController) {
     return;
   }
 
-  modal.abortController.abort();
-  modal.abortController = undefined;
-  setLoadingState(modal, false);
+  globalState.modal.abortController.abort();
+  globalState.modal.abortController = undefined;
+  setLoadingState(false);
 };
 
-export const tryAgain = (modal: Modal, config: ModalConfig) => {
-  if (modal.history.getMessages().length === 0) {
+export const tryAgain = (config: ModalConfig) => {
+  if (globalState.modal.history.getMessages().length === 0) {
     return;
   }
 
   if (config.type === 'text') {
-    void sendMessage(modal, config, 'Try again');
+    void sendMessage(config, 'Try again');
     return;
   }
 
   if (config.type === 'image') {
-    const latestUserMsg = modal.history
+    const latestUserMsg = globalState.modal.history
       .getMessages()
       .reverse()
       .find((msg) => msg.role === 'user');
     if (latestUserMsg) {
-      void sendMessage(modal, config, latestUserMsg.content as string);
+      void sendMessage(config, latestUserMsg.content as string);
     }
   }
 };
 
-export const switchType = (type: ModalType, modal: Modal, config: ModalConfig) => {
+export const switchType = (type: ModalType, config: ModalConfig) => {
   config.type = type;
 
-  modal.history = chatHistory.init(`${config.key}/${config.type}`, (msg) => {
-    return renderMessage(msg, modal, config);
+  globalState.modal.history = chatHistory.init(`${config.key}/${config.type}`, (msg) => {
+    return renderMessage(msg, config);
   });
 
-  while (modal.chatMessages.firstChild) {
-    modal.chatMessages.removeChild(modal.chatMessages.firstChild);
+  while (globalState.modal.chatMessages.firstChild) {
+    globalState.modal.chatMessages.removeChild(globalState.modal.chatMessages.firstChild);
   }
 
-  modal.chatMessages.style.display = 'none';
-  const messages = modal.history.getMessages().filter((m) => !m.hidden);
+  const messages = globalState.modal.history.getMessages().filter((m) => !m.hidden);
   if (messages.length > 0) {
-    modal.chatMessages.style.display = 'block';
+    globalState.modal.welcomeMessage.style.display = 'none';
+
     messages.forEach((msg) => {
-      renderMessage(msg, modal, config);
+      if (msg.el) {
+        globalState.modal.chatMessages.appendChild(msg.el);
+      }
     });
-    modal.tryAgainBtn.enable();
-    modal.clearChatBtn.enable();
+
+    globalState.modal.actionButtons.forEach((btn) => {
+      btn.enable();
+    });
   } else {
-    modal.tryAgainBtn.disable();
-    modal.clearChatBtn.disable();
+    globalState.modal.welcomeMessage.style.display = 'block';
+    globalState.modal.actionButtons.forEach((btn) => {
+      btn.disable();
+    });
   }
+
+  scrollToBottom();
 };
 
-export const clearChat = (modal: Modal) => {
-  while (modal.chatMessages.firstChild) {
-    modal.chatMessages.removeChild(modal.chatMessages.firstChild);
-  }
-  modal.chatMessages.style.display = 'none';
+export const clearChat = () => {
+  globalState.modal.history.clearHistory();
+  globalState.modal.chatMessages.innerHTML = '';
+  globalState.modal.welcomeMessage.style.display = 'block';
 
-  modal.history.clearHistory();
-  modal.tryAgainBtn.disable();
-  modal.clearChatBtn.disable();
+  globalState.modal.actionButtons.forEach((btn) => {
+    btn.disable();
+  });
+};
+
+export const handleImageUpload = async (fileOrUrl: File | string, isRemoteUrl: boolean = false) => {
+  if (!isRemoteUrl && fileOrUrl instanceof File && !fileOrUrl.type.startsWith('image/')) {
+    addErrorMessage('Only image files are allowed');
+    return;
+  }
+
+  if (isRemoteUrl) {
+    globalState.modal.attachments.addImageAttachment(fileOrUrl as string);
+    return;
+  }
+
+  const dataURL = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      resolve(event.target?.result as string);
+    };
+
+    reader.onerror = function (error) {
+      reject(error);
+    };
+
+    reader.readAsDataURL(fileOrUrl as File);
+  });
+  globalState.modal.attachments.addImageAttachment(dataURL);
+};
+
+export const scrollToBottom = () => {
+  globalState.modal.chatContainer.scrollTop = globalState.modal.chatContainer.scrollHeight;
 };

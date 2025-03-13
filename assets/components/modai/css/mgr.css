@@ -1,7 +1,3 @@
-.modai-history_prev, .modai-history_next {
-    //all: unset;
-}
-
 .modai-generate,
 .modai-history_next,
 .modai-history_prev {
@@ -11,8 +7,8 @@
     --button-hover-darken: 15%;
     --button-border-darken: 20%;
     --button-color: hsl(var(--button-h), var(--button-s), var(--button-l));
-    --button-color-border: hsl( var(--button-h), var(--button-s), calc(var(--button-l) - var(--button-border-darken)) );;
-    --button-color-hover: hsl( var(--button-h), var(--button-s), calc(var(--button-l) - var(--button-hover-darken)) );;
+    --button-color-border: hsl( var(--button-h), var(--button-s), calc(var(--button-l) - var(--button-border-darken)) );
+    --button-color-hover: hsl( var(--button-h), var(--button-s), calc(var(--button-l) - var(--button-hover-darken)) );
     display: inline-block;
     cursor: pointer;
     background: var(--button-color);

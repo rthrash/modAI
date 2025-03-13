@@ -81,13 +81,14 @@ const getMessage = (key: string, id: string) => {
 };
 
 export type ChatHistory = {
-  addUserMessage: (content: Prompt, id: string, hidden?: boolean, type?: MessageType) => void;
+  addUserMessage: (content: Prompt, hidden?: boolean, type?: MessageType) => void;
   addAssistantMessage: (content: string, id: string, type?: MessageType) => void;
   updateAssistantMessage: (id: string, content: string, type?: MessageType) => void;
   getAssistantMessage: (id: string) => Message | undefined;
   getMessages: () => Message[];
   getMessagesHistory: () => Pick<Message, 'role' | 'content'>[];
   clearHistory: () => void;
+  clearHistoryFrom: (id: string) => void;
 };
 
 export const chatHistory = {
@@ -103,12 +104,8 @@ export const chatHistory = {
     _namespace[key].onAddMessage = onAddMessage;
 
     return {
-      addUserMessage: (
-        content: Prompt,
-        id: string,
-        hidden?: boolean,
-        type: MessageType = 'text',
-      ) => {
+      addUserMessage: (content: Prompt, hidden?: boolean, type: MessageType = 'text') => {
+        const id = 'user-msg-' + Date.now() + Math.round(Math.random() * 1000);
         addMessage(key, content, ROLES.user, id, hidden, type);
       },
       addAssistantMessage: (content: string, id: string, type: MessageType = 'text') => {
@@ -130,7 +127,22 @@ export const chatHistory = {
         }));
       },
       clearHistory: () => {
+        _namespace[key].history.forEach((msg) => {
+          msg.el?.remove();
+        });
         _namespace[key].history = [];
+      },
+      clearHistoryFrom: (id: string) => {
+        const startIndex = _namespace[key].history.findIndex((obj) => obj.id === id);
+
+        if (startIndex !== -1) {
+          for (let i = startIndex; i < _namespace[key].history.length; i++) {
+            const obj = _namespace[key].history[i];
+            obj.el?.remove();
+          }
+
+          _namespace[key].history.splice(startIndex);
+        }
       },
     };
   },

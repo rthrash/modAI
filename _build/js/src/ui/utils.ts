@@ -1,17 +1,12 @@
-import { props } from '@stylexjs/stylex';
-
-import { globalStyles } from './globalStyles';
-
-import type { StyleXStyles } from '@stylexjs/stylex';
-
-export const applyStyles = (element: HTMLElement, styleObj: StyleXStyles) => {
-  Object.assign(element, props(globalStyles.resetStyles, styleObj));
+export const applyStyles = (element: HTMLElement, styleObj: string) => {
+  element.className = styleObj;
 };
 
 export const createElement = <K extends keyof HTMLElementTagNameMap>(
   type: K,
-  styleObj?: StyleXStyles,
-  content?: string | HTMLElement | (HTMLElement | string)[],
+  styleObj?: string,
+  content?: string | HTMLElement | Element | (Element | HTMLElement | string)[],
+  elProps?: Partial<HTMLElementTagNameMap[K]>,
 ): HTMLElementTagNameMap[K] => {
   const textContent = typeof content === 'string' ? content : '';
 
@@ -20,9 +15,12 @@ export const createElement = <K extends keyof HTMLElementTagNameMap>(
   }
 
   const element = document.createElement(type);
+  if (elProps) {
+    Object.assign(element, elProps);
+  }
 
   if (styleObj) {
-    Object.assign(element, props(styleObj));
+    element.className = styleObj;
   }
 
   if (textContent) {

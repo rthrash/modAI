@@ -1,3 +1,5 @@
+import { globalState } from './ui/localChat/state';
+
 type ServiceType = 'chatgpt' | 'claude' | 'gemini';
 type BufferMode = 'buffered' | 'stream';
 
@@ -490,7 +492,7 @@ const serviceExecutor = async <D extends ServiceResponse>(
 };
 
 const modxFetch = async <R>(action: string, params: Record<string, unknown>) => {
-  const res = await fetch(`${modAI.apiURL}?action=${action}`, {
+  const res = await fetch(`${globalState.config.apiURL}?action=${action}`, {
     method: 'POST',
     body: JSON.stringify(params),
     headers: {
@@ -519,7 +521,7 @@ const aiFetch = async <D extends ServiceResponse>(
   controller = !controller ? new AbortController() : controller;
   const signal = controller.signal;
 
-  const res = await fetch(`${modAI.apiURL}?action=${action}`, {
+  const res = await fetch(`${globalState.config.apiURL}?action=${action}`, {
     signal,
     method: 'POST',
     body: JSON.stringify(params),

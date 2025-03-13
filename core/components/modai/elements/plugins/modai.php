@@ -24,20 +24,30 @@ if (in_array($action, ['resource/create', 'resource/update'])) {
     $assetsUrl = $modAI->getOption('assetsUrl');
     $modx->controller->addLexiconTopic('modai:default');
 
+    $firstName = explode(' ', $modx->user->Profile->fullname)[0];
+
     $modx->controller->addHtml('
             <script type="text/javascript">
-                Ext.onReady(function() {
-                    modAI.config = ' . $modx->toJSON($modAI->config) . ';
-                    modAI.apiURL = "' . $modAI->getAPIUrl() . '";
-                    modAI.tvs =  ' . $modx->toJSON($modAI->getListOfTVsWithIDs()) . ';
-                    modAI.resourceFields =  ' . $modx->toJSON($modAI->getResourceFields()) . ';
+            let modAI;
+            Ext.onReady(function() {
+                modAI = ModAI({
+                  name: "' . $firstName . '",
+                  apiURL: "' . $modAI->getAPIUrl() . '",
                 });
+                
+                 Ext.defer(function () {
+                   modAI.initOnResource({
+                      tvs:  ' . $modx->toJSON($modAI->getListOfTVsWithIDs()) . ',
+                      resourceFields:  ' . $modx->toJSON($modAI->getResourceFields()) . ',
+                    });
+                 }, 500);
+            });
             </script>
         ');
 
     $lit = $modAI->getLit();
 
     $modx->regClientCSS("{$assetsUrl}css/mgr.css?lit=$lit");
-    $modx->regClientCSS("{$assetsUrl}js/mgr/modai.css?lit=$lit");
-    $modx->regClientStartupScript("{$assetsUrl}js/mgr/modai.js?lit=$lit");
+    $modx->regClientCSS("{$assetsUrl}css/modai.css?lit=$lit");
+    $modx->regClientStartupScript("{$assetsUrl}js/modai.js?lit=$lit");
 }

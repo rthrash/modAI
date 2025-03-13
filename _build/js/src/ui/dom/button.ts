@@ -1,5 +1,3 @@
-import { StyleXStyles } from '@stylexjs/stylex';
-
 import { createElement } from '../utils';
 
 export type Button = HTMLButtonElement & {
@@ -8,9 +6,9 @@ export type Button = HTMLButtonElement & {
 };
 
 export const button = (
-  content: string | HTMLElement | (HTMLElement | string)[],
+  content: string | HTMLElement | Element | (HTMLElement | Element | string)[],
   onClick: () => Promise<void> | void,
-  styleObj: StyleXStyles,
+  styleObj?: string,
   btnProps?: Partial<HTMLButtonElement>,
 ) => {
   const textContent = typeof content === 'string' ? content : '';

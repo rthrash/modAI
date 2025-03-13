@@ -1,8 +1,23 @@
-import './resource';
+import { chatHistory } from './chatHistory';
+import { executor } from './executor';
+import { history } from './history';
+import { initOnResource } from './resource';
+import { ui } from './ui';
+import { globalState } from './ui/localChat/state';
 
-export const window = {};
+export type Config = {
+  name?: string;
+  apiURL: string;
+};
 
-export { chatHistory } from './chatHistory';
-export { history } from './history';
-export { executor } from './executor';
-export { ui } from './ui';
+export default (config: Config) => {
+  globalState.config = config;
+
+  return {
+    chatHistory,
+    history,
+    executor,
+    ui,
+    initOnResource,
+  };
+};

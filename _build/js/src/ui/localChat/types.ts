@@ -1,30 +1,32 @@
+import { UserInput } from './modalInput';
+import { AttachmentsWrapper } from './modalInputAttachments';
 import { ChatHistory, Message } from '../../chatHistory';
 import { Button } from '../dom/button';
 
 export type ModalType = 'text' | 'image';
 
 export interface Modal extends HTMLDivElement {
-  modalOverlay: HTMLDivElement;
-  chatHeader: HTMLDivElement;
-  closeBtn: Button;
+  modal: HTMLDivElement;
+  welcomeMessage: HTMLDivElement;
   chatMessages: HTMLDivElement;
-  messageInput: HTMLTextAreaElement;
-  sendBtn: Button;
-  tryAgainBtn: Button;
-  stopBtn: Button;
-  clearChatBtn: Button;
+  chatContainer: HTMLDivElement;
+  scrollWrapper: HTMLDivElement;
   loadingIndicator: HTMLDivElement;
-  typeSelector: HTMLDivElement;
-  typeButtons: { [key: string]: HTMLButtonElement };
-  inputWrapper: HTMLDivElement;
+
+  attachments: AttachmentsWrapper;
+  messageInput: UserInput;
+
+  modeButtons: Button[];
+  actionButtons: Button[];
+  stopBtn: Button;
+  sendBtn: Button;
+
   isDragging: boolean;
   isLoading: boolean;
-  abortController?: AbortController;
   offsetX: number;
   offsetY: number;
-  uploadedImage?: string;
-  imagePreview?: HTMLDivElement;
 
+  abortController?: AbortController;
   history: ChatHistory;
 
   api: {
@@ -35,7 +37,6 @@ export interface Modal extends HTMLDivElement {
 
 export interface ModalConfig {
   key: string;
-  overlay?: boolean;
   type?: ModalType;
   availableTypes?: ModalType[];
   namespace?: string;
