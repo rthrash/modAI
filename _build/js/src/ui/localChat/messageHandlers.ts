@@ -7,7 +7,7 @@ import { copy, edit, plus, triangleError } from '../icons';
 import { createElement, nlToBr } from '../utils';
 import { globalState } from './state';
 
-import type { ModalConfig } from './types';
+import type { LocalChatConfig } from './types';
 import type { Message, UpdatableHTMLElement } from '../../chatHistory';
 
 export const addUserMessage = (msg: Message) => {
@@ -117,7 +117,7 @@ export const addErrorMessage = (content: string) => {
   return messageElement;
 };
 
-export const addAssistantMessage = (msg: Message, config: ModalConfig) => {
+export const addAssistantMessage = (msg: Message, config: LocalChatConfig) => {
   const messageElement: UpdatableHTMLElement = createElement('div', 'message ai');
 
   let textContent = Array.isArray(msg.content) ? msg.content[0].value : msg.content;
@@ -248,7 +248,7 @@ export const addAssistantMessage = (msg: Message, config: ModalConfig) => {
   return messageElement;
 };
 
-export const renderMessage = (msg: Message, config: ModalConfig) => {
+export const renderMessage = (msg: Message, config: LocalChatConfig) => {
   if (msg.hidden) {
     return;
   }
@@ -271,6 +271,7 @@ export const renderMessage = (msg: Message, config: ModalConfig) => {
 };
 
 export const copyToClipboard = async (message: Message) => {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   const textContent = Array.isArray(message.content) ? message.content[0].value : message.content;
 
   if (navigator.clipboard && navigator.clipboard.writeText) {

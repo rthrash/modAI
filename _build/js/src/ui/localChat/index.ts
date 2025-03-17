@@ -2,11 +2,11 @@ import { closeModal, sendMessage } from './modalActions';
 import { buildModal } from './modalBuilder';
 import { globalState } from './state';
 
-import type { ModalConfig } from './types';
+import type { LocalChatConfig } from './types';
 
 export const modalTypes = ['text', 'image'] as const;
 
-export const createModal = (config: ModalConfig) => {
+export const createModal = (config: LocalChatConfig) => {
   if (globalState.modalOpen) {
     return;
   }

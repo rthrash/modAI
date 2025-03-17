@@ -7,9 +7,9 @@ import { buildModalInput } from './modalInput';
 import { globalState } from './state';
 import { chatHistory } from '../../chatHistory';
 
-import type { Modal, ModalConfig } from './types';
+import type { Modal, LocalChatConfig } from './types';
 
-export const buildModal = (config: ModalConfig) => {
+export const buildModal = (config: LocalChatConfig) => {
   const shadow = createElement('div') as Modal;
   // const shadowRoot = shadow.attachShadow({ mode: 'open' });
 

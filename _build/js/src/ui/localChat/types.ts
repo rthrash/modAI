@@ -5,7 +5,7 @@ import { Button } from '../dom/button';
 
 export type ModalType = 'text' | 'image';
 
-export interface Modal extends HTMLDivElement {
+export type Modal = HTMLDivElement & {
   modal: HTMLDivElement;
   welcomeMessage: HTMLDivElement;
   chatMessages: HTMLDivElement;
@@ -33,9 +33,9 @@ export interface Modal extends HTMLDivElement {
     sendMessage: (providedMessage?: string, hidePrompt?: boolean) => Promise<void>;
     closeModal: () => void;
   };
-}
+};
 
-export interface ModalConfig {
+export type LocalChatConfig = {
   key: string;
   type?: ModalType;
   availableTypes?: ModalType[];
@@ -53,6 +53,6 @@ export interface ModalConfig {
     insert?: (message: Message, modal: Modal) => void;
   };
   image?: {
-    mediaSource?: number;
+    mediaSource?: number | string;
   };
-}
+};

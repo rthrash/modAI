@@ -9,11 +9,20 @@ type ConfirmDialogOptions = {
   onConfirm: () => void;
   onCancel?: () => void;
   confirmText: string;
+  cancelText?: string;
+  showConfirm?: boolean;
+  showCancel?: boolean;
 };
 
 export const confirmDialog = (config: ConfirmDialogOptions) => {
+  config = {
+    showConfirm: true,
+    showCancel: true,
+    ...config,
+  };
+
   const cancelBtn = button(
-    'Cancel',
+    config.cancelText ?? 'Cancel',
     () => {
       closeDialog();
     },
@@ -40,7 +49,10 @@ export const confirmDialog = (config: ConfirmDialogOptions) => {
         [
           createElement('h3', 'title', config.title),
           createElement('p', 'message', config.content),
-          createElement('div', 'buttons', [cancelBtn, confirmBtn]),
+          createElement('div', 'buttons', [
+            config.showCancel && cancelBtn,
+            config.showConfirm && confirmBtn,
+          ]),
         ],
         { tabIndex: -1 },
       ),
@@ -72,21 +84,25 @@ export const confirmDialog = (config: ConfirmDialogOptions) => {
 
     if (e.key === 'Tab') {
       const focusableElements = [cancelBtn, confirmBtn];
+      if (config.showCancel) {
+        focusableElements.push(cancelBtn);
+      }
+
+      if (config.showConfirm) {
+        focusableElements.push(confirmBtn);
+      }
+
       const focusedElement = document.activeElement;
-      const currentIndex = focusedElement ? focusableElements.indexOf(focusedElement as Button) : 0;
+      let currentIndex = focusedElement ? focusableElements.indexOf(focusedElement as Button) : -1;
 
       if (e.shiftKey) {
-        if (currentIndex === 0 || currentIndex === -1) {
-          confirmBtn.focus();
-        } else {
-          cancelBtn.focus();
-        }
+        currentIndex = (currentIndex - 1 + focusableElements.length) % focusableElements.length;
       } else {
-        if (currentIndex === 1 || currentIndex === -1) {
-          cancelBtn.focus();
-        } else {
-          confirmBtn.focus();
-        }
+        currentIndex = (currentIndex + 1) % focusableElements.length;
+      }
+
+      if (focusableElements.length > 0) {
+        focusableElements[currentIndex].focus();
       }
 
       e.preventDefault();
@@ -97,5 +113,11 @@ export const confirmDialog = (config: ConfirmDialogOptions) => {
 
   document.body.append(overlay);
 
-  confirmBtn.focus();
+  if (config.showConfirm) {
+    confirmBtn.focus();
+  }
+
+  if (!config.showConfirm && config.showCancel) {
+    cancelBtn.focus();
+  }
 };

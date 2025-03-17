@@ -4,7 +4,7 @@ import { setLoadingState, globalState } from './state';
 import { chatHistory } from '../../chatHistory';
 import { executor } from '../../executor';
 
-import type { ModalConfig, ModalType } from './types';
+import type { LocalChatConfig, ModalType } from './types';
 import type { Prompt } from '../../executor';
 
 export const closeModal = () => {
@@ -19,7 +19,7 @@ export const closeModal = () => {
 };
 
 export const sendMessage = async (
-  config: ModalConfig,
+  config: LocalChatConfig,
   providedMessage?: string,
   hidePrompt?: boolean,
 ) => {
@@ -115,7 +115,7 @@ export const stopGeneration = () => {
   setLoadingState(false);
 };
 
-export const tryAgain = (config: ModalConfig) => {
+export const tryAgain = (config: LocalChatConfig) => {
   if (globalState.modal.history.getMessages().length === 0) {
     return;
   }
@@ -136,7 +136,7 @@ export const tryAgain = (config: ModalConfig) => {
   }
 };
 
-export const switchType = (type: ModalType, config: ModalConfig) => {
+export const switchType = (type: ModalType, config: LocalChatConfig) => {
   config.type = type;
 
   globalState.modal.history = chatHistory.init(`${config.key}/${config.type}`, (msg) => {

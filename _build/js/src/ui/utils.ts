@@ -2,10 +2,12 @@ export const applyStyles = (element: HTMLElement, styleObj: string) => {
   element.className = styleObj;
 };
 
+type El = string | HTMLElement | Element | false | undefined;
+
 export const createElement = <K extends keyof HTMLElementTagNameMap>(
   type: K,
   styleObj?: string,
-  content?: string | HTMLElement | Element | (Element | HTMLElement | string)[],
+  content?: El | El[],
   elProps?: Partial<HTMLElementTagNameMap[K]>,
 ): HTMLElementTagNameMap[K] => {
   const textContent = typeof content === 'string' ? content : '';
@@ -27,13 +29,18 @@ export const createElement = <K extends keyof HTMLElementTagNameMap>(
     element.textContent = textContent;
   } else if (content) {
     if (Array.isArray(content)) {
-      content.forEach((i) => {
-        if (typeof i === 'string') {
-          element.append(document.createTextNode(i));
-        } else {
-          element.append(i);
+      for (const item of content) {
+        if (!item) {
+          continue;
         }
-      });
+
+        if (typeof item === 'string') {
+          element.append(document.createTextNode(item));
+          continue;
+        }
+
+        element.append(item);
+      }
     }
   }
 

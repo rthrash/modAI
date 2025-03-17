@@ -15,14 +15,14 @@ import { image, refresh, arrowUp, square, text, trash } from '../icons';
 import { buildScrollToBottom } from './scrollBottom';
 import { globalState } from './state';
 
-import type { ModalConfig } from './types';
+import type { LocalChatConfig } from './types';
 import type { Button } from '../dom/button';
 
 export type UserInput = HTMLTextAreaElement & {
   setValue: (value: string) => void;
 };
 
-export const buildModalInput = (config: ModalConfig) => {
+export const buildModalInput = (config: LocalChatConfig) => {
   const container = createElement('div', 'inputContainer');
 
   const inputSection = createElement('div', 'inputSection');

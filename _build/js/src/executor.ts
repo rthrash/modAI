@@ -117,7 +117,7 @@ export type ImagePrompt = { type: 'image'; value: string };
 
 export type Prompt = string | [TextPrompt, ...ImagePrompt[]];
 
-type FreeTextParams = {
+export type FreeTextParams = {
   prompt: Prompt;
   field?: string;
   context?: string;
@@ -125,25 +125,31 @@ type FreeTextParams = {
   messages: { role: string; content: Prompt }[];
 };
 
-type TextParams = {
+export type TextParams = {
   field?: string;
   namespace?: string;
-  id: string | number;
-};
+} & (
+  | {
+      resourceId: string | number;
+    }
+  | {
+      content?: string;
+    }
+);
 
-type VisionParams = {
+export type VisionParams = {
   field?: string;
   namespace?: string;
   image: string;
 };
 
-type ImageParams = {
+export type ImageParams = {
   prompt: string;
   field?: string;
   namespace?: string;
 };
 
-type DownloadImageParams = {
+export type DownloadImageParams = {
   url: string;
   field?: string;
   namespace?: string;

@@ -39,19 +39,24 @@ class Text extends API
             }
         }
 
-        $id = $this->modx->getOption('id', $data);
-        if (empty($id)) {
+        $resourceId = $this->modx->getOption('resourceId', $data);
+        $content = $this->modx->getOption('content', $data);
+
+        if (empty($resourceId) && empty($content)) {
             throw new LexiconException('modai.error.no_resource_specified');
         }
 
-        $resource = $this->modx->getObject('modResource', $id);
-        if (!$resource) {
-            throw new LexiconException('modai.error.no_resource_found');
-        }
+        if (!empty($resourceId)) {
+            $resource = $this->modx->getObject('modResource', $resourceId);
+            if (!$resource) {
+                throw new LexiconException('modai.error.no_resource_found');
+            }
 
-        $content = $resource->getContent();
-        if (empty($content)) {
-            throw new LexiconException('modai.error.no_content');
+            $content = $resource->getContent();
+
+            if (empty($content)) {
+                throw new LexiconException('modai.error.no_content');
+            }
         }
 
         $systemInstructions = [];

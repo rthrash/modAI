@@ -47,7 +47,6 @@ if (in_array($action, ['resource/create', 'resource/update'])) {
 
     $lit = $modAI->getLit();
 
-    $modx->regClientCSS("{$assetsUrl}css/mgr.css?lit=$lit");
     $modx->regClientCSS("{$assetsUrl}css/modai.css?lit=$lit");
     $modx->regClientStartupScript("{$assetsUrl}js/modai.js?lit=$lit");
 }
