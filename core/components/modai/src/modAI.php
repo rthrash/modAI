@@ -53,17 +53,23 @@ class modAI
      */
     public function getOption(string $key, $options = [], $default = null)
     {
-        $option = $default;
-        if (!empty($key) && is_string($key)) {
-            if ($options != null && array_key_exists($key, $options)) {
-                $option = $options[$key];
-            } elseif (array_key_exists($key, $this->config)) {
-                $option = $this->config[$key];
-            } elseif (array_key_exists("{$this->namespace}.{$key}", $this->modx->config)) {
-                $option = $this->modx->getOption("{$this->namespace}.{$key}");
-            }
+        if (empty($key) || !is_string($key)) {
+            return $default;
         }
-        return $option;
+
+        if (!empty($options) && array_key_exists($key, $options)) {
+            return $options[$key];
+        }
+
+        if (array_key_exists($key, $this->config)) {
+            return $this->config[$key];
+        }
+
+        if (array_key_exists("{$this->namespace}.{$key}", $this->modx->config)) {
+            return $this->modx->getOption("{$this->namespace}.{$key}");
+        }
+
+        return $default;
     }
 
     public function getListOfTVs()
@@ -125,5 +131,21 @@ class modAI
     public function getAPIUrl()
     {
         return $this->config['assetsUrl'] . 'api.php';
+    }
+
+    public function getJSFile()
+    {
+        $lit = $this->getLit();
+        $assetsUrl = $this->getOption('assetsUrl');
+
+        return "{$assetsUrl}js/modai.js?lit=$lit";
+    }
+
+    public function getCSSFile()
+    {
+        $lit = $this->getLit();
+        $assetsUrl = $this->getOption('assetsUrl');
+
+        return "{$assetsUrl}css/modai.css?lit=$lit";
     }
 }

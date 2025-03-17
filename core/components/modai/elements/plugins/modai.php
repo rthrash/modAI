@@ -21,7 +21,6 @@ if (isset($modx->controller) && is_object($modx->controller) && property_exists(
 }
 
 if (in_array($action, ['resource/create', 'resource/update'])) {
-    $assetsUrl = $modAI->getOption('assetsUrl');
     $modx->controller->addLexiconTopic('modai:default');
 
     $firstName = explode(' ', $modx->user->Profile->fullname)[0];
@@ -45,8 +44,7 @@ if (in_array($action, ['resource/create', 'resource/update'])) {
             </script>
         ');
 
-    $lit = $modAI->getLit();
 
-    $modx->regClientCSS("{$assetsUrl}css/modai.css?lit=$lit");
-    $modx->regClientStartupScript("{$assetsUrl}js/modai.js?lit=$lit");
+    $modx->regClientCSS($modAI->getCSSFile());
+    $modx->regClientStartupScript($modAI->getJSFile());
 }
