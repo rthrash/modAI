@@ -8,6 +8,10 @@ import type { LocalChatConfig, ModalType } from './types';
 import type { Prompt } from '../../executor';
 
 export const closeModal = () => {
+  if (globalState.modal.isLoading) {
+    return;
+  }
+
   document.removeEventListener('mousemove', (e) => drag(e));
   document.removeEventListener('mouseup', () => endDrag());
 

@@ -20,6 +20,7 @@ export type Modal = HTMLDivElement & {
   actionButtons: Button[];
   stopBtn: Button;
   sendBtn: Button;
+  closeModalBtn: Button;
 
   isDragging: boolean;
   isLoading: boolean;

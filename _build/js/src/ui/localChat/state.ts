@@ -23,9 +23,13 @@ export const setLoadingState = (loading: boolean) => {
   if (loading) {
     globalState.modal.sendBtn.disable();
     globalState.modal.stopBtn.enable();
+
+    globalState.modal.closeModalBtn.disable();
   } else {
     globalState.modal.sendBtn.disable();
     globalState.modal.stopBtn.disable();
+
+    globalState.modal.closeModalBtn.enable();
   }
 
   globalState.modal.modeButtons.forEach((btn) => {

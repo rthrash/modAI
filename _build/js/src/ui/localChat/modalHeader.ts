@@ -7,16 +7,18 @@ import { x } from '../icons';
 import { globalState } from './state';
 
 export const buildModalHeader = () => {
+  const closeModalBtn = button(
+    icon(24, x),
+    () => {
+      closeModal();
+    },
+    'closeBtn',
+    { ariaLabel: 'Close dialog' },
+  );
+
   const header = createElement('header', 'header', [
     createElement('h1', '', 'modAI Assistant'),
-    button(
-      icon(24, x),
-      () => {
-        closeModal();
-      },
-      'closeBtn',
-      { ariaLabel: 'Close dialog' },
-    ),
+    closeModalBtn,
   ]);
 
   header.addEventListener('mousedown', (e) => {
@@ -39,6 +41,8 @@ export const buildModalHeader = () => {
       closeModal();
     }
   });
+
+  globalState.modal.closeModalBtn = closeModalBtn;
 
   return header;
 };
