@@ -94,53 +94,57 @@ export const buildModalInput = (config: LocalChatConfig) => {
 
   const modeButtons: Button[] = [];
 
-  const textModeBtn = button(
-    [icon(24, text), createElement('span', 'tooltip', 'Text Mode')],
-    () => {
-      if (config.type === 'text') {
-        return;
-      }
+  if (config.availableTypes?.includes('text')) {
+    const textModeBtn = button(
+      [icon(24, text), createElement('span', 'tooltip', 'Text Mode')],
+      () => {
+        if (config.type === 'text') {
+          return;
+        }
 
-      switchType('text', config);
-      modeButtons.forEach((btn) => {
-        applyStyles(btn, '');
-      });
+        switchType('text', config);
+        modeButtons.forEach((btn) => {
+          applyStyles(btn, '');
+        });
+        applyStyles(textModeBtn, 'active');
+      },
+      '',
+      {
+        ariaLabel: 'Text mode',
+      },
+    );
+
+    if (config.type === 'text') {
       applyStyles(textModeBtn, 'active');
-    },
-    '',
-    {
-      ariaLabel: 'Text mode',
-    },
-  );
-
-  if (config.type === 'text') {
-    applyStyles(textModeBtn, 'active');
+    }
+    modeButtons.push(textModeBtn);
   }
 
-  const imageModeBtn = button(
-    [icon(24, image), createElement('span', 'tooltip', 'Image Mode')],
-    () => {
-      if (config.type === 'image') {
-        return;
-      }
+  if (config.availableTypes?.includes('image')) {
+    const imageModeBtn = button(
+      [icon(24, image), createElement('span', 'tooltip', 'Image Mode')],
+      () => {
+        if (config.type === 'image') {
+          return;
+        }
 
-      switchType('image', config);
-      modeButtons.forEach((btn) => {
-        applyStyles(btn, '');
-      });
+        switchType('image', config);
+        modeButtons.forEach((btn) => {
+          applyStyles(btn, '');
+        });
+        applyStyles(imageModeBtn, 'active');
+      },
+      '',
+      {
+        ariaLabel: 'Image mode',
+      },
+    );
+    if (config.type === 'image') {
       applyStyles(imageModeBtn, 'active');
-    },
-    '',
-    {
-      ariaLabel: 'Image mode',
-    },
-  );
-  if (config.type === 'image') {
-    applyStyles(imageModeBtn, 'active');
-  }
+    }
 
-  modeButtons.push(textModeBtn);
-  modeButtons.push(imageModeBtn);
+    modeButtons.push(imageModeBtn);
+  }
 
   const tryAgainBtn = button(
     [icon(24, refresh), createElement('span', 'tooltip', 'Retry Last Message')],
@@ -166,15 +170,10 @@ export const buildModalInput = (config: LocalChatConfig) => {
   );
   clearChatBtn.disable();
 
-  const options = createElement(
-    'div',
-    'options',
-    [textModeBtn, imageModeBtn, tryAgainBtn, clearChatBtn],
-    {
-      ariaLabel: 'Chat options',
-      role: 'toolbar',
-    },
-  );
+  const options = createElement('div', 'options', [...modeButtons, tryAgainBtn, clearChatBtn], {
+    ariaLabel: 'Chat options',
+    role: 'toolbar',
+  });
 
   const scrollWrapper = buildScrollToBottom();
   container.append(scrollWrapper);

@@ -2,8 +2,15 @@ import { ui } from './ui';
 
 const attachImagePlus = (imgPlusPanel: Element, fieldName: string) => {
   const imagePlus = Ext.getCmp(imgPlusPanel.firstElementChild?.id);
+  const label =
+    imagePlus.el.dom.parentElement?.parentElement?.parentElement?.querySelector('label');
 
-  const imageWand = ui.generateButton.localChat({
+  if (!label) {
+    return;
+  }
+
+  ui.generateButton.localChat({
+    targetEl: label,
     key: fieldName,
     field: fieldName,
     type: 'image',
@@ -21,6 +28,7 @@ const attachImagePlus = (imgPlusPanel: Element, fieldName: string) => {
   });
 
   const altTextWand = ui.generateButton.vision({
+    targetEl: imagePlus.altTextField.el.dom,
     input: imagePlus.altTextField.items.items[0].el.dom,
     field: fieldName,
     image: imagePlus.imagePreview.el.dom,
@@ -36,25 +44,24 @@ const attachImagePlus = (imgPlusPanel: Element, fieldName: string) => {
   imagePlus.altTextField.el.dom.style.display = 'flex';
   imagePlus.altTextField.el.dom.style.justifyItems = 'center';
   imagePlus.altTextField.el.dom.style.alignItems = 'center';
-
-  imagePlus.el.dom.parentElement?.parentElement?.parentElement
-    ?.querySelector('label')
-    ?.appendChild(imageWand);
-  imagePlus.altTextField.el.dom.appendChild(altTextWand);
 };
 
 const attachContent = () => {
   const cmp = Ext.getCmp('modx-resource-content');
   const label = cmp.el.dom.querySelector('label');
-  label?.appendChild(
-    ui.generateButton.localChat({
-      key: 'res.content',
-      field: 'res.content',
-      type: 'text',
-      availableTypes: ['text', 'image'],
-      resource: MODx.request.id,
-    }),
-  );
+
+  if (!label) {
+    return;
+  }
+
+  ui.generateButton.localChat({
+    targetEl: label,
+    key: 'res.content',
+    field: 'res.content',
+    type: 'text',
+    availableTypes: ['text', 'image'],
+    resource: MODx.request.id,
+  });
 };
 
 const attachTVs = (config: Config) => {
@@ -83,38 +90,40 @@ const attachTVs = (config: Config) => {
       if (!label) return;
 
       if (prompt) {
-        label.appendChild(
-          ui.generateButton.forcedText({
-            input: field.el.dom,
-            resourceId: MODx.request.id,
-            field: fieldName,
-            initialValue: field.getValue(),
-            onChange: (data, noStore) => {
-              const prevValue = field.getValue();
-              field.setValue(data.value);
-              field.fireEvent('change', field, data.value, prevValue);
+        ui.generateButton.forcedText({
+          targetEl: label,
+          input: field.el.dom,
+          resourceId: MODx.request.id,
+          field: fieldName,
+          initialValue: field.getValue(),
+          onChange: (data, noStore) => {
+            const prevValue = field.getValue();
+            field.setValue(data.value);
+            field.fireEvent('change', field, data.value, prevValue);
 
-              if (noStore) {
-                field.el.dom.scrollTop = field.el.dom.scrollHeight;
-              }
-            },
-          }),
-        );
+            if (noStore) {
+              field.el.dom.scrollTop = field.el.dom.scrollHeight;
+            }
+          },
+        });
       } else {
-        label.appendChild(
-          ui.generateButton.localChat({
-            key: fieldName,
-            field: fieldName,
-            type: 'text',
-            availableTypes: ['text', 'image'],
-            resource: MODx.request.id,
-          }),
-        );
+        ui.generateButton.localChat({
+          targetEl: label,
+          key: fieldName,
+          field: fieldName,
+          type: 'text',
+          availableTypes: ['text', 'image'],
+          resource: MODx.request.id,
+        });
       }
     }
 
     if (field.xtype === 'modx-panel-tv-image') {
-      const imageWand = ui.generateButton.localChat({
+      const label = wrapper.dom.querySelector('label');
+      if (!label) return;
+
+      ui.generateButton.localChat({
+        targetEl: label,
         key: fieldName,
         field: fieldName,
         type: 'image',
@@ -135,11 +144,6 @@ const attachTVs = (config: Config) => {
           },
         },
       });
-
-      const label = wrapper.dom.querySelector('label');
-      if (!label) return;
-
-      label.appendChild(imageWand);
     }
   }
 };
@@ -166,23 +170,22 @@ const attachResourceFields = (config: Config) => {
     fieldsMap[field].forEach((cmpId) => {
       const fieldEl = Ext.getCmp(cmpId);
       if (fieldEl) {
-        fieldEl.label.appendChild(
-          ui.generateButton.forcedText({
-            resourceId: MODx.request.id,
-            field: `res.${field}`,
-            input: fieldEl.el.dom,
-            initialValue: fieldEl.getValue(),
-            onChange: (data, noStore) => {
-              const prevValue = fieldEl.getValue();
-              fieldEl.setValue(data.value);
-              fieldEl.fireEvent('change', fieldEl, data.value, prevValue);
+        ui.generateButton.forcedText({
+          targetEl: fieldEl.label,
+          resourceId: MODx.request.id,
+          field: `res.${field}`,
+          input: fieldEl.el.dom,
+          initialValue: fieldEl.getValue(),
+          onChange: (data, noStore) => {
+            const prevValue = fieldEl.getValue();
+            fieldEl.setValue(data.value);
+            fieldEl.fireEvent('change', fieldEl, data.value, prevValue);
 
-              if (noStore) {
-                fieldEl.el.dom.scrollTop = fieldEl.el.dom.scrollHeight;
-              }
-            },
-          }),
-        );
+            if (noStore) {
+              fieldEl.el.dom.scrollTop = fieldEl.el.dom.scrollHeight;
+            }
+          },
+        });
       }
     });
   }

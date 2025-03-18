@@ -1,4 +1,5 @@
 import { button } from '../dom/button';
+import { createModAIShadow } from '../dom/modAIShadow';
 import { createElement } from '../utils';
 
 import type { Button } from '../dom/button';
@@ -21,13 +22,23 @@ export const confirmDialog = (config: ConfirmDialogOptions) => {
     ...config,
   };
 
+  const { shadow, shadowRoot } = createModAIShadow(false, () => {
+    if (config.showConfirm) {
+      confirmBtn.focus();
+    }
+
+    if (!config.showConfirm && config.showCancel) {
+      cancelBtn.focus();
+    }
+  });
+
   const cancelBtn = button(
     config.cancelText ?? 'Cancel',
     () => {
       closeDialog();
     },
     'cancelBtn',
-    { tabIndex: 0 },
+    { tabIndex: -1 },
   );
   const confirmBtn = button(
     config.confirmText,
@@ -36,7 +47,7 @@ export const confirmDialog = (config: ConfirmDialogOptions) => {
       config.onConfirm();
     },
     'confirmBtn',
-    { tabIndex: 0 },
+    { tabIndex: -1 },
   );
 
   const overlay = createElement(
@@ -67,12 +78,22 @@ export const confirmDialog = (config: ConfirmDialogOptions) => {
   const destroyDialog = () => {
     document.removeEventListener('keydown', handleDialogKeyDown);
     overlay.remove();
+    shadow.remove();
   };
 
   const closeDialog = () => {
     destroyDialog();
     config.onCancel?.();
   };
+
+  const focusableElements: Button[] = [];
+  if (config.showCancel) {
+    focusableElements.push(cancelBtn);
+  }
+
+  if (config.showConfirm) {
+    focusableElements.push(confirmBtn);
+  }
 
   const handleDialogKeyDown = (e: KeyboardEvent) => {
     if (e.key === 'Escape') {
@@ -83,16 +104,7 @@ export const confirmDialog = (config: ConfirmDialogOptions) => {
     }
 
     if (e.key === 'Tab') {
-      const focusableElements = [cancelBtn, confirmBtn];
-      if (config.showCancel) {
-        focusableElements.push(cancelBtn);
-      }
-
-      if (config.showConfirm) {
-        focusableElements.push(confirmBtn);
-      }
-
-      const focusedElement = document.activeElement;
+      const focusedElement = shadowRoot.activeElement;
       let currentIndex = focusedElement ? focusableElements.indexOf(focusedElement as Button) : -1;
 
       if (e.shiftKey) {
@@ -111,13 +123,6 @@ export const confirmDialog = (config: ConfirmDialogOptions) => {
 
   document.addEventListener('keydown', handleDialogKeyDown);
 
-  document.body.append(overlay);
-
-  if (config.showConfirm) {
-    confirmBtn.focus();
-  }
-
-  if (!config.showConfirm && config.showCancel) {
-    cancelBtn.focus();
-  }
+  shadowRoot.appendChild(overlay);
+  document.body.append(shadow);
 };

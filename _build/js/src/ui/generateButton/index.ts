@@ -1,10 +1,10 @@
-import { Message } from '../../chatHistory';
 import { executor, TextData, TextParams } from '../../executor';
 import { DataOutput, history } from '../../history';
 import { confirmDialog } from '../cofirmDialog';
 import { button } from '../dom/button';
+import { createModAIShadow } from '../dom/modAIShadow';
 import { ui } from '../index';
-import { LocalChatConfig, Modal } from '../localChat/types';
+import { LocalChatConfig } from '../localChat/types';
 import { createLoadingOverlay } from '../overlay';
 import { createElement } from '../utils';
 
@@ -30,8 +30,10 @@ type DataContext = {
   }[];
 };
 
-const createWandEl = (onClick: () => void | Promise<void>) => {
-  return createElement(
+const createWandEl = <R extends HTMLElement>(onClick: () => void | Promise<void>) => {
+  const { shadow, shadowRoot } = createModAIShadow<R>(true);
+
+  const generate = createElement(
     'span',
     'modai--root generate',
     button('✦', onClick, 'generate', {
@@ -39,6 +41,10 @@ const createWandEl = (onClick: () => void | Promise<void>) => {
       title: 'Generate using AI',
     }),
   );
+
+  shadowRoot.appendChild(generate);
+
+  return { shadow, shadowRoot, generate };
 };
 
 const createHistoryNav = (cache: ReturnType<typeof history.init<DataContext>>) => {
@@ -95,10 +101,18 @@ const createHistoryNav = (cache: ReturnType<typeof history.init<DataContext>>) =
   return wrapper;
 };
 
-const createLocalChat = (config: LocalChatConfig) => {
-  return createWandEl(() => {
+type Target = {
+  targetEl: HTMLElement;
+};
+
+const createLocalChat = (config: LocalChatConfig & Target) => {
+  const { shadow } = createWandEl(() => {
     ui.localChat(config);
   });
+
+  config.targetEl.appendChild(shadow);
+
+  return shadow;
 };
 
 type ForcedTextConfig = {
@@ -106,15 +120,17 @@ type ForcedTextConfig = {
   input: HTMLElement;
   onChange: (data: DataOutput<DataContext>, noStore?: boolean) => void;
   initialValue?: string;
-} & TextParams;
+} & TextParams &
+  Target;
 const createForcedTextPrompt = ({
+  targetEl,
   input,
   onChange,
   initialValue,
   field,
   ...rest
 }: ForcedTextConfig) => {
-  const wrapper = createWandEl(async () => {
+  const { shadow, generate } = createWandEl<HistoryElement>(async () => {
     const done = createLoadingOverlay(input);
 
     try {
@@ -139,7 +155,7 @@ const createForcedTextPrompt = ({
         onConfirm: () => {},
       });
     }
-  }) as HistoryElement;
+  });
 
   const cache = history.init<DataContext>(
     field,
@@ -173,14 +189,16 @@ const createForcedTextPrompt = ({
   if (!cache.cachedItem.context.els) {
     cache.cachedItem.context.els = [];
   }
-  cache.cachedItem.context.els.push({ onFieldChange: onChange, wrapper });
+  cache.cachedItem.context.els.push({ onFieldChange: onChange, wrapper: shadow });
 
   const historyNav = createHistoryNav(cache);
 
-  wrapper.appendChild(historyNav);
-  wrapper.historyNav = historyNav;
+  generate.appendChild(historyNav);
+  shadow.historyNav = historyNav;
 
-  return wrapper;
+  targetEl.appendChild(shadow);
+
+  return shadow;
 };
 
 type VisionConfig = {
@@ -191,8 +209,8 @@ type VisionConfig = {
   namespace?: string;
 };
 
-const createVisionPrompt = (config: VisionConfig) => {
-  return createWandEl(async () => {
+const createVisionPrompt = (config: VisionConfig & Target) => {
+  const { shadow } = createWandEl(async () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -231,6 +249,10 @@ const createVisionPrompt = (config: VisionConfig) => {
       });
     }
   });
+
+  config.targetEl.appendChild(shadow);
+
+  return shadow;
 };
 
 export const createGenerateButton = {

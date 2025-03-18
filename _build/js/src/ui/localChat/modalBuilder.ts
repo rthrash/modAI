@@ -6,12 +6,15 @@ import { buildModalHeader } from './modalHeader';
 import { buildModalInput } from './modalInput';
 import { globalState } from './state';
 import { chatHistory } from '../../chatHistory';
+import { createModAIShadow } from '../dom/modAIShadow';
 
 import type { Modal, LocalChatConfig } from './types';
 
 export const buildModal = (config: LocalChatConfig) => {
-  const shadow = createElement('div') as Modal;
-  // const shadowRoot = shadow.attachShadow({ mode: 'open' });
+  const { shadow, shadowRoot } = createModAIShadow<Modal>(true, () => {
+    scrollToBottom();
+    shadow.messageInput.focus();
+  });
 
   const chatModal = createElement('div', 'modai--root chat-modal', '', {
     ariaLabel: 'modAI Assistant chat dialog',
@@ -35,8 +38,7 @@ export const buildModal = (config: LocalChatConfig) => {
   );
   chatModal.append(disclaimer);
 
-  // shadowRoot.appendChild(chatModal);
-  shadow.appendChild(chatModal);
+  shadowRoot.appendChild(chatModal);
   document.body.append(shadow);
 
   shadow.isDragging = false;
@@ -58,12 +60,6 @@ export const buildModal = (config: LocalChatConfig) => {
       }
     });
   }
-
-  setTimeout(() => {
-    scrollToBottom();
-    chatModal.style.visibility = 'visible';
-    shadow.messageInput.focus();
-  }, 100);
 
   return shadow;
 };

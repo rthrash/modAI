@@ -31,8 +31,7 @@ export const createModal = (config: LocalChatConfig) => {
   }
 
   const modal = buildModal(config);
-  // @ts-expect-error asd
-  window.x = modal;
+
   modal.api = {
     sendMessage: async (providedMessage?: string, hidePrompt?: boolean) => {
       await sendMessage(config, providedMessage, hidePrompt);

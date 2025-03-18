@@ -16,7 +16,7 @@
     }
 }
 
-.modai--root {
+:host {
     --primary: #4499E1;
     --primary-dark: #3a87c7;
     --text-light: #ffffff;
@@ -33,479 +33,370 @@
     --border-radius: 12px;
     --border-radius-inner: 1px;
     --icon-size: 20px;
+}
+.icon {
+    display: flex;
+    align-items: center;
+}
 
-    .icon {
-        display: flex;
-        align-items: center;
+.chat-modal {
+    width: 90%;
+    max-width: 800px;
+    background-color: var(--bg-light);
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    max-height: 700px;
+    overflow: hidden;
+    position: fixed;
+    z-index: 101;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    .disclaimer {
+        font-size: 11px;
+        color: #666;
+        opacity: 0.8;
+        text-align: center;
+        display: block;
+        width: 100%;
+        position: absolute;
+        bottom: 10px;
     }
 
-    &.chat-modal {
-        width: 90%;
-        max-width: 800px;
-        background-color: var(--bg-light);
-        border-radius: var(--border-radius);
-        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+    .header {
         display: flex;
-        flex-direction: column;
-        height: 80vh;
-        max-height: 700px;
-        overflow: hidden;
-        position: fixed;
-        z-index: 101;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        visibility: hidden;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-md) var(--spacing-lg);
+        cursor: move;
 
-        .disclaimer {
-            font-size: 11px;
-            color: #666;
-            opacity: 0.8;
-            text-align: center;
-            display: block;
-            width: 100%;
-            position: absolute;
-            bottom: 10px;
+        h1 {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin: 0;
+            padding-left: var(--spacing-sm);
         }
 
-        .header {
+        .closeBtn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: var(--spacing-sm);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: var(--spacing-md) var(--spacing-lg);
-            cursor: move;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background-color var(--transition-speed);
 
-            h1 {
-                font-size: 18px;
-                font-weight: 600;
-                color: var(--text-dark);
-                margin: 0;
-                padding-left: var(--spacing-sm);
+            &:hover, &:focus {
+                background-color: var(--border-light);
             }
 
-            .closeBtn {
-                background: none;
-                border: none;
-                cursor: pointer;
-                padding: var(--spacing-sm);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                border-radius: 50%;
-                transition: background-color var(--transition-speed);
+            &:focus {
+                outline: 2px solid var(--primary);
+                outline-offset: 2px;
+            }
+        }
+    }
 
-                &:hover, &:focus {
-                    background-color: var(--border-light);
-                }
+    .chatContainer {
+        flex: 1;
+        overflow-y: auto;
+        padding: var(--spacing-lg);
+        padding-bottom: var(--spacing-sm);
 
-                &:focus {
-                    outline: 2px solid var(--primary) !important;
-                    outline-offset: 2px;
-                }
+        .welcome {
+            text-align: left;
+            padding: var(--spacing-lg) var(--spacing-sm);
+            opacity: 1;
+            transition: opacity 0.5s ease-out, height 0.5s ease-out;
+
+            .greeting {
+                font-size: 24px;
+                color: var(--text-dark);
+                opacity: 0.7;
+                margin-block: var(--spacing-sm);
+                font-weight: 400;
+            }
+
+            .msg {
+                font-size: 24px;
+                color: var(--text-dark);
+                margin-top: 0;
+                font-weight: 500;
             }
         }
 
-        .chatContainer {
-            flex: 1;
-            overflow-y: auto;
-            padding: var(--spacing-lg);
-            padding-bottom: var(--spacing-sm);
+        .history {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
 
-            .welcome {
-                text-align: left;
-                padding: var(--spacing-lg) var(--spacing-sm);
-                opacity: 1;
-                transition: opacity 0.5s ease-out, height 0.5s ease-out;
+            .message {
+                padding: var(--spacing-md);
+                border-radius: var(--border-radius);
+                position: relative;
+                font-size: 16px;
+                max-width: 80%;
 
-                .greeting {
-                    font-size: 24px;
-                    color: var(--text-dark);
-                    opacity: 0.7;
-                    margin-block: var(--spacing-sm);
-                    font-weight: 400;
+                &.user {
+                    min-width: 60px;
+                    align-self: flex-end;
+                    background-color: var(--primary-dark);
+                    color: var(--text-light);
+                    border-top-right-radius: var(--border-radius-inner);
                 }
 
-                .msg {
-                    font-size: 24px;
+                &.ai {
+                    max-width: 100%;
+                    align-self: flex-start;
+                    background-color: #f1f1f2;
                     color: var(--text-dark);
-                    margin-top: 0;
-                    font-weight: 500;
-                }
-            }
+                    border-top-left-radius: var(--border-radius-inner);
+                    width: 100%;
+                    box-sizing: border-box;
 
-            .history {
-                display: flex;
-                flex-direction: column;
-                gap: var(--spacing-md);
-                margin-bottom: var(--spacing-md);
-
-                .message {
-                    padding: var(--spacing-md);
-                    border-radius: var(--border-radius);
-                    position: relative;
-                    font-size: 16px;
-                    max-width: 80%;
-
-                    &.user {
-                        min-width: 60px;
-                        align-self: flex-end;
-                        background-color: var(--primary-dark);
-                        color: var(--text-light);
-                        border-top-right-radius: var(--border-radius-inner);
-                    }
-
-                    &.ai {
-                        max-width: 100%;
-                        align-self: flex-start;
-                        background-color: #f1f1f2;
-                        color: var(--text-dark);
-                        border-top-left-radius: var(--border-radius-inner);
-                        width: 100%;
-                        box-sizing: border-box;
-
-                        &:last-of-type .actions {
-                            opacity: 1;
-                        }
-                    }
-
-                    &.error {
-                        max-width: 100%;
-                        align-self: flex-start;
-                        background-color: #e44848;
-                        color: var(--text-light);
-                        width: 100%;
-                        box-sizing: border-box;
-                        align-items: center;
-                        display: flex;
-                        gap: 10px;
-                    }
-
-                    .imageRow {
-                        padding-top: var(--spacing-md);
-                        display: flex;
-                        gap: var(--spacing-sm);
-
-                        div {
-                            width: 65px;
-                            height: 65px;
-                            border-radius: 5px;
-                            overflow: hidden;
-                            border: 1px solid #e2e8f0;
-                            background-color: #f8fafc;
-
-                            img {
-                                width: 100%;
-                                height: 100%;
-                                object-fit: cover;
-                            }
-                        }
-                    }
-
-                    .actions {
-                        position: absolute;
-                        display: flex;
-                        gap: 0;
-                        opacity: 0;
-                        transition: opacity var(--transition-speed);
-                        background-color: white;
-                        border-radius: 28px;
-                        padding: 3px;
-                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                        z-index: 1;
-                        right: -6px;
-                        left: auto;
-                        bottom: -16.5px;
-
-                        &:hover,
-                        &:focus-within {
-                            opacity: 1;
-                        }
-
-                        .action-button {
-                            background: none;
-                            border: none;
-                            display: flex;
-                            align-items: center;
-                            gap: 4px;
-                            font-size: 12px;
-                            color: var(--text-dark);
-                            cursor: pointer;
-                            padding: 4px 8px;
-                            border-radius: 28px;
-                            line-height: 1;
-
-                            &:focus, &:hover {
-                                background-color: var(--border-light);
-                            }
-
-                            &:focus {
-                                outline: 2px solid var(--primary) !important;
-                                outline-offset: 2px;
-                            }
-
-
-                            .spinner {
-                                display: inline-block;
-                                margin-right: 5px;
-                                width: 12px;
-                                height: 12px;
-                                position: relative;
-                                animation-name: modai--spin-animation;
-                                animation-duration: 1s;
-                                animation-timing-function: linear;
-                                animation-iteration-count: infinite;
-
-                                .dot {
-                                    position: absolute;
-                                    width: 3px;
-                                    height: 3px;
-                                    background-color: currentColor;
-                                    border-radius: 50%;
-
-                                    &.top {
-                                        top: 0;
-                                        left: 50%;
-                                        transform: translate(-50%, 0);
-                                    }
-
-                                    &.right {
-                                        top: 50%;
-                                        right: 0;
-                                        transform: translate(0, -50%);
-                                    }
-
-                                    &.bottom {
-                                        bottom: 0;
-                                        left: 50%;
-                                        transform: translate(-50%, 0);
-                                    }
-
-                                    &.left {
-                                        top: 50%;
-                                        left: 0;
-                                        transform: translate(0, -50%);
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    &:hover .actions,
-                    &:focus-within .actions {
+                    &:last-of-type .actions {
                         opacity: 1;
                     }
                 }
-            }
-        }
 
-        .inputContainer {
-            padding: var(--spacing-md) var(--spacing-lg);
-            position: relative;
-
-            .scrollToBottomContainer {
-                position: absolute;
-                top: -15px;
-                justify-content: center;
-                box-sizing: border-box;
-                width: 100%;
-                left: 0;
-                display: none;
-
-                button {
-                    display: flex;
-                    border-radius: 24px;
-                    background-color: rgba(255, 255, 255, 0.9);
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                    border: none;
-                    padding: 5px 10px;
+                &.error {
+                    max-width: 100%;
+                    align-self: flex-start;
+                    background-color: #e44848;
+                    color: var(--text-light);
+                    width: 100%;
+                    box-sizing: border-box;
                     align-items: center;
-                    gap: 5px;
-                    cursor: pointer;
-
-                    &:hover, &:focus {
-                        background-color: var(--border-light);
-                    }
-                }
-            }
-
-            .inputSection {
-                align-items: flex-end;
-                gap: var(--spacing-md);
-                padding: var(--spacing-md);
-                border: 1px solid var(--border-light);
-                border-radius: 28px;
-                background-color: var(--bg-light);
-
-                .inputWrapper {
                     display: flex;
-                    align-items: flex-end;
-                    gap: var(--spacing-md);
-                    position: relative;
-
-                    textarea {
-                        flex: 1;
-                        border: none;
-                        outline: none !important;
-                        resize: none;
-                        padding: 0;
-                        padding-right: 44px;
-                        font-family: inherit;
-                        font-size: 16px;
-                        max-height: 140px;
-                        overflow-y: auto;
-                        line-height: 1.4;
-
-                        &:disabled {
-                            background-color: var(--bg-light);
-                            color: var(--primary);
-                        }
-
-                        &::placeholder {
-                            color: var(--input-placeholder);
-                        }
-                    }
-
-                    .loadingDots {
-                        display: none;
-                        align-items: center;
-                        justify-content: center;
-                        height: 40px;
-                        position: absolute;
-                        right: 50px;
-                        bottom: -8px;
-
-                        .loadingDot {
-                            width: 8px;
-                            height: 8px;
-                            margin: 0 4px;
-                            border-radius: 50%;
-                            background-color: var(--primary);
-                            opacity: 0.7;
-                            animation: modai--dot-bounds 1.4s infinite ease-in-out both;
-
-                            &:nth-child(1) {
-                                animation-delay: -0.32s;
-                            }
-
-                            &:nth-child(2) {
-                                animation-delay: -0.16s;
-                            }
-                        }
-                    }
-
-                    button {
-                        position: absolute;
-                        right: -5px;
-                        bottom: -7px;
-                        background-color: transparent;
-                        border: none;
-                        cursor: pointer;
-                        width: 36px;
-                        height: 36px;
-                        border-radius: 50%;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        transition: all var(--transition-speed);
-                        transform: scale(0);
-                        opacity: 0;
-                        pointer-events: none;
-                        color: var(--text-light);
-
-                        &:hover, &:focus {
-                            background-color: var(--primary-dark);
-                        }
-
-                        &:focus {
-                            outline: 2px solid var(--primary) !important;
-                            outline-offset: 2px;
-                        }
-
-                        &.active {
-                            transform: scale(1);
-                            opacity: 1;
-                            background-color: var(--primary);
-                            pointer-events: auto;
-                        }
-
-                        &.sending {
-                            background-color: var(--primary-dark);
-                        }
-                    }
+                    gap: 10px;
                 }
 
-                .attachmentsWrapper {
-                    position: relative;
-                    height: 70px;
-                    display: none;
-                    padding-bottom: var(--spacing-sm);
-                    box-sizing: content-box;
+                .imageRow {
+                    padding-top: var(--spacing-md);
+                    display: flex;
+                    gap: var(--spacing-sm);
 
-                    &.visible {
-                        display: block;
-                    }
-
-                    .imagePreview {
-                        position: absolute;
+                    div {
                         width: 65px;
                         height: 65px;
                         border-radius: 5px;
                         overflow: hidden;
                         border: 1px solid #e2e8f0;
                         background-color: #f8fafc;
-                        cursor: pointer;
-                        transition: transform 0.2s ease;
-
-                        &:hover {
-                            transform: scale(1.05);
-                        }
 
                         img {
                             width: 100%;
                             height: 100%;
                             object-fit: cover;
                         }
+                    }
+                }
 
-                        button {
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            width: 100%;
-                            height: 100%;
-                            background-color: rgba(0, 0, 0, 0.5);
-                            border-radius: 5px;
-                            color: white;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            font-size: 24px;
-                            cursor: pointer;
-                            opacity: 0;
-                            transition: opacity 0.2s ease;
+                .actions {
+                    position: absolute;
+                    display: flex;
+                    gap: 0;
+                    opacity: 0;
+                    transition: opacity var(--transition-speed);
+                    background-color: white;
+                    border-radius: 28px;
+                    padding: 3px;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                    z-index: 1;
+                    right: -6px;
+                    left: auto;
+                    bottom: -16.5px;
 
-                            &:hover {
-                                opacity: 1;
+                    &:hover,
+                    &:focus-within {
+                        opacity: 1;
+                    }
+
+                    .action-button {
+                        background: none;
+                        border: none;
+                        display: flex;
+                        align-items: center;
+                        gap: 4px;
+                        font-size: 12px;
+                        color: var(--text-dark);
+                        cursor: pointer;
+                        padding: 4px 8px;
+                        border-radius: 28px;
+                        line-height: 1;
+
+                        &:focus, &:hover {
+                            background-color: var(--border-light);
+                        }
+
+                        &:focus {
+                            outline: 2px solid var(--primary);
+                            outline-offset: 2px;
+                        }
+
+
+                        .spinner {
+                            display: inline-block;
+                            margin-right: 5px;
+                            width: 12px;
+                            height: 12px;
+                            position: relative;
+                            animation-name: modai--spin-animation;
+                            animation-duration: 1s;
+                            animation-timing-function: linear;
+                            animation-iteration-count: infinite;
+
+                            .dot {
+                                position: absolute;
+                                width: 3px;
+                                height: 3px;
+                                background-color: currentColor;
+                                border-radius: 50%;
+
+                                &.top {
+                                    top: 0;
+                                    left: 50%;
+                                    transform: translate(-50%, 0);
+                                }
+
+                                &.right {
+                                    top: 50%;
+                                    right: 0;
+                                    transform: translate(0, -50%);
+                                }
+
+                                &.bottom {
+                                    bottom: 0;
+                                    left: 50%;
+                                    transform: translate(-50%, 0);
+                                }
+
+                                &.left {
+                                    top: 50%;
+                                    left: 0;
+                                    transform: translate(0, -50%);
+                                }
                             }
                         }
                     }
-
                 }
 
-                &.dragOver {
-                    border-color: #00B6DE;
+                &:hover .actions,
+                &:focus-within .actions {
+                    opacity: 1;
                 }
-
             }
+        }
+    }
 
-            .options {
+    .inputContainer {
+        padding: var(--spacing-md) var(--spacing-lg);
+        position: relative;
+
+        .scrollToBottomContainer {
+            position: absolute;
+            top: -15px;
+            justify-content: center;
+            box-sizing: border-box;
+            width: 100%;
+            left: 0;
+            display: none;
+
+            button {
                 display: flex;
+                border-radius: 24px;
+                background-color: rgba(255, 255, 255, 0.9);
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                border: none;
+                padding: 5px 10px;
                 align-items: center;
-                gap: var(--spacing-lg);
-                padding: var(--spacing-md) var(--spacing-sm);
-                padding-left: calc(var(--spacing-sm) + var(--spacing-sm));
+                gap: 5px;
+                cursor: pointer;
+
+                &:hover, &:focus {
+                    background-color: var(--border-light);
+                }
+            }
+        }
+
+        .inputSection {
+            align-items: flex-end;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-light);
+            border-radius: 28px;
+            background-color: var(--bg-light);
+
+            .inputWrapper {
+                display: flex;
+                align-items: flex-end;
+                gap: var(--spacing-md);
+                position: relative;
+
+                textarea {
+                    flex: 1;
+                    border: none;
+                    outline: none;
+                    resize: none;
+                    padding: 0;
+                    padding-right: 44px;
+                    font-family: inherit;
+                    font-size: 16px;
+                    max-height: 140px;
+                    overflow-y: auto;
+                    line-height: 1.4;
+
+                    &:disabled {
+                        background-color: var(--bg-light);
+                        color: var(--primary);
+                    }
+
+                    &::placeholder {
+                        color: var(--input-placeholder);
+                    }
+                }
+
+                .loadingDots {
+                    display: none;
+                    align-items: center;
+                    justify-content: center;
+                    height: 40px;
+                    position: absolute;
+                    right: 50px;
+                    bottom: -8px;
+
+                    .loadingDot {
+                        width: 8px;
+                        height: 8px;
+                        margin: 0 4px;
+                        border-radius: 50%;
+                        background-color: var(--primary);
+                        opacity: 0.7;
+                        animation: modai--dot-bounds 1.4s infinite ease-in-out both;
+
+                        &:nth-child(1) {
+                            animation-delay: -0.32s;
+                        }
+
+                        &:nth-child(2) {
+                            animation-delay: -0.16s;
+                        }
+                    }
+                }
 
                 button {
-                    background: none;
+                    position: absolute;
+                    right: -5px;
+                    bottom: -7px;
+                    background-color: transparent;
                     border: none;
                     cursor: pointer;
                     width: 36px;
@@ -514,178 +405,277 @@
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    position: relative;
-                    transition: background-color var(--transition-speed), color var(--transition-speed);
+                    transition: all var(--transition-speed);
+                    transform: scale(0);
+                    opacity: 0;
+                    pointer-events: none;
+                    color: var(--text-light);
 
-                    .tooltip {
-                        position: absolute;
-                        bottom: -34px;
-                        left: 50%;
-                        transform: translateX(-50%);
-                        background-color: var(--text-dark);
-                        color: var(--text-light);
-                        padding: 6px 10px;
-                        border-radius: 8px;
-                        font-size: 12px;
-                        white-space: nowrap;
-                        opacity: 0;
-                        pointer-events: none;
-                        transition: opacity var(--transition-speed);
-                        z-index: 2;
-                    }
-
-                    &:focus, &:hover {
-                        background-color: var(--border-light);
-                        opacity: 1;
+                    &:hover, &:focus {
+                        background-color: var(--primary-dark);
                     }
 
                     &:focus {
-                        outline: 2px solid var(--primary) !important;
+                        outline: 2px solid var(--primary);
                         outline-offset: 2px;
                     }
 
                     &.active {
+                        transform: scale(1);
+                        opacity: 1;
                         background-color: var(--primary);
-                        color: var(--text-light);
+                        pointer-events: auto;
+                    }
 
-                        &:hover, &:focus {
-                            background-color: var(--primary);
-                            color: var(--text-light);
+                    &.sending {
+                        background-color: var(--primary-dark);
+                    }
+                }
+            }
+
+            .attachmentsWrapper {
+                position: relative;
+                height: 70px;
+                display: none;
+                padding-bottom: var(--spacing-sm);
+                box-sizing: content-box;
+
+                &.visible {
+                    display: block;
+                }
+
+                .imagePreview {
+                    position: absolute;
+                    width: 65px;
+                    height: 65px;
+                    border-radius: 5px;
+                    overflow: hidden;
+                    border: 1px solid #e2e8f0;
+                    background-color: #f8fafc;
+                    cursor: pointer;
+                    transition: transform 0.2s ease;
+
+                    &:hover {
+                        transform: scale(1.05);
+                    }
+
+                    img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+
+                    button {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: rgba(0, 0, 0, 0.5);
+                        border-radius: 5px;
+                        color: white;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 24px;
+                        cursor: pointer;
+                        opacity: 0;
+                        transition: opacity 0.2s ease;
+
+                        &:hover {
+                            opacity: 1;
                         }
                     }
+                }
 
-                    &:hover .tooltip,
-                    &:focus .tooltip {
-                        opacity: 1;
+            }
+
+            &.dragOver {
+                border-color: #00B6DE;
+            }
+
+        }
+
+        .options {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            padding: var(--spacing-md) var(--spacing-sm);
+            padding-left: calc(var(--spacing-sm) + var(--spacing-sm));
+
+            button {
+                background: none;
+                border: none;
+                cursor: pointer;
+                width: 36px;
+                height: 36px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                transition: background-color var(--transition-speed), color var(--transition-speed);
+
+                .tooltip {
+                    position: absolute;
+                    bottom: -34px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background-color: var(--text-dark);
+                    color: var(--text-light);
+                    padding: 6px 10px;
+                    border-radius: 8px;
+                    font-size: 12px;
+                    white-space: nowrap;
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: opacity var(--transition-speed);
+                    z-index: 2;
+                }
+
+                &:focus, &:hover {
+                    background-color: var(--border-light);
+                    opacity: 1;
+                }
+
+                &:focus {
+                    outline: 2px solid var(--primary);
+                    outline-offset: 2px;
+                }
+
+                &.active {
+                    background-color: var(--primary);
+                    color: var(--text-light);
+
+                    &:hover, &:focus {
+                        background-color: var(--primary);
+                        color: var(--text-light);
                     }
                 }
-            }
-        }
-    }
 
-    &.overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 9999;
-        opacity: 1;
-        pointer-events: auto;
-        transition: opacity 0.2s ease;
-
-        .dialog {
-            background-color: white;
-            border-radius: 8px;
-            padding: 20px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-
-            &:focus {
-                outline: none;
-            }
-        }
-
-
-        .title {
-            font-weight: 600;
-            margin-top: 0;
-            margin-bottom: 12px;
-        }
-
-        .message {
-            margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 12px;
-
-            .cancelBtn {
-                padding: 8px 16px;
-                border: none;
-                background-color: #f1f1f2;
-                border-radius: 4px;
-                cursor: pointer;
-
-                &:focus {
-                    outline: 2px solid var(--primary) !important;
-                    outline-offset: 2px;
+                &:hover .tooltip,
+                &:focus .tooltip {
+                    opacity: 1;
                 }
             }
-            .confirmBtn {
-                padding: 8px 16px;
-                border: none;
-                background-color: var(--primary);
-                color: white;
-                border-radius: 4px;
-                cursor: pointer;
-
-                &:focus {
-                    outline: 2px solid var(--primary) !important;
-                    outline-offset: 2px;
-                }
-            }
-        }
-    }
-
-    &.generate {
-        .generate,
-        .history_next,
-        .history_prev {
-            --button-h: 191;
-            --button-s: 100%;
-            --button-l: 44%;
-            --button-hover-darken: 15%;
-            --button-border-darken: 20%;
-            --button-color: hsl(var(--button-h), var(--button-s), var(--button-l));
-            --button-color-border: hsl( var(--button-h), var(--button-s), calc(var(--button-l) - var(--button-border-darken)) );
-            --button-color-hover: hsl( var(--button-h), var(--button-s), calc(var(--button-l) - var(--button-hover-darken)) );
-            display: inline-block;
-            cursor: pointer;
-            background: var(--button-color);
-            color: #ffffff;
-            border-radius: 4px;
-            margin-right: 6px;
-            padding-inline: 0.6em;
-            padding: 4px 6px 2px;
-            vertical-align: baseline;
-            border: 2px solid var(--button-color-border);
-            border-top-width: 1px;
-            border-left-width: 1px;
-            height: 1.85em;
-            transition: 200ms all;
-
-            &:hover {
-                transform: scale(1.15);
-                background: var(--button-color-hover);
-            }
-
-            &:disabled {
-                opacity:0.5;
-                cursor:initial;
-            }
-        }
-
-        .generate {
-            margin-left: 6px;
-            padding-bottom: 3px;
         }
     }
 }
 
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.2s ease;
+
+    .dialog {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+        &:focus {
+            outline: none;
+        }
+    }
 
 
+    .title {
+        font-weight: 600;
+        margin-top: 0;
+        margin-bottom: 12px;
+    }
 
+    .message {
+        margin-bottom: 20px;
+        font-size: 14px;
+        line-height: 1.5;
+    }
 
+    .buttons {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
 
+        .cancelBtn {
+            padding: 8px 16px;
+            border: none;
+            background-color: #f1f1f2;
+            border-radius: 4px;
+            cursor: pointer;
 
+            &:focus {
+                outline: 2px solid var(--primary);
+                outline-offset: 2px;
+            }
+        }
+        .confirmBtn {
+            padding: 8px 16px;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
 
+            &:focus {
+                outline: 2px solid var(--primary);
+                outline-offset: 2px;
+            }
+        }
+    }
+}
+
+.generate {
+    .generate,
+    .history_next,
+    .history_prev {
+        --button-h: 191;
+        --button-s: 100%;
+        --button-l: 44%;
+        --button-hover-darken: 15%;
+        --button-border-darken: 20%;
+        --button-color: hsl(var(--button-h), var(--button-s), var(--button-l));
+        --button-color-border: hsl( var(--button-h), var(--button-s), calc(var(--button-l) - var(--button-border-darken)) );
+        --button-color-hover: hsl( var(--button-h), var(--button-s), calc(var(--button-l) - var(--button-hover-darken)) );
+        display: inline-block;
+        cursor: pointer;
+        background: var(--button-color);
+        color: #ffffff;
+        border-radius: 4px;
+        margin-right: 6px;
+        padding-inline: 0.6em;
+        padding: 4px 6px 2px;
+        vertical-align: baseline;
+        border: 2px solid var(--button-color-border);
+        border-top-width: 1px;
+        border-left-width: 1px;
+        height: 1.85em;
+        transition: 200ms all;
+
+        &:hover {
+            transform: scale(1.15);
+            background: var(--button-color-hover);
+        }
+
+        &:disabled {
+            opacity:0.5;
+            cursor:initial;
+        }
+    }
+
+    .generate {
+        margin-left: 6px;
+        padding-bottom: 3px;
+    }
+}

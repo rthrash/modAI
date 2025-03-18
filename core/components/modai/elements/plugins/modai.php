@@ -32,6 +32,7 @@ if (in_array($action, ['resource/create', 'resource/update'])) {
                 modAI = ModAI.init({
                   name: "' . $firstName . '",
                   apiURL: "' . $modAI->getAPIUrl() . '",
+                  cssURL: "' . $modAI->getCSSFile() . '",
                 });
                 
                  Ext.defer(function () {
@@ -44,7 +45,5 @@ if (in_array($action, ['resource/create', 'resource/update'])) {
             </script>
         ');
 
-
-    $modx->regClientCSS($modAI->getCSSFile());
     $modx->regClientStartupScript($modAI->getJSFile());
 }

@@ -2,8 +2,8 @@
   "name": "mod-ai",
   "source": "_build/js/src/index.ts",
   "scripts": {
-    "build": "esbuild _build/js/src/index.ts --bundle --outfile=assets/components/modai/js/modai.js --platform=browser --format=iife --global-name=ModAI --minify",
-    "dev": "esbuild _build/js/src/index.ts --bundle --outfile=assets/components/modai/js/modai.js --platform=browser --format=iife --global-name=ModAI --watch --sourcemap=inline",
+    "build": "node esbuild.build.mjs",
+    "dev": "node esbuild.dev.mjs",
     "lint": "eslint"
   },
   "engines": {
@@ -18,5 +18,8 @@
     "eslint-plugin-prettier": "^5.2.3",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.1"
+  },
+  "dependencies": {
+    "@jgoz/esbuild-plugin-typecheck": "^4.0.3"
   }
 }

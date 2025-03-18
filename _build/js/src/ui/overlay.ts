@@ -44,10 +44,10 @@ export const createLoadingOverlay = (
     indicator.style.borderRadius = '50%';
     indicator.style.width = '30px';
     indicator.style.height = '30px';
-    indicator.style.animation = 'textareaOverlaySpin 1s linear infinite';
+    indicator.style.animation = 'modai--loading-overlay_spin 1s linear infinite';
 
     styleText = `
-      @keyframes textareaOverlaySpin {
+      @keyframes modai--loading-overlay_spin {
         0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
       }
@@ -65,13 +65,13 @@ export const createLoadingOverlay = (
       dot.style.borderRadius = '50%';
       dot.style.backgroundColor = config.indicatorColor;
       dot.style.margin = '0 4px';
-      dot.style.animation = `textareaOverlayDotPulse 1.4s infinite ease-in-out`;
+      dot.style.animation = `modai--loading-overlay_dot-pulse 1.4s infinite ease-in-out`;
       dot.style.animationDelay = `${i * 0.2}s`;
       indicator.appendChild(dot);
     }
 
     styleText = `
-      @keyframes textareaOverlayDotPulse {
+      @keyframes modai--loading-overlay_dot-pulse {
         0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
         40% { transform: scale(1); opacity: 1; }
       }

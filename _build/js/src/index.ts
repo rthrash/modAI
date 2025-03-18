@@ -8,6 +8,7 @@ import { globalState } from './ui/localChat/state';
 export type Config = {
   name?: string;
   apiURL: string;
+  cssURL: string;
 };
 
 export const init = (config: Config) => {
