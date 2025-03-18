@@ -29,7 +29,7 @@ if (in_array($action, ['resource/create', 'resource/update'])) {
             <script type="text/javascript">
             let modAI;
             Ext.onReady(function() {
-                modAI = ModAI({
+                modAI = ModAI.init({
                   name: "' . $firstName . '",
                   apiURL: "' . $modAI->getAPIUrl() . '",
                 });

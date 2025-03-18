@@ -271,7 +271,6 @@ export const renderMessage = (msg: Message, config: LocalChatConfig) => {
 };
 
 export const copyToClipboard = async (message: Message) => {
-  await new Promise((resolve) => setTimeout(resolve, 2000));
   const textContent = Array.isArray(message.content) ? message.content[0].value : message.content;
 
   if (navigator.clipboard && navigator.clipboard.writeText) {

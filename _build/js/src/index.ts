@@ -10,7 +10,7 @@ export type Config = {
   apiURL: string;
 };
 
-export default (config: Config) => {
+export const init = (config: Config) => {
   globalState.config = config;
 
   return {
