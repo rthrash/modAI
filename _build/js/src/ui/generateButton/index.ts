@@ -2,7 +2,9 @@ import { executor, TextData, TextParams } from '../../executor';
 import { DataOutput, history } from '../../history';
 import { confirmDialog } from '../cofirmDialog';
 import { button } from '../dom/button';
+import { icon } from '../dom/icon';
 import { createModAIShadow } from '../dom/modAIShadow';
+import { arrowLeft, arrowRight, sparkle } from '../icons';
 import { ui } from '../index';
 import { LocalChatConfig } from '../localChat/types';
 import { createLoadingOverlay } from '../overlay';
@@ -12,10 +14,10 @@ type HistoryButton = HTMLButtonElement & {
   enable: () => void;
   disable: () => void;
 };
-type HistoryInfo = HTMLElement & {
+type HistoryInfo = HTMLDivElement & {
   update: (showing: number, total: number) => void;
 };
-type HistoryNav = HTMLElement & {
+type HistoryNav = HTMLDivElement & {
   show: () => void;
   hide: () => void;
   prevButton: HistoryButton;
@@ -34,9 +36,9 @@ const createWandEl = <R extends HTMLElement>(onClick: () => void | Promise<void>
   const { shadow, shadowRoot } = createModAIShadow<R>(true);
 
   const generate = createElement(
-    'span',
+    'div',
     'modai--root generate',
-    button('✦', onClick, 'generate', {
+    button(icon(14, sparkle), onClick, 'btn', {
       type: 'button',
       title: 'Generate using AI',
     }),
@@ -49,37 +51,39 @@ const createWandEl = <R extends HTMLElement>(onClick: () => void | Promise<void>
 
 const createHistoryNav = (cache: ReturnType<typeof history.init<DataContext>>) => {
   const prevButton = button(
-    'prev',
+    icon(14, arrowLeft),
     () => {
       cache.prev();
     },
-    'history_prev',
+    'history--prev',
     {
       type: 'button',
       title: 'Previous Version',
+      role: 'navigation',
     },
   );
 
   const nextButton = button(
-    'next',
+    icon(14, arrowRight),
     () => {
       cache.next();
     },
-    'history_next',
+    'history--next',
     {
       type: 'button',
       title: 'Next Version',
+      role: 'navigation',
     },
   );
 
-  const info = createElement('span') as HistoryInfo;
+  const info = createElement('div') as HistoryInfo;
   info.update = (showing, total) => {
     info.innerText = `${showing}/${total}`;
   };
 
-  const wrapper = createElement('span') as HistoryNav;
+  const wrapper = createElement('div', 'history--wrapper') as HistoryNav;
   wrapper.show = () => {
-    wrapper.style.display = 'initial';
+    wrapper.style.display = 'inline-flex';
   };
 
   wrapper.hide = () => {
@@ -169,6 +173,10 @@ const createForcedTextPrompt = ({
 
         wrapper.historyNav.info.update(data.current, data.total);
 
+        const root = wrapper.shadowRoot || wrapper.ownerDocument;
+        const focusNext = !data.prevStatus && root.activeElement === wrapper.historyNav.prevButton;
+        const focusPrev = !data.nextStatus && root.activeElement === wrapper.historyNav.nextButton;
+
         if (data.prevStatus) {
           wrapper.historyNav.prevButton.enable();
         } else {
@@ -179,6 +187,14 @@ const createForcedTextPrompt = ({
           wrapper.historyNav.nextButton.enable();
         } else {
           wrapper.historyNav.nextButton.disable();
+        }
+
+        if (focusNext) {
+          wrapper.historyNav.nextButton.focus();
+        }
+
+        if (focusPrev) {
+          wrapper.historyNav.prevButton.focus();
         }
       });
     },
