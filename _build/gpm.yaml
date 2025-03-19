@@ -1,5 +1,5 @@
 name: modAI
-version: 0.11.0-alpha13
+version: 0.11.0-alpha14
 lowCaseName: modai
 namespace: modAI
 author: 'John Peca'
@@ -97,7 +97,7 @@ systemSettings:
     value: dall-e-3
   - key: global.image.style
     area: image
-    value: vivid
+    value: natural
   - key: global.image.size
     area: image
     value: "1792x1024"

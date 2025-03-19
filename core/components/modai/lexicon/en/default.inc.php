@@ -42,7 +42,7 @@ $_lang['setting_modai.global.text.context_prompt_desc'] = 'Prompt that will be u
 $_lang['setting_modai.global.text.stream'] = 'Stream';
 $_lang['setting_modai.global.text.stream_desc'] = 'If enabled and execute on server is disabled, supported models will stream the response.';
 $_lang['setting_modai.global.text.custom_options'] = 'Custom Options';
-$_lang['setting_modai.global.text.custom_options_desc'] = 'A JSON object of custom options passed to the body of the AI request.';
+$_lang['setting_modai.global.text.custom_options_desc'] = 'A JSON object of custom options passed to the body of the AI request. Please consult the documentation for your model for supported options.';
 
 $_lang['setting_modai.global.vision.model'] = 'Vision Model';
 $_lang['setting_modai.global.vision.model_desc'] = 'Create text from image inputs. Valid options are o1, gpt-4o, gpt-4o-mini, and gpt-4-turbo.';
@@ -51,7 +51,7 @@ $_lang['setting_modai.global.vision.prompt_desc'] = 'By default, this should cre
 $_lang['setting_modai.global.vision.stream'] = 'Stream';
 $_lang['setting_modai.global.vision.stream_desc'] = 'If enabled and execute on server is disabled, supported models will stream the response.';
 $_lang['setting_modai.global.vision.custom_options'] = 'Custom Options';
-$_lang['setting_modai.global.vision.custom_options_desc'] = 'A JSON object of custom options passed to the body of the AI request.';
+$_lang['setting_modai.global.vision.custom_options_desc'] = 'A JSON object of custom options passed to the body of the AI request. Please consult the documentation for your model for supported options.';
 
 $_lang['setting_modai.global.image.model'] = 'Image Model';
 $_lang['setting_modai.global.image.model_desc'] = 'Valid options are `dall-e-2` and `dall-e-3` (default). See https://platform.openai.com/docs/guides/images/image-generation-beta for full details including DALL-E-2 specifics.';
@@ -65,8 +65,10 @@ $_lang['setting_modai.global.image.download_domains'] = 'Allowed Download Domain
 $_lang['setting_modai.global.image.download_domains_desc'] = 'Additional domains to allow downloading generated images from.';
 $_lang['setting_modai.global.image.media_source'] = 'Media Source';
 $_lang['setting_modai.global.image.media_source_desc'] = 'Default media source for image uploads (unless field specifies it\'s own).';
+$_lang['setting_modai.global.image.style'] = 'Style';
+$_lang['setting_modai.global.image.style_desc'] = 'Valid options for DALL-E-3 are vivid and natural (default)';
 $_lang['setting_modai.global.image.custom_options'] = 'Custom Options';
-$_lang['setting_modai.global.image.custom_options_desc'] = 'A JSON object of custom options passed to the body of the AI request.';
+$_lang['setting_modai.global.image.custom_options_desc'] = 'A JSON object of custom options passed to the body of the AI request. Please consult the documentation for your model for supported options.';
 
 $_lang['setting_modai.res.fields'] = 'Use with MODX Resource Fields';
 $_lang['setting_modai.res.fields_desc'] = 'The default Resource fields to attached modAI generative AI buttons to.';
